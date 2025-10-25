@@ -1,13 +1,9 @@
-import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { AuthWrapper } from "@/components/auth-wrapper"
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
-  ];
+export function meta() {
+  return [{ title: "Calendar" }, { name: "description", content: "Calendar" }]
 }
 
 export default function Home() {
-  return <Welcome />;
+  return <AuthWrapper></AuthWrapper>
 }
