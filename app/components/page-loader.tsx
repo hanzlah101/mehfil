@@ -2,7 +2,7 @@ import { Spinner } from "@/components/ui/spinner"
 
 export function PageLoader() {
   return (
-    <div className="flex justify-center items-center min-h-svh">
+    <div className="flex min-h-svh items-center justify-center">
       <Spinner />
     </div>
   )
