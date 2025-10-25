@@ -2,6 +2,14 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Render a styled input element with a default set of utility classes.
+ *
+ * @param className - Additional CSS classes to merge with the component's default classes
+ * @param type - The input `type` attribute (e.g., "text", "password")
+ * @param props - All other standard input attributes are forwarded to the underlying element
+ * @returns The input element with applied styles and forwarded props
+ */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (
     <input

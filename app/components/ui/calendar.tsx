@@ -10,6 +10,18 @@ import {
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
 
+/**
+ * Render a themed calendar component based on react-day-picker with project-styled navigation and day buttons.
+ *
+ * The component accepts all DayPicker props and forwards them to the underlying DayPicker while applying a set of default classNames, a short-month formatter for dropdowns, and custom subcomponents (including a styled DayButton). It also exposes a `buttonVariant` prop to control the variant of navigation buttons.
+ *
+ * @param buttonVariant - Variant to apply to navigation buttons (overrides default "ghost")
+ * @param showOutsideDays - Whether to display days from adjacent months in the current month view
+ * @param captionLayout - Layout style for the caption; forwarded to DayPicker
+ * @param components - Component overrides forwarded to DayPicker; merged with the component's built-in overrides
+ * @param classNames - ClassName overrides forwarded to DayPicker; merged with the component's built-in classNames
+ * @returns The rendered calendar element (JSX element) configured with the given props
+ */
 function Calendar({
   className,
   classNames,
@@ -171,6 +183,15 @@ function Calendar({
   )
 }
 
+/**
+ * Renders a styled day button for the calendar, reflecting selection and range state.
+ *
+ * The button sets data attributes for the day value and range/selection state (`data-day`, `data-selected-single`,
+ * `data-range-start`, `data-range-middle`, `data-range-end`) and will programmatically receive focus when the
+ * `modifiers.focused` flag is true.
+ *
+ * @returns The rendered day button element for use inside a DayPicker calendar.
+ */
 function CalendarDayButton({
   className,
   day,

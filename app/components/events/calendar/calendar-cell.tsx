@@ -82,6 +82,18 @@ const data = Array.from({ length: 15 }).map((_, i) => {
   }
 }) satisfies (Doc<"events"> & { venue: Doc<"venues"> })[]
 
+/**
+ * Render a calendar day cell that displays the date and any events for that day.
+ *
+ * Filters events whose `startTime` falls on `day`, highlights today, and visually mutes days
+ * outside the current month. On desktop it shows up to `MAX_EVENTS` event bars with venue
+ * colors and a "+N more" indicator when there are additional events; on mobile it shows a
+ * compact event count. Clicking the cell triggers a date alert.
+ *
+ * @param day - The date represented by this cell.
+ * @param index - The zero-based index of the day within the calendar grid (used for column-start alignment).
+ * @returns A JSX element for the calendar cell containing the day button and the day's events or placeholders.
+ */
 export function CalendarCell({ day, index }: { day: Date; index: number }) {
   const isMobile = useIsMobile()
   const { currentMonth } = useCurrentMonth()
@@ -152,6 +164,13 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
   )
 }
 
+/**
+ * Renders placeholder rows for a calendar cell when there are no events.
+ *
+ * Displays up to `MAX_EVENTS` empty placeholder lines on non-mobile screens and a single compact line on mobile.
+ *
+ * @returns A JSX element containing the placeholder layout for empty event slots.
+ */
 function EmptyEvents() {
   const isMobile = useIsMobile()
 

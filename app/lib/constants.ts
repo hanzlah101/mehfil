@@ -32,6 +32,12 @@ const COLOR_CLASSES = {
     "bg-orange-200/50 hover:bg-orange-200/40 text-orange-950/80 dark:bg-orange-400/25 dark:hover:bg-orange-400/20 dark:text-orange-200 shadow-orange-700/8"
 }
 
+/**
+ * Get the CSS class string for an event color.
+ *
+ * @param color - The color name (expected to be one of VENUE_COLORS, e.g. "red", "sky"); unknown values are handled by falling back to the "sky" color
+ * @returns The Tailwind-like CSS class string associated with `color`; returns the "sky" color classes if `color` is not recognized
+ */
 export function getEventColorClasses(color: string) {
   return COLOR_CLASSES[color as keyof typeof COLOR_CLASSES] ?? COLOR_CLASSES.sky
 }

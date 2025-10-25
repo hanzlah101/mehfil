@@ -12,6 +12,15 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 
+/**
+ * Render the calendar header with month navigation, a Today reset, and a New Event button.
+ *
+ * The header includes previous/next month buttons with tooltips showing the target month, a
+ * Today button that resets the view to the current date, a label showing the current month and year,
+ * and a New Event button that opens the event modal pre-filled with today's date.
+ *
+ * @returns The React element for the calendar header containing navigation controls, the current month label, and the New Event button.
+ */
 export function CalendarHeader() {
   const openEventModal = useEventModal((s) => s.onOpen)
   const { currentMonth, setCurrentMonth, today } = useCurrentMonth()

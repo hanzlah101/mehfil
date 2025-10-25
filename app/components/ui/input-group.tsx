@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
+/**
+ * Wraps input-related elements to provide consistent layout, styling, and interactive states for an input group.
+ *
+ * The rendered container handles alignment of addons, focus styling of contained controls, and error visual states through applied classes.
+ *
+ * @returns A div element with role="group" and data-slot="input-group" configured for input-group layout and behaviors.
+ */
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -114,6 +121,13 @@ function InputGroupButton({
   )
 }
 
+/**
+ * Text container for icons or text within an input group.
+ *
+ * SVG children are made non-interactive and default to `size-4` unless they already provide a size class.
+ *
+ * @returns A styled `span` element suitable for displaying text or icons in an input group, with any passed props applied.
+ */
 function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span

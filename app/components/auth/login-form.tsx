@@ -15,6 +15,13 @@ import {
   FormMessage
 } from "@/components/ui/form"
 
+/**
+ * Renders a login form that validates credentials, shows success or error toasts, and navigates to the root route on successful sign-in.
+ *
+ * The form uses schema-based validation and disables inputs while submitting. On submit it attempts email sign-in, displays an error toast when sign-in fails, displays a success toast on success, and replaces the current route with "/".
+ *
+ * @returns The rendered login form element
+ */
 export function LoginForm() {
   const navigate = useNavigate()
 

@@ -10,6 +10,11 @@ export function meta() {
   ]
 }
 
+/**
+ * Render the login route UI that shows a loading indicator, redirects authenticated users, and displays the login form for unauthenticated users.
+ *
+ * @returns A JSX element representing the login route: a loading state while authentication status is pending, a redirect to the root path for authenticated users, or the centered login form for unauthenticated users.
+ */
 export default function Login() {
   return (
     <>

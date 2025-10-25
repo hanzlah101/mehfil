@@ -10,6 +10,14 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 
+/**
+ * Render a date-picker button that opens a calendar popover for selecting a single date.
+ *
+ * @param value - The currently selected date, or `undefined`/falsy when no date is selected.
+ * @param onChange - Callback invoked with the newly selected date (or `undefined` to clear selection).
+ * @param disabled - When `true`, disables both the trigger button and calendar interaction.
+ * @returns The date picker JSX element.
+ */
 export function DatePicker({
   value,
   onChange,

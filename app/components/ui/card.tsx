@@ -2,6 +2,11 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * Renders a card container div with composed utility classes and forwarded props.
+ *
+ * @returns A div element with `data-slot="card"`, default card layout and appearance classes merged with `className`; any other props are spread onto the element.
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -38,6 +43,11 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+/**
+ * Renders the card description slot with default small, muted text styling.
+ *
+ * @returns A div element with `data-slot="card-description"` and the composed `className`
+ */
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div

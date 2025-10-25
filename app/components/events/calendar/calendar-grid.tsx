@@ -4,6 +4,11 @@ import { eachDayOfInterval, endOfMonth, endOfWeek, startOfWeek } from "date-fns"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { CalendarCell } from "./calendar-cell"
 
+/**
+ * Renders a 7-column by 5-row calendar grid showing each day for the current month.
+ *
+ * @returns A React element containing the calendar grid with a CalendarCell for each day
+ */
 export function CalendarGrid() {
   const { currentMonth } = useCurrentMonth()
 

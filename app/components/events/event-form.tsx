@@ -24,6 +24,15 @@ import {
   SelectValue
 } from "@/components/ui/select"
 
+/**
+ * Renders a form for creating or scheduling an event.
+ *
+ * The form is validated with the project's event schema, exposes fields for title,
+ * event type, booking date, start/end date and time, customer details, and notes.
+ * Changing the event date preserves existing times and updates the end time accordingly.
+ *
+ * @returns The rendered event form element
+ */
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
   const now = new Date()

@@ -1,6 +1,11 @@
 import { createParser } from "nuqs"
 import { startOfMonth, isValid, parse } from "date-fns"
 
+/**
+ * Get the start of the current month.
+ *
+ * @returns A `Date` set to the first day of the current month at local midnight (start of that month)
+ */
 function getCurrentMonthStart() {
   return startOfMonth(new Date())
 }

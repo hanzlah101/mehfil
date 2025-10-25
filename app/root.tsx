@@ -35,6 +35,15 @@ export const links: Route.LinksFunction = () => [
   }
 ]
 
+/**
+ * Renders the root HTML document and wraps the app content with platform and theme providers.
+ *
+ * The document sets language and viewport metadata, injects router head links and meta, and places
+ * the app children inside NuqsAdapter → ConvexProvider → ThemeProvider. A Toaster with rich colors
+ * is included, and router utilities (ScrollRestoration and Scripts) are mounted at the end of the body.
+ *
+ * @returns The complete HTML document element containing the provided children wrapped with global providers and router assets.
+ */
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -64,6 +73,14 @@ export default function App() {
   return <Outlet />
 }
 
+/**
+ * Render a user-facing error page for route-level errors.
+ *
+ * Chooses a short status message and human-readable details from the provided route error; when running in development and the error is an `Error` instance, the error message and stack trace are exposed.
+ *
+ * @param error - The error object supplied to the route error boundary (may be a route error response or an `Error`)
+ * @returns A React element containing the error message, details, and an optional stack trace
+ */
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!"
   let details = "An unexpected error occurred."

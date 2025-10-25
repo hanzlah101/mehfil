@@ -8,6 +8,14 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 
+/**
+ * Renders a modal drawer for creating a new event.
+ *
+ * The drawer's open state and close handler come from the global `useEventModal` store.
+ * It displays a header with the title "New Event" and a short description, and renders the `EventForm` inside the drawer content.
+ *
+ * @returns The Drawer JSX element containing the new-event form and header
+ */
 export function EventModal() {
   const { isOpen, onClose } = useEventModal()
 
