@@ -11,6 +11,7 @@ export default defineSchema({
     location: v.optional(v.string()),
     capacity: v.optional(v.number()),
     tenantId: v.id("tenants"),
+    color: v.string(),
     updatedAt: v.number()
   }).index("tenantId", ["tenantId"]),
   events: defineTable({
@@ -23,8 +24,10 @@ export default defineSchema({
     customerName: v.optional(v.string()),
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
-    customerLocation: v.optional(v.string()),
-    pax: v.optional(v.union(v.array(v.number()), v.number())),
+    guestArrival: v.optional(v.string()),
+    pax: v.optional(
+      v.union(v.object({ from: v.number(), to: v.number() }), v.number())
+    ),
     withFood: v.boolean(),
     tenantId: v.id("tenants"),
     venueId: v.id("venues"),

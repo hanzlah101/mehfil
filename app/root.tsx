@@ -12,6 +12,7 @@ import type { Route } from "./+types/root"
 import { Toaster } from "@/components/ui/sonner"
 import { ConvexProvider } from "@/providers/convex-provider"
 import { ThemeProvider } from "@/providers/theme-provider"
+import { NuqsAdapter } from "nuqs/adapters/react-router/v7"
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,6 +28,10 @@ export const links: Route.LinksFunction = () => [
   {
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap"
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap"
   }
 ]
 
@@ -40,12 +45,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ConvexProvider>
-          <ThemeProvider>
-            {children}
-            <Toaster richColors />
-          </ThemeProvider>
-        </ConvexProvider>
+        <NuqsAdapter>
+          <ConvexProvider>
+            <ThemeProvider>
+              {children}
+              <Toaster richColors />
+            </ThemeProvider>
+          </ConvexProvider>
+        </NuqsAdapter>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -74,11 +81,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main className="container mx-auto p-4 pt-16">
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="w-full overflow-x-auto p-4">
           <code>{stack}</code>
         </pre>
       )}

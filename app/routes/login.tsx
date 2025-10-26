@@ -20,8 +20,8 @@ export default function Login() {
         <Navigate to="/" replace />
       </Authenticated>
       <Unauthenticated>
-        <div className="flex justify-center px-4 py-12 min-h-svh flex-col">
-          <div className="mx-auto max-w-md w-full">
+        <div className="flex min-h-svh flex-col justify-center px-4 py-12">
+          <div className="mx-auto w-full max-w-md">
             <LoginForm />
           </div>
         </div>
