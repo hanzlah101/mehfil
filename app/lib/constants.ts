@@ -1,5 +1,3 @@
-export const MONTH_FORMAT = "Myyyy" as const
-
 export const VENUE_COLORS = [
   "red",
   "pink",

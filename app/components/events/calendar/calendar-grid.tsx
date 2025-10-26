@@ -1,8 +1,9 @@
 import * as React from "react"
 import { eachDayOfInterval, endOfMonth, endOfWeek, startOfWeek } from "date-fns"
 
+import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
-import { CalendarCell } from "./calendar-cell"
+import { CalendarCell } from "@/components/events/calendar/calendar-cell"
 
 export function CalendarGrid() {
   const { currentMonth } = useCurrentMonth()
@@ -14,8 +15,15 @@ export function CalendarGrid() {
     })
   }, [currentMonth])
 
+  const rows = Math.ceil(days.length / 7) // 5 or 6
+
   return (
-    <div className="grid w-full grid-cols-7 grid-rows-5 border-b [&_div:nth-child(7n)]:border-r-0">
+    <div
+      className={cn(
+        "grid w-full grid-cols-7 border-b [&_div:nth-child(7n)]:border-r-0",
+        rows === 6 ? "grid-rows-6" : "grid-rows-5"
+      )}
+    >
       {days.map((day, dayIdx) => (
         <CalendarCell key={day.toString()} day={day} index={dayIdx} />
       ))}

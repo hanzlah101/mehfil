@@ -57,6 +57,9 @@ export function LoginForm() {
               <FormControl>
                 <Input
                   autoFocus
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   placeholder="john@example.com"
                   disabled={isSubmitting}
                   {...field}
@@ -75,6 +78,8 @@ export function LoginForm() {
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
+                  type="password"
+                  autoComplete="current-password"
                   placeholder="•••••••"
                   disabled={isSubmitting}
                   {...field}

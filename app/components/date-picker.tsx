@@ -15,7 +15,7 @@ export function DatePicker({
   onChange,
   disabled
 }: {
-  value: Date
+  value?: Date
   onChange: (val?: Date) => void
   disabled: boolean
 }) {
@@ -42,6 +42,7 @@ export function DatePicker({
           mode="single"
           disabled={disabled}
           selected={value}
+          defaultMonth={value}
           onSelect={onChange}
           captionLayout="dropdown"
         />

@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useEventModal } from "@/stores/use-event-modal"
 import { eventSchema } from "@/validations/events"
 import { Input } from "@/components/ui/input"
@@ -7,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { DatePicker } from "@/components/date-picker"
 import { TimeField } from "@/components/ui/time-field"
 import { useForm } from "react-hook-form"
-import { setDatePreserveTime } from "@/lib/utils"
+import { setDatePreserveTime, defaultEventTime } from "@/lib/date"
 import {
   Form,
   FormControl,
@@ -26,15 +27,18 @@ import {
 
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
-  const now = new Date()
+  const { defaultStartTime, defaultEndTime } = useMemo(
+    () => defaultEventTime(initialDate ?? new Date()),
+    [initialDate]
+  )
 
   const form = useForm({
     resolver: zodResolver(eventSchema),
     defaultValues: {
       title: "",
-      bookingDate: now,
-      startTime: initialDate ?? now,
-      endTime: initialDate ?? now,
+      bookingDate: new Date(),
+      startTime: defaultStartTime,
+      endTime: defaultEndTime,
       type: "booking",
       customerName: "",
       withFood: false,

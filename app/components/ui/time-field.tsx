@@ -23,7 +23,9 @@ export function TimeField({
       )}
       onChange={(evt) => {
         const [hours, minutes] = evt.target.value.split(":").map(Number)
-        onChange(set(value, { hours, minutes }))
+        if (value && !isNaN(hours) && !isNaN(minutes)) {
+          onChange(set(value, { hours, minutes }))
+        }
       }}
       {...props}
     />

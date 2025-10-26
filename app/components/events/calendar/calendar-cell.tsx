@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useEventModal } from "@/stores/use-event-modal"
 import { VENUE_COLORS, getEventColorClasses } from "@/lib/constants"
 import type { Doc, Id } from "@db/_generated/dataModel"
 
@@ -73,7 +74,9 @@ const data = Array.from({ length: 15 }).map((_, i) => {
     customerPhone: `+1-555-123-45${(i + 10).toString().padStart(2, "0")}`,
     customerLocation: `Downtown Plaza ${i + 1}`,
     pax:
-      Math.random() > 0.5 ? [5, 10, 15] : Math.floor(Math.random() * 50) + 10,
+      Math.random() > 0.5
+        ? { from: 20, to: 100 }
+        : Math.floor(Math.random() * 50) + 10,
     withFood: Math.random() > 0.3,
     tenantId: "tenant_001" as Id<"tenants">,
     venueId: venue._id,
@@ -88,15 +91,16 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
 
   const today = isToday(day)
   const isSame = isSameMonth(day, currentMonth)
+  const openEventModal = useEventModal((s) => s.onOpen)
 
   const filteredEvents = React.useMemo(() => {
     return data.filter((evt) => isSameDay(evt.startTime, day))
-  }, [data])
+  }, [day])
 
   return (
     <div
       key={index}
-      onClick={() => alert(day)}
+      onClick={() => openEventModal(day)}
       className={cn(
         index === 0 && colStartClasses[getDay(day)],
         "relative flex cursor-pointer flex-col border-t border-r px-0.5 py-2 hover:bg-muted focus:z-10 dark:hover:bg-muted/50",
@@ -107,6 +111,7 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
         type="button"
         size="icon"
         variant={today ? "default" : "ghost"}
+        aria-current={today ? "date" : undefined}
         className={cn(
           "mx-auto flex size-6 shrink-0 items-center justify-center rounded-full text-xs md:mx-0",
           !today && !isSame && "text-muted-foreground"
@@ -133,13 +138,13 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
             ))}
 
           {isMobile ? (
-            <p className="font-mono text-[9px] leading-none text-muted-foreground text-center">
+            <p className="text-center font-mono text-[9px] leading-none text-muted-foreground">
               {filteredEvents.length}{" "}
               {filteredEvents.length === 1 ? "event" : "events"}
             </p>
           ) : (
             filteredEvents.length > MAX_EVENTS && (
-              <p className="font-mono leading-none text-muted-foreground text-xs">
+              <p className="font-mono text-xs leading-none text-muted-foreground">
                 +{filteredEvents.length - MAX_EVENTS} more
               </p>
             )

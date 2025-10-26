@@ -7,7 +7,7 @@ function getCurrentMonthStart() {
 
 export const monthParser = createParser<Date>({
   parse(value) {
-    const match = /^(\d{1,2})(\d{4})$/.exec(value)
+    const match = /^(\d{2})(\d{4})$/.exec(value)
     if (!match) return getCurrentMonthStart()
 
     const month = parseInt(match[1], 10)
@@ -22,7 +22,7 @@ export const monthParser = createParser<Date>({
   },
 
   serialize(date) {
-    const month = date.getMonth() + 1
+    const month = String(date.getMonth() + 1).padStart(2, "0")
     const year = date.getFullYear()
     return `${month}${year}`
   },

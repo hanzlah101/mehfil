@@ -16,11 +16,11 @@ export const eventSchema = z
     customerPhone: z.string().optional(),
     pax: z.optional(
       z.union([
-        z.int().positive("Pax must be greater than 1"),
+        z.int().positive("Pax must be greater than 0"),
         z
           .object({
-            from: z.int().positive("Pax must be greater than 1"),
-            to: z.int().positive("Pax must be greater than 1")
+            from: z.int().positive("Pax must be greater than 0"),
+            to: z.int().positive("Pax must be greater than 0")
           })
           .refine((val) => val.to > val.from, {
             error: "Max guests must be greater than start",
