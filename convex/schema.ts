@@ -8,8 +8,8 @@ export default defineSchema({
   }),
   venues: defineTable({
     name: v.string(),
+    capacity: v.number(),
     location: v.optional(v.string()),
-    capacity: v.optional(v.number()),
     tenantId: v.id("tenants"),
     color: v.string(),
     updatedAt: v.number()

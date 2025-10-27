@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { RiCalendar2Fill } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { FormControl } from "@/components/ui/form"
@@ -32,7 +32,7 @@ export function DatePicker({
             )}
           >
             {value ? format(value, "PPP") : <span>Pick a date</span>}
-            <CalendarIcon className="ml-auto opacity-50" />
+            <RiCalendar2Fill className="ml-auto opacity-50" />
           </Button>
         </FormControl>
       </PopoverTrigger>

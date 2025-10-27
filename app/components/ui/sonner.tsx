@@ -2,11 +2,11 @@ import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import {
-  CircleCheckIcon,
-  InfoIcon,
-  OctagonXIcon,
-  TriangleAlertIcon
-} from "lucide-react"
+  RiCheckboxCircleFill,
+  RiErrorWarningFill,
+  RiSpam2Fill,
+  RiAlertFill
+} from "@remixicon/react"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -15,10 +15,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       icons={{
-        success: <CircleCheckIcon className="size-4" />,
-        info: <InfoIcon className="size-4" />,
-        warning: <TriangleAlertIcon className="size-4" />,
-        error: <OctagonXIcon className="size-4" />,
+        success: <RiCheckboxCircleFill className="size-4" />,
+        info: <RiErrorWarningFill className="size-4" />,
+        warning: <RiAlertFill className="size-4" />,
+        error: <RiSpam2Fill className="size-4" />,
         loading: <Spinner />
       }}
       style={

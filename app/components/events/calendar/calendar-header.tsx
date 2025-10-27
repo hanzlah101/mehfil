@@ -1,6 +1,10 @@
 import { useMemo } from "react"
 import { add, format } from "date-fns"
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "lucide-react"
+import {
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+  RiAddLine
+} from "@remixicon/react"
 
 import { Button } from "@/components/ui/button"
 import { useCurrentMonth } from "@/hooks/use-current-month"
@@ -25,7 +29,7 @@ export function CalendarHeader() {
   )
 
   return (
-    <div className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-1 items-center justify-between gap-6 md:justify-normal">
         <ButtonGroup className="divide-x divide-background">
           <Tooltip>
@@ -35,7 +39,7 @@ export function CalendarHeader() {
                 size="icon-sm"
                 onClick={() => setCurrentMonth(prevMonth)}
               >
-                <ChevronLeftIcon />
+                <RiArrowLeftSLine />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -58,7 +62,7 @@ export function CalendarHeader() {
                 size="icon-sm"
                 onClick={() => setCurrentMonth(nextMonth)}
               >
-                <ChevronRightIcon />
+                <RiArrowRightSLine />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
@@ -77,7 +81,7 @@ export function CalendarHeader() {
         className="w-full md:w-auto"
         onClick={() => openEventModal(today)}
       >
-        <PlusIcon />
+        <RiAddLine />
         New Event
       </Button>
     </div>

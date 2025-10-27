@@ -1,5 +1,5 @@
-import { EventForm } from "@/components/events/event-form"
-import { useEventModal } from "@/stores/use-event-modal"
+import { useVenueModal } from "@/stores/use-venue-modal"
+import { VenueForm } from "@/components/venues/venue-form"
 import {
   Drawer,
   DrawerContent,
@@ -8,21 +8,21 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 
-export function EventModal() {
-  const { isOpen, onClose } = useEventModal()
+export function VenueModal() {
+  const { isOpen, onClose } = useVenueModal()
 
   return (
     <Drawer open={isOpen} onClose={onClose}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>New Event</DrawerTitle>
+          <DrawerTitle>New Venue</DrawerTitle>
           <DrawerDescription>
-            Set up event details, date, and customer info.
+            Create a new venue, hall, or floor within your business location
           </DrawerDescription>
         </DrawerHeader>
 
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">
-          <EventForm />
+          <VenueForm />
         </div>
       </DrawerContent>
     </Drawer>

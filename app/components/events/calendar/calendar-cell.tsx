@@ -6,7 +6,7 @@ import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useEventModal } from "@/stores/use-event-modal"
-import { VENUE_COLORS, getEventColorClasses } from "@/lib/constants"
+import { VENUE_COLORS, getEventColorClasses } from "@/lib/colors"
 import type { Doc, Id } from "@db/_generated/dataModel"
 
 const colStartClasses = [
@@ -103,7 +103,7 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
       onClick={() => openEventModal(day)}
       className={cn(
         index === 0 && colStartClasses[getDay(day)],
-        "relative flex cursor-pointer flex-col border-t border-r px-0.5 py-2 hover:bg-muted focus:z-10 dark:hover:bg-muted/50",
+        "relative flex cursor-pointer flex-col border-t border-r px-0.5 py-2 hover:bg-muted focus:z-10 md:px-2 dark:hover:bg-muted/50",
         !isSame && "bg-muted/50 text-muted-foreground dark:bg-accent/30"
       )}
     >

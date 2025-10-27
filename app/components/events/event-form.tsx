@@ -1,4 +1,5 @@
 import { useMemo } from "react"
+import { cn } from "@/lib/utils"
 import { useEventModal } from "@/stores/use-event-modal"
 import { eventSchema } from "@/validations/events"
 import { Input } from "@/components/ui/input"
@@ -6,12 +7,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DatePicker } from "@/components/date-picker"
+import { Switch } from "@/components/ui/switch"
 import { TimeField } from "@/components/ui/time-field"
 import { useForm } from "react-hook-form"
 import { setDatePreserveTime, defaultEventTime } from "@/lib/date"
+import { RiRestaurantFill } from "@remixicon/react"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -42,7 +46,7 @@ export function EventForm() {
       type: "booking",
       customerName: "",
       withFood: false,
-      venueId: "abcd"
+      venueId: ""
     }
   })
 
@@ -260,6 +264,44 @@ export function EventForm() {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="withFood"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-2 rounded-md border border-input p-3 shadow-xs dark:bg-input/30",
+                  field.value &&
+                    "border-primary bg-primary/10 dark:bg-primary/10"
+                )}
+              >
+                <RiRestaurantFill
+                  className={cn(
+                    "size-6",
+                    field.value ? "text-primary" : "opacity-60"
+                  )}
+                />
+                <div className="flex flex-col gap-1">
+                  <p className="leading-none">Includes Catering</p>
+                  <FormDescription className="text-xs leading-none">
+                    Specify whether food or catering services will be provided
+                    for this event.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    className="ml-auto"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

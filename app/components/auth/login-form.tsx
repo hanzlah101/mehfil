@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { authClient } from "@/lib/auth-client"
 import { useNavigate } from "react-router"
-import { loginSchema, type LoginSchema } from "@/validations/auth"
+import { PasswordInput } from "@/components/ui/password-input"
+import { loginSchema } from "@/validations/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import {
@@ -18,7 +19,7 @@ import {
 export function LoginForm() {
   const navigate = useNavigate()
 
-  const form = useForm<LoginSchema>({
+  const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -76,15 +77,15 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
+
+              <FormControl data-slot="input-group-control">
+                <PasswordInput
                   autoComplete="current-password"
-                  placeholder="•••••••"
                   disabled={isSubmitting}
                   {...field}
                 />
               </FormControl>
+
               <FormMessage />
             </FormItem>
           )}

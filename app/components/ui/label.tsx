@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
-import { AsteriskIcon } from "lucide-react"
+import { RiAsterisk } from "@remixicon/react"
 
 import { cn } from "@/lib/utils"
 
@@ -23,9 +23,7 @@ function Label({
       {...props}
     >
       {children}
-      {required === true && (
-        <AsteriskIcon className="size-3 text-destructive" />
-      )}
+      {required === true && <RiAsterisk className="size-3 text-destructive" />}
     </LabelPrimitive.Root>
   )
 }

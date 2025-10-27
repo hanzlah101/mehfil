@@ -17,6 +17,6 @@ type EventModalStore = {
 export const useEventModal = create<EventModalStore>((set) => ({
   isOpen: false,
   date: null,
-  onOpen: (date) => set({ isOpen: true, date: date }),
+  onOpen: (date) => set({ isOpen: true, date }),
   onClose: () => set({ isOpen: false, date: null })
 }))

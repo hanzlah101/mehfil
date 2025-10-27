@@ -1,8 +1,9 @@
 export default {
-  "semi": false,
-  "singleQuote": false,
-  "jsxSingleQuote": false,
-  "trailingComma": "none",
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./app/app.css"
+  semi: false,
+  singleQuote: false,
+  jsxSingleQuote: false,
+  trailingComma: "none",
+  plugins: ["prettier-plugin-tailwindcss"],
+  tailwindStylesheet: "./app/app.css",
+  tailwindFunctions: ["cva", "cn", "tx"]
 }
