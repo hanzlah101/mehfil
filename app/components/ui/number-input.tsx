@@ -7,7 +7,7 @@ function NumberInput({
   value,
   ...props
 }: Omit<ComponentProps<typeof Input>, "type" | "onChange" | "value"> & {
-  onChange: (value: number | undefined | null) => void
+  onChange: (value: number | null) => void
   value: undefined | null | number
 }) {
   return (
@@ -16,7 +16,7 @@ function NumberInput({
       value={value ?? ""}
       onChange={(evt) => {
         const number = evt.target.valueAsNumber
-        onChange(isNaN(number) ? undefined : number)
+        onChange(isNaN(number) ? null : number)
       }}
       {...props}
     />

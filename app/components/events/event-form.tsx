@@ -31,6 +31,8 @@ import {
 
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
+  const initialValues = useEventModal((s) => s.event)
+
   const { defaultStartTime, defaultEndTime } = useMemo(
     () => defaultEventTime(initialDate ?? new Date()),
     [initialDate]
@@ -39,14 +41,23 @@ export function EventForm() {
   const form = useForm({
     resolver: zodResolver(eventSchema),
     defaultValues: {
-      title: "",
-      bookingDate: new Date(),
-      startTime: defaultStartTime,
-      endTime: defaultEndTime,
-      type: "booking",
-      customerName: "",
-      withFood: false,
-      venueId: ""
+      title: initialValues?.title ?? "",
+      type: initialValues?.type ?? "booking",
+      customerName: initialValues?.customerName ?? "",
+      customerEmail: initialValues?.customerEmail,
+      customerPhone: initialValues?.customerPhone,
+      withFood: initialValues?.withFood ?? false,
+      venueId: initialValues?.venueId ?? "",
+      guestArrival: initialValues?.guestArrival,
+      notes: initialValues?.notes,
+      pax: initialValues?.pax,
+      bookingDate: initialValues
+        ? new Date(initialValues.bookingDate)
+        : new Date(),
+      startTime: initialValues
+        ? new Date(initialValues.startTime)
+        : defaultStartTime,
+      endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime
     }
   })
 
@@ -236,6 +247,7 @@ export function EventForm() {
                 <FormLabel>Customer Email</FormLabel>
                 <FormControl>
                   <Input
+                    type="email"
                     placeholder="ali@hamza.com"
                     disabled={isSubmitting}
                     {...field}
@@ -254,6 +266,8 @@ export function EventForm() {
                 <FormLabel>Customer Phone</FormLabel>
                 <FormControl>
                   <Input
+                    type="tel"
+                    autoComplete="tel"
                     placeholder="0306-6666666"
                     disabled={isSubmitting}
                     {...field}
@@ -264,44 +278,6 @@ export function EventForm() {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="withFood"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel
-                className={cn(
-                  "flex w-full cursor-pointer items-center gap-2 rounded-md border border-input p-3 shadow-xs dark:bg-input/30",
-                  field.value &&
-                    "border-primary bg-primary/10 dark:bg-primary/10"
-                )}
-              >
-                <RiRestaurantFill
-                  className={cn(
-                    "size-6",
-                    field.value ? "text-primary" : "opacity-60"
-                  )}
-                />
-                <div className="flex flex-col gap-1">
-                  <p className="leading-none">Includes Catering</p>
-                  <FormDescription className="text-xs leading-none">
-                    Specify whether food or catering services will be provided
-                    for this event.
-                  </FormDescription>
-                </div>
-                <FormControl>
-                  <Switch
-                    className="ml-auto"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-              </FormLabel>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <FormField
           control={form.control}
@@ -321,8 +297,46 @@ export function EventForm() {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="withFood"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel
+                className={cn(
+                  "flex w-full cursor-pointer items-center gap-2 rounded-md border border-input px-3 py-4 shadow-xs dark:bg-input/30",
+                  field.value &&
+                    "border-primary bg-primary/10 dark:bg-primary/10"
+                )}
+              >
+                <RiRestaurantFill
+                  className={cn(
+                    "size-6",
+                    field.value ? "text-primary" : "opacity-60"
+                  )}
+                />
+                <div className="flex flex-col gap-1">
+                  <p className="leading-none">With Food</p>
+                  <FormDescription className="text-xs leading-none">
+                    Specify whether food or catering services will be provided
+                    for this event.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    className="ml-auto"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" className="w-full" loading={isSubmitting}>
-          Create Event
+          {initialValues ? "Save Changes" : "Create Event"}
         </Button>
       </form>
     </Form>

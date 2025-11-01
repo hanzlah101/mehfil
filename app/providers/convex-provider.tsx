@@ -1,3 +1,5 @@
+import { toast } from "sonner"
+import { ConvexError } from "convex/values"
 import { ConvexQueryClient } from "@convex-dev/react-query"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react"
@@ -17,6 +19,12 @@ const queryClient = new QueryClient({
     queries: {
       queryKeyHashFn: convexQueryClient.hashFn(),
       queryFn: convexQueryClient.queryFn()
+    },
+    mutations: {
+      onError: (err) => {
+        if (err instanceof ConvexError) toast.error(err.data)
+        else toast.error("Something went wrong, please try again!")
+      }
     }
   }
 })

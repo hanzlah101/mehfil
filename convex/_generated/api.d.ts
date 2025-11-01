@@ -8,12 +8,14 @@
  * @module
  */
 
+import type * as auth__generated_api from "../auth/_generated/api.js";
+import type * as auth__generated_server from "../auth/_generated/server.js";
+import type * as auth_adapter from "../auth/adapter.js";
+import type * as auth_auth from "../auth/auth.js";
 import type * as auth from "../auth.js";
-import type * as betterAuth__generated_api from "../betterAuth/_generated/api.js";
-import type * as betterAuth__generated_server from "../betterAuth/_generated/server.js";
-import type * as betterAuth_adapter from "../betterAuth/adapter.js";
-import type * as betterAuth_auth from "../betterAuth/auth.js";
 import type * as http from "../http.js";
+import type * as util from "../util.js";
+import type * as venues from "../venues.js";
 
 import type {
   ApiFromModules,
@@ -30,12 +32,14 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "auth/_generated/api": typeof auth__generated_api;
+  "auth/_generated/server": typeof auth__generated_server;
+  "auth/adapter": typeof auth_adapter;
+  "auth/auth": typeof auth_auth;
   auth: typeof auth;
-  "betterAuth/_generated/api": typeof betterAuth__generated_api;
-  "betterAuth/_generated/server": typeof betterAuth__generated_server;
-  "betterAuth/adapter": typeof betterAuth_adapter;
-  "betterAuth/auth": typeof betterAuth_auth;
   http: typeof http;
+  util: typeof util;
+  venues: typeof venues;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
@@ -63,8 +67,18 @@ export declare const components: {
                   emailVerified: boolean;
                   image?: null | string;
                   name: string;
+                  permissions?: Array<
+                    | "create:venue"
+                    | "read:venues"
+                    | "update:venue"
+                    | "delete:venue"
+                    | "create:event"
+                    | "read:events"
+                    | "update:event"
+                    | "delete:event"
+                  >;
                   role: "staff" | "admin";
-                  tenantId: string;
+                  tenantId?: string;
                   updatedAt: number;
                 };
                 model: "user";
@@ -137,6 +151,7 @@ export declare const components: {
                     | "image"
                     | "tenantId"
                     | "role"
+                    | "permissions"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -320,6 +335,7 @@ export declare const components: {
                     | "image"
                     | "tenantId"
                     | "role"
+                    | "permissions"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -566,6 +582,16 @@ export declare const components: {
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
+                  permissions?: Array<
+                    | "create:venue"
+                    | "read:venues"
+                    | "update:venue"
+                    | "delete:venue"
+                    | "create:event"
+                    | "read:events"
+                    | "update:event"
+                    | "delete:event"
+                  >;
                   role?: "staff" | "admin";
                   tenantId?: string;
                   updatedAt?: number;
@@ -579,6 +605,7 @@ export declare const components: {
                     | "image"
                     | "tenantId"
                     | "role"
+                    | "permissions"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -794,6 +821,16 @@ export declare const components: {
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
+                  permissions?: Array<
+                    | "create:venue"
+                    | "read:venues"
+                    | "update:venue"
+                    | "delete:venue"
+                    | "create:event"
+                    | "read:events"
+                    | "update:event"
+                    | "delete:event"
+                  >;
                   role?: "staff" | "admin";
                   tenantId?: string;
                   updatedAt?: number;
@@ -807,6 +844,7 @@ export declare const components: {
                     | "image"
                     | "tenantId"
                     | "role"
+                    | "permissions"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";

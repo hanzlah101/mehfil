@@ -1,5 +1,6 @@
-import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server"
+import { PERMISSIONS } from "@/lib/permissions"
 
 export default defineSchema({
   user: defineTable({
@@ -7,8 +8,9 @@ export default defineSchema({
     email: v.string(),
     emailVerified: v.boolean(),
     image: v.optional(v.union(v.null(), v.string())),
-    tenantId: v.string(),
+    tenantId: v.optional(v.string()),
     role: v.union(v.literal("staff"), v.literal("admin")),
+    permissions: v.optional(v.array(v.union(...PERMISSIONS.map(v.literal)))),
     createdAt: v.number(),
     updatedAt: v.number()
   })

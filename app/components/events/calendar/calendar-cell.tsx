@@ -6,8 +6,12 @@ import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useEventModal } from "@/stores/use-event-modal"
-import { VENUE_COLORS, getEventColorClasses } from "@/lib/colors"
 import type { Doc, Id } from "@db/_generated/dataModel"
+import {
+  EVENT_COLOR_CLASSES,
+  VENUE_COLORS,
+  getEventColorStyles
+} from "@/lib/colors"
 
 const colStartClasses = [
   "",
@@ -21,7 +25,7 @@ const colStartClasses = [
 
 const MAX_EVENTS = 3
 
-const venues: (Doc<"venues"> & { _id: Id<"venues"> })[] = Array.from({
+const venues: Doc<"venues">[] = Array.from({
   length: 15
 }).map((_, i) => ({
   _id: `venue_${i}` as Id<"venues">,
@@ -31,7 +35,8 @@ const venues: (Doc<"venues"> & { _id: Id<"venues"> })[] = Array.from({
   capacity: 50 + i * 10,
   tenantId: "tenant_001" as Id<"tenants">,
   color: VENUE_COLORS[i % VENUE_COLORS.length],
-  updatedAt: Date.now()
+  updatedAt: Date.now(),
+  deletedAt: null
 }))
 
 // helper to generate random date/time in a given range
@@ -81,6 +86,7 @@ const data = Array.from({ length: 15 }).map((_, i) => {
     tenantId: "tenant_001" as Id<"tenants">,
     venueId: venue._id,
     updatedAt: Date.now(),
+    deletedAt: null,
     venue
   }
 }) satisfies (Doc<"events"> & { venue: Doc<"venues"> })[]
@@ -100,10 +106,10 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
   return (
     <div
       key={index}
-      onClick={() => openEventModal(day)}
+      onClick={() => openEventModal("create", day)}
       className={cn(
         index === 0 && colStartClasses[getDay(day)],
-        "relative flex cursor-pointer flex-col border-t border-r px-0.5 py-2 hover:bg-muted focus:z-10 md:px-2 dark:hover:bg-muted/50",
+        "relative flex flex-col border-t border-r px-0.5 py-2 transition-colors hover:bg-muted focus:z-10 md:px-2 dark:hover:bg-muted/50",
         !isSame && "bg-muted/50 text-muted-foreground dark:bg-accent/30"
       )}
     >
@@ -124,17 +130,23 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
         <div className="space-y-1.5 p-1">
           {!isMobile &&
             filteredEvents.slice(0, MAX_EVENTS).map((event) => (
-              <div
+              <button
                 key={event._id}
+                style={getEventColorStyles(event.venue.color)}
+                onClick={(evt) => {
+                  evt.stopPropagation()
+                  evt.preventDefault()
+                  openEventModal("update", event)
+                }}
                 className={cn(
-                  "w-full space-y-1 rounded-sm px-2 py-1.5 leading-tight",
-                  getEventColorClasses(event.venue.color)
+                  "w-full space-y-1 rounded-sm px-2 py-1.5 leading-tight transition-all",
+                  EVENT_COLOR_CLASSES
                 )}
               >
                 <p className="truncate text-xs leading-none font-medium">
                   {event.title}
                 </p>
-              </div>
+              </button>
             ))}
 
           {isMobile ? (

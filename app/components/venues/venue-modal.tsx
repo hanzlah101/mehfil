@@ -8,17 +8,32 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 
+const modalContent = {
+  create: {
+    title: "New Venue",
+    description:
+      "Create a new venue, hall, or floor within your business location"
+  },
+  update: {
+    title: "Update Venue",
+    description: "Modify the details of your existing venue"
+  }
+}
+
 export function VenueModal() {
-  const { isOpen, onClose } = useVenueModal()
+  const { type, isOpen, onClose } = useVenueModal()
+
+  const content = type === "update" ? modalContent.update : modalContent.create
 
   return (
-    <Drawer open={isOpen} onClose={onClose}>
+    <Drawer
+      onClose={onClose}
+      open={isOpen && (type === "create" || type === "update")}
+    >
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>New Venue</DrawerTitle>
-          <DrawerDescription>
-            Create a new venue, hall, or floor within your business location
-          </DrawerDescription>
+          <DrawerTitle>{content.title}</DrawerTitle>
+          <DrawerDescription>{content.description}</DrawerDescription>
         </DrawerHeader>
 
         <div className="mx-auto w-full max-w-2xl px-4 pb-4">

@@ -1,4 +1,3 @@
-import { VENUE_COLORS } from "@/lib/colors"
 import { z } from "zod"
 
 export const venueSchema = z.object({
@@ -10,7 +9,7 @@ export const venueSchema = z.object({
         code === "invalid_type" ? "Please enter a valid capacity" : undefined
     })
     .positive("Capacity must be greater than 0"),
-  color: z.enum(VENUE_COLORS, "Please pick a color")
+  color: z.string().min(1, "Please pick a color")
 })
 
 export type VenueSchema = z.infer<typeof venueSchema>

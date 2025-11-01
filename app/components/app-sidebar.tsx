@@ -2,9 +2,9 @@ import { Link, useLocation } from "react-router"
 import {
   RiCalendar2Line,
   RiCalendar2Fill,
-  type RemixiconComponentType,
   RiMapPinLine,
-  RiMapPinFill
+  RiMapPinFill,
+  type RemixiconComponentType
 } from "@remixicon/react"
 import {
   Sidebar,

@@ -43,8 +43,18 @@ export type Mounts = {
                 emailVerified: boolean;
                 image?: null | string;
                 name: string;
+                permissions?: Array<
+                  | "create:venue"
+                  | "read:venues"
+                  | "update:venue"
+                  | "delete:venue"
+                  | "create:event"
+                  | "read:events"
+                  | "update:event"
+                  | "delete:event"
+                >;
                 role: "staff" | "admin";
-                tenantId: string;
+                tenantId?: string;
                 updatedAt: number;
               };
               model: "user";
@@ -117,6 +127,7 @@ export type Mounts = {
                   | "image"
                   | "tenantId"
                   | "role"
+                  | "permissions"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -300,6 +311,7 @@ export type Mounts = {
                   | "image"
                   | "tenantId"
                   | "role"
+                  | "permissions"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -546,6 +558,16 @@ export type Mounts = {
                 emailVerified?: boolean;
                 image?: null | string;
                 name?: string;
+                permissions?: Array<
+                  | "create:venue"
+                  | "read:venues"
+                  | "update:venue"
+                  | "delete:venue"
+                  | "create:event"
+                  | "read:events"
+                  | "update:event"
+                  | "delete:event"
+                >;
                 role?: "staff" | "admin";
                 tenantId?: string;
                 updatedAt?: number;
@@ -559,6 +581,7 @@ export type Mounts = {
                   | "image"
                   | "tenantId"
                   | "role"
+                  | "permissions"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -774,6 +797,16 @@ export type Mounts = {
                 emailVerified?: boolean;
                 image?: null | string;
                 name?: string;
+                permissions?: Array<
+                  | "create:venue"
+                  | "read:venues"
+                  | "update:venue"
+                  | "delete:venue"
+                  | "create:event"
+                  | "read:events"
+                  | "update:event"
+                  | "delete:event"
+                >;
                 role?: "staff" | "admin";
                 tenantId?: string;
                 updatedAt?: number;
@@ -787,6 +820,7 @@ export type Mounts = {
                   | "image"
                   | "tenantId"
                   | "role"
+                  | "permissions"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";

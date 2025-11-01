@@ -79,7 +79,7 @@ export function CalendarHeader() {
       <Button
         size="sm"
         className="w-full md:w-auto"
-        onClick={() => openEventModal(today)}
+        onClick={() => openEventModal("create", today)}
       >
         <RiAddLine />
         New Event
