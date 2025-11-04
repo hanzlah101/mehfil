@@ -1,9 +1,38 @@
-import { useMemo } from "react"
+import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { useStore } from "@tanstack/react-form"
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import { useFieldContext, useFormContext } from "@/hooks/form-hooks"
+import { Slot } from "@radix-ui/react-slot"
+
+const FieldIdContext = React.createContext<string | undefined>(undefined)
+
+function useIsFieldInvalid() {
+  const field = useFieldContext()
+  const [isTouched, isValid] = useStore(field.store, ({ meta }) => [
+    meta.isTouched,
+    meta.isValid
+  ])
+  return { isInvalid: isTouched && !isValid, field }
+}
+
+function Form(props: React.ComponentProps<"form">) {
+  const form = useFormContext()
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        form.handleSubmit()
+      }}
+      {...props}
+    />
+  )
+}
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -81,14 +110,19 @@ function Field({
   orientation = "vertical",
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
+  const id = React.useId()
+  const { isInvalid, field } = useIsFieldInvalid()
   return (
-    <div
-      role="group"
-      data-slot="field"
-      data-orientation={orientation}
-      className={cn(fieldVariants({ orientation }), className)}
-      {...props}
-    />
+    <FieldIdContext.Provider value={`${id}-${field.name}`}>
+      <div
+        role="group"
+        data-slot="field"
+        data-invalid={isInvalid}
+        data-orientation={orientation}
+        className={cn(fieldVariants({ orientation }), className)}
+        {...props}
+      />
+    </FieldIdContext.Provider>
   )
 }
 
@@ -109,8 +143,10 @@ function FieldLabel({
   className,
   ...props
 }: React.ComponentProps<typeof Label>) {
+  const fieldId = React.useContext(FieldIdContext)
   return (
     <Label
+      htmlFor={fieldId}
       data-slot="field-label"
       className={cn(
         "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50",
@@ -184,55 +220,38 @@ function FieldSeparator({
 function FieldError({
   className,
   children,
-  errors,
   ...props
-}: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>
-}) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
+}: React.ComponentProps<"p">) {
+  const { isInvalid, field } = useIsFieldInvalid()
+  const error = useStore(field.store, (s) => s.meta.errors?.[0])
 
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values()
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
-    )
-  }, [children, errors])
+  const content = children ? children : isInvalid ? error?.message : null
 
   if (!content) {
     return null
   }
 
   return (
-    <div
+    <p
       role="alert"
       data-slot="field-error"
       className={cn("text-sm font-normal text-destructive", className)}
       {...props}
     >
       {content}
-    </div>
+    </p>
   )
 }
 
+function FieldControl(props: React.ComponentProps<typeof Slot>) {
+  const { field, isInvalid } = useIsFieldInvalid()
+  const fieldId = React.useContext(FieldIdContext)
+  const idProps = { id: fieldId, name: field.name }
+  return <Slot aria-invalid={isInvalid} {...idProps} {...props} />
+}
+
 export {
+  Form,
   Field,
   FieldLabel,
   FieldDescription,
@@ -242,5 +261,7 @@ export {
   FieldSeparator,
   FieldSet,
   FieldContent,
-  FieldTitle
+  FieldTitle,
+  FieldControl,
+  useIsFieldInvalid
 }

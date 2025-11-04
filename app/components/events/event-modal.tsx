@@ -35,7 +35,7 @@ export function EventModal() {
           <DrawerDescription>{content.description}</DrawerDescription>
         </DrawerHeader>
 
-        <div className="mx-auto w-full max-w-2xl px-4 pb-4">
+        <div className="mx-auto w-full max-w-2xl px-4">
           <EventForm />
         </div>
       </DrawerContent>

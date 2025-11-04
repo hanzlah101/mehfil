@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
-import { revalidateLogic } from "@tanstack/react-form"
+import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { NumberInput } from "@/components/ui/number-input"
@@ -21,7 +21,7 @@ export function VenueForm() {
   const closeVenueModal = useVenueModal((s) => s.onClose)
   const initialValues = useVenueModal((s) => s.venue)
 
-  const { mutateAsync: createVenue, isPending: isCreating } = useMutation({
+  const { mutateAsync: createVenue } = useMutation({
     mutationFn: useConvexMutation(api.venues.create),
     onSuccess: () => {
       closeVenueModal()
@@ -29,15 +29,13 @@ export function VenueForm() {
     }
   })
 
-  const { mutateAsync: updateVenue, isPending: isUpdating } = useMutation({
+  const { mutateAsync: updateVenue } = useMutation({
     mutationFn: useConvexMutation(api.venues.update),
     onSuccess: () => {
       closeVenueModal()
       toast.success("Venue Updated Successfully!")
     }
   })
-
-  const isPending = isCreating || isUpdating
 
   const form = useAppForm({
     validationLogic: revalidateLogic(),
@@ -60,9 +58,11 @@ export function VenueForm() {
     }
   })
 
+  const isPending = useStore(form.store, (s) => s.isSubmitting)
+
   return (
-    <form.AppForm>
-      <form.Form className="flex flex-col gap-6">
+    <form.Form>
+      <form.Group>
         <form.AppField name="name">
           {(field) => (
             <field.Field>
@@ -151,7 +151,7 @@ export function VenueForm() {
         <Button type="submit" className="w-full" loading={isPending}>
           {initialValues ? "Save Changes" : "Create Venue"}
         </Button>
-      </form.Form>
-    </form.AppForm>
+      </form.Group>
+    </form.Form>
   )
 }
