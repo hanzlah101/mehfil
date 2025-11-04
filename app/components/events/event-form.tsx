@@ -11,8 +11,12 @@ import { Switch } from "@/components/ui/switch"
 import { TimeField } from "@/components/ui/time-field"
 import { RiRestaurantFill } from "@remixicon/react"
 import { setDatePreserveTime, defaultEventTime } from "@/lib/date"
-import { useAppForm } from "@/hooks/form-hooks"
+import { useAppForm, useFieldContext } from "@/hooks/form-hooks"
+import { useQuery, useMutation } from "@tanstack/react-query"
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
+import { api } from "@db/_generated/api"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
+import { FieldControl } from "@/components/ui/field"
 import type { EventType } from "@/lib/types"
 import {
   Select,
@@ -21,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
+import type { Id } from "@db/_generated/dataModel"
 
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
@@ -31,6 +36,22 @@ export function EventForm() {
     () => defaultEventTime(initialDate ?? new Date()),
     [initialDate]
   )
+
+  const { mutateAsync: createEvent } = useMutation({
+    mutationFn: useConvexMutation(api.events.create),
+    onSuccess: () => {
+      closeEventModal()
+      toast.success("New Event Created!")
+    }
+  })
+
+  const { mutateAsync: updateEvent } = useMutation({
+    mutationFn: useConvexMutation(api.events.update),
+    onSuccess: () => {
+      closeEventModal()
+      toast.success("Event Updated Successfully!")
+    }
+  })
 
   const form = useAppForm({
     validationLogic: revalidateLogic(),
@@ -56,13 +77,21 @@ export function EventForm() {
         : defaultStartTime,
       endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime
     } satisfies EventSchema as EventSchema,
-    onSubmit: async ({ formApi }) => {
-      await new Promise((res) => setTimeout(res, 2000))
-      toast.success(
-        initialValues ? "Event updated successfully!" : "New event created!"
-      )
+    onSubmit: async ({ formApi, value }) => {
+      const body = {
+        ...value,
+        venueId: value.venueId as Id<"venues">,
+        bookingDate: value.bookingDate.getTime(),
+        startTime: value.startTime.getTime(),
+        endTime: value.endTime.getTime()
+      }
+
+      if (initialValues) {
+        await updateEvent({ ...body, id: initialValues._id })
+      } else {
+        await createEvent(body)
+      }
       formApi.reset()
-      closeEventModal()
     }
   })
 
@@ -94,23 +123,22 @@ export function EventForm() {
           {(field) => (
             <field.Field>
               <field.Label required>Event Type</field.Label>
-              <field.Control>
-                <Select
-                  disabled={isPending}
-                  value={field.state.value}
-                  onValueChange={(type) =>
-                    field.handleChange(type as EventType)
-                  }
-                >
+              <Select
+                disabled={isPending}
+                value={field.state.value}
+                onValueChange={(type) => field.handleChange(type as EventType)}
+              >
+                <field.Control>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select event type" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="booking">Booking</SelectItem>
-                    <SelectItem value="reservation">Reservation</SelectItem>
-                  </SelectContent>
-                </Select>
-              </field.Control>
+                </field.Control>
+
+                <SelectContent>
+                  <SelectItem value="booking">Booking</SelectItem>
+                  <SelectItem value="reservation">Reservation</SelectItem>
+                </SelectContent>
+              </Select>
               <field.Error />
             </field.Field>
           )}
@@ -281,6 +309,16 @@ export function EventForm() {
           </form.AppField>
         </div>
 
+        <form.AppField name="venueId">
+          {(field) => (
+            <field.Field>
+              <field.Label required>Venue</field.Label>
+              <VenueSelect />
+              <field.Error />
+            </field.Field>
+          )}
+        </form.AppField>
+
         <form.AppField name="notes">
           {(field) => (
             <field.Field>
@@ -342,5 +380,34 @@ export function EventForm() {
         </div>
       </form.Group>
     </form.Form>
+  )
+}
+
+function VenueSelect() {
+  const field = useFieldContext<string>()
+  const { data } = useQuery(convexQuery(api.venues.list, {}))
+
+  const isPending = useStore(field.form.store, (s) => s.isSubmitting)
+
+  return (
+    <Select
+      disabled={isPending}
+      value={field.state.value}
+      onValueChange={field.handleChange}
+    >
+      <FieldControl>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="Pick a venue" />
+        </SelectTrigger>
+      </FieldControl>
+
+      <SelectContent>
+        {data?.map((venue) => (
+          <SelectItem key={venue._id} value={venue._id}>
+            {venue.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }

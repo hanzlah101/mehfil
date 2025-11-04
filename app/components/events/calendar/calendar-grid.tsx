@@ -1,12 +1,32 @@
 import * as React from "react"
-import { eachDayOfInterval, endOfMonth, endOfWeek, startOfWeek } from "date-fns"
+import { useQuery } from "@tanstack/react-query"
+import { convexQuery } from "@convex-dev/react-query"
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  startOfWeek,
+  isSameDay
+} from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { CalendarCell } from "@/components/events/calendar/calendar-cell"
+import { api } from "@db/_generated/api"
 
 export function CalendarGrid() {
   const { currentMonth } = useCurrentMonth()
+
+  const { data } = useQuery(
+    convexQuery(api.events.list, { date: currentMonth.getTime() })
+  )
+
+  const getEventsByDate = React.useCallback(
+    (date: Date) => {
+      return data?.filter((event) => isSameDay(event.startTime, date)) ?? []
+    },
+    [data]
+  )
 
   const days = React.useMemo(() => {
     return eachDayOfInterval({
@@ -25,7 +45,12 @@ export function CalendarGrid() {
       )}
     >
       {days.map((day, dayIdx) => (
-        <CalendarCell key={day.toString()} day={day} index={dayIdx} />
+        <CalendarCell
+          key={day.toString()}
+          day={day}
+          index={dayIdx}
+          events={getEventsByDate(day)}
+        />
       ))}
     </div>
   )

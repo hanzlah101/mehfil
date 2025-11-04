@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router"
+import { Protected } from "@/components/protected"
 import {
   RiCalendar2Line,
   RiCalendar2Fill,
@@ -21,18 +22,23 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            <MenuItem
-              href="/"
-              label="Calendar"
-              icon={RiCalendar2Line}
-              activeIcon={RiCalendar2Fill}
-            />
-            <MenuItem
-              href="/venues"
-              label="Venues"
-              icon={RiMapPinLine}
-              activeIcon={RiMapPinFill}
-            />
+            <Protected perm="read:events">
+              <MenuItem
+                href="/"
+                label="Calendar"
+                icon={RiCalendar2Line}
+                activeIcon={RiCalendar2Fill}
+              />
+            </Protected>
+
+            <Protected perm="read:venues">
+              <MenuItem
+                href="/venues"
+                label="Venues"
+                icon={RiMapPinLine}
+                activeIcon={RiMapPinFill}
+              />
+            </Protected>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

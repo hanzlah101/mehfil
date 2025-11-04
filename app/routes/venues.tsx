@@ -1,6 +1,7 @@
 import { VenueModal } from "@/components/venues/venue-modal"
 import { VenuesList } from "@/components/venues/venues-list"
 import { DeleteVenueDialog } from "@/components/venues/delete-venue-dialog"
+import { Protected } from "@/components/protected"
 
 export function meta() {
   return [
@@ -12,9 +13,15 @@ export function meta() {
 export default function Home() {
   return (
     <>
-      <VenuesList />
-      <VenueModal />
-      <DeleteVenueDialog />
+      <Protected perm="read:venues">
+        <VenuesList />
+      </Protected>
+      <Protected operator="or" perm={["create:venue", "update:venue"]}>
+        <VenueModal />
+      </Protected>
+      <Protected perm="delete:venue">
+        <DeleteVenueDialog />
+      </Protected>
     </>
   )
 }

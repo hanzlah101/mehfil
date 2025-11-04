@@ -34,5 +34,12 @@ export default defineSchema({
     venueId: v.id("venues"),
     updatedAt: v.optional(v.number()),
     deletedAt: v.union(v.null(), v.number())
-  }).index("by_venueId_deletedAt", ["venueId", "deletedAt"])
+  })
+    .index("by_venueId_deletedAt", ["venueId", "deletedAt"])
+    .index("by_tenantId", ["tenantId", "deletedAt"])
+    .index("by_tenantId_deletedAt_startTime", [
+      "tenantId",
+      "deletedAt",
+      "startTime"
+    ])
 })

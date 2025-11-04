@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { useEventModal } from "@/stores/use-event-modal"
+import { CalendarViews } from "@/components/events/calendar/calendar-views"
 import {
   Tooltip,
   TooltipContent,
@@ -30,7 +31,7 @@ export function CalendarHeader() {
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-1 items-center justify-between gap-6 md:justify-normal">
+      <div className="flex flex-1 items-center gap-6 not-md:flex-row-reverse not-md:justify-between">
         <ButtonGroup className="divide-x divide-background">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -76,14 +77,17 @@ export function CalendarHeader() {
         </h2>
       </div>
 
-      <Button
-        size="sm"
-        className="w-full md:w-auto"
-        onClick={() => openEventModal("create", today)}
-      >
-        <RiAddLine />
-        New Event
-      </Button>
+      <div className="flex gap-6 not-md:flex-col md:items-center">
+        <CalendarViews />
+        <Button
+          size="sm"
+          className="w-full md:w-auto"
+          onClick={() => openEventModal("create", today)}
+        >
+          <RiAddLine />
+          New Event
+        </Button>
+      </div>
     </div>
   )
 }

@@ -1,17 +1,12 @@
-import * as React from "react"
-import { format, getDay, isSameDay, isSameMonth, isToday } from "date-fns"
+import { format, getDay, isSameMonth, isToday } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useEventModal } from "@/stores/use-event-modal"
-import type { Doc, Id } from "@db/_generated/dataModel"
-import {
-  EVENT_COLOR_CLASSES,
-  VENUE_COLORS,
-  getEventColorStyles
-} from "@/lib/colors"
+import { EVENT_COLOR_CLASSES, getEventColorStyles } from "@/lib/colors"
+import type { Doc } from "@db/_generated/dataModel"
 
 const colStartClasses = [
   "",
@@ -25,83 +20,21 @@ const colStartClasses = [
 
 const MAX_EVENTS = 3
 
-const venues: Doc<"venues">[] = Array.from({
-  length: 15
-}).map((_, i) => ({
-  _id: `venue_${i}` as Id<"venues">,
-  _creationTime: Date.now(),
-  name: `Venue ${i + 1}`,
-  location: `Location ${i + 1}`,
-  capacity: 50 + i * 10,
-  tenantId: "tenant_001" as Id<"tenants">,
-  color: VENUE_COLORS[i % VENUE_COLORS.length],
-  updatedAt: Date.now(),
-  deletedAt: null
-}))
-
-// helper to generate random date/time in a given range
-const randomDateInRange = (start: Date, end: Date) =>
-  new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
-
-// helper to generate random event duration (1–4 hours)
-const randomDurationHours = () => Math.floor(Math.random() * 4) + 1
-
-// events with random booking/start/end time
-const data = Array.from({ length: 15 }).map((_, i) => {
-  const venue = venues[i % venues.length]
-
-  // booking date within next 30 days
-  const bookingDate = randomDateInRange(
-    new Date("2025-10-25T00:00:00Z"),
-    new Date("2025-11-25T00:00:00Z")
-  )
-
-  // random start time between 10 AM and 8 PM
-  const start = new Date(bookingDate)
-  start.setHours(10 + Math.floor(Math.random() * 10), 0, 0, 0)
-
-  // random duration (1–4 hours)
-  const duration = randomDurationHours()
-  const end = new Date(start)
-  end.setHours(start.getHours() + duration)
-
-  return {
-    _id: `event_${i}` as Id<"events">,
-    _creationTime: Date.now(),
-    title: `Corporate Dinner ${i + 1}`,
-    notes: "Client requested vegetarian options only",
-    bookingDate: bookingDate.getTime(),
-    startTime: start.getTime(),
-    endTime: end.getTime(),
-    type: Math.random() > 0.5 ? "booking" : "reservation",
-    customerName: `John Doe ${i + 1}`,
-    customerEmail: `john.doe${i + 1}@example.com`,
-    customerPhone: `+1-555-123-45${(i + 10).toString().padStart(2, "0")}`,
-    customerLocation: `Downtown Plaza ${i + 1}`,
-    pax:
-      Math.random() > 0.5
-        ? { from: 20, to: 100 }
-        : Math.floor(Math.random() * 50) + 10,
-    withFood: Math.random() > 0.3,
-    tenantId: "tenant_001" as Id<"tenants">,
-    venueId: venue._id,
-    updatedAt: Date.now(),
-    deletedAt: null,
-    venue
-  }
-}) satisfies (Doc<"events"> & { venue: Doc<"venues"> })[]
-
-export function CalendarCell({ day, index }: { day: Date; index: number }) {
+export function CalendarCell({
+  day,
+  index,
+  events
+}: {
+  day: Date
+  index: number
+  events: (Doc<"events"> & { venue: Doc<"venues"> })[]
+}) {
   const isMobile = useIsMobile()
   const { currentMonth } = useCurrentMonth()
 
   const today = isToday(day)
   const isSame = isSameMonth(day, currentMonth)
   const openEventModal = useEventModal((s) => s.onOpen)
-
-  const filteredEvents = React.useMemo(() => {
-    return data.filter((evt) => isSameDay(evt.startTime, day))
-  }, [day])
 
   return (
     <div
@@ -126,10 +59,10 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
         <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
       </Button>
 
-      {filteredEvents.length > 0 ? (
+      {events.length > 0 ? (
         <div className="space-y-1.5 p-1">
           {!isMobile &&
-            filteredEvents.slice(0, MAX_EVENTS).map((event) => (
+            events.slice(0, MAX_EVENTS).map((event) => (
               <button
                 key={event._id}
                 style={getEventColorStyles(event.venue.color)}
@@ -151,13 +84,12 @@ export function CalendarCell({ day, index }: { day: Date; index: number }) {
 
           {isMobile ? (
             <p className="text-center font-mono text-[9px] leading-none text-muted-foreground">
-              {filteredEvents.length}{" "}
-              {filteredEvents.length === 1 ? "event" : "events"}
+              {events.length} {events.length === 1 ? "event" : "events"}
             </p>
           ) : (
-            filteredEvents.length > MAX_EVENTS && (
+            events.length > MAX_EVENTS && (
               <p className="font-mono text-xs leading-none text-muted-foreground">
-                +{filteredEvents.length - MAX_EVENTS} more
+                +{events.length - MAX_EVENTS} more
               </p>
             )
           )}

@@ -4,6 +4,7 @@ import { validateAuth } from "./auth"
 import { venueSchema } from "@/validations/venue"
 import { ConvexError } from "convex/values"
 import { query } from "./_generated/server"
+import { atLeastOne } from "@/validations/_utils"
 
 export const create = zm({
   args: venueSchema,
@@ -21,7 +22,7 @@ export const create = zm({
 })
 
 export const update = zm({
-  args: venueSchema.partial().extend({ id: zid("venues") }),
+  args: atLeastOne(venueSchema).safeExtend({ id: zid("venues") }),
   handler: async (ctx, { id, ...args }) => {
     const user = await validateAuth(ctx, "update:venue")
 

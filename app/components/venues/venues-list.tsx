@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useVenueModal } from "@/stores/use-venue-modal"
 import { VenueItem } from "./venue-item"
 import { RiAddLine } from "@remixicon/react"
+import { Protected } from "@/components/protected"
 
 export function VenuesList() {
   const openVenueModal = useVenueModal((s) => s.onOpen)
@@ -25,10 +26,12 @@ export function VenuesList() {
           )}
           )
         </h1>
-        <Button size="sm" onClick={() => openVenueModal("create")}>
-          <RiAddLine />
-          New Venue
-        </Button>
+        <Protected perm="create:venue">
+          <Button size="sm" onClick={() => openVenueModal("create")}>
+            <RiAddLine />
+            New Venue
+          </Button>
+        </Protected>
       </div>
 
       <ul className="grid w-full gap-3 md:grid-cols-2">
