@@ -22,8 +22,11 @@ const queryClient = new QueryClient({
     },
     mutations: {
       onError: (err) => {
-        if (err instanceof ConvexError) toast.error(err.data)
-        else toast.error("Something went wrong, please try again!")
+        if (err instanceof ConvexError && typeof err.data === "string") {
+          toast.error(err.data)
+        } else {
+          toast.error("Something went wrong, please try again!")
+        }
       }
     }
   }

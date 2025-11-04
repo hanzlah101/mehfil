@@ -47,7 +47,7 @@ export function EventForm() {
       venueId: initialValues?.venueId ?? "",
       guestArrival: initialValues?.guestArrival ?? "",
       notes: initialValues?.notes ?? "",
-      pax: initialValues?.pax ?? 0,
+      pax: initialValues?.pax,
       bookingDate: initialValues
         ? new Date(initialValues.bookingDate)
         : new Date(),

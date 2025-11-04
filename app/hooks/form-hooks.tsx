@@ -42,6 +42,8 @@ const { useAppForm: useTanstackAppForm, withForm } = createFormHook({
   }
 })
 
+type Inputs = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+
 function useAppForm<
   TFormData,
   TOnMount extends FormValidateOrFn<TFormData> | undefined,
@@ -77,8 +79,10 @@ function useAppForm<
     onSubmitInvalid({ formApi }) {
       if (!formRef.current) return
       const errMap: Record<string, unknown> = formApi.state.errorMap.onDynamic!
-      const inputs = formRef.current.querySelectorAll<HTMLInputElement>("input")
-      let firstInput: HTMLInputElement | undefined
+      const inputs = formRef.current.querySelectorAll<Inputs>(
+        "input, textarea, select"
+      )
+      let firstInput: Inputs | undefined
       for (const input of inputs) {
         if (!!errMap?.[input.name]) {
           firstInput = input
