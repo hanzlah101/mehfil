@@ -1,104 +1,97 @@
 import { toast } from "sonner"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
 import { useNavigate } from "react-router"
-import { loginSchema, type LoginSchema } from "@/validations/auth"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form"
+import { loginSchema } from "@/validations/auth"
+import { useAppForm } from "@/hooks/form-hooks"
+import { revalidateLogic, useStore } from "@tanstack/react-form"
 
 export function LoginForm() {
   const navigate = useNavigate()
 
-  const form = useForm<LoginSchema>({
-    resolver: zodResolver(loginSchema),
+  const form = useAppForm({
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: loginSchema
+    },
     defaultValues: {
       email: "",
       password: ""
+    },
+    onSubmit: async ({ value, formApi }) => {
+      const { error } = await authClient.signIn.email(value)
+      if (error) {
+        toast.error(error.message)
+        return
+      }
+      toast.success("Successfully logged in!")
+      navigate("/", { replace: true })
+      formApi.reset()
     }
   })
 
-  const handleSubmit = form.handleSubmit(async (values) => {
-    const { error } = await authClient.signIn.email(values)
-    if (error) {
-      toast.error(error.message)
-      return
-    }
-    toast.success("Successfully logged in!")
-    navigate("/", { replace: true })
-  })
-
-  const isSubmitting = form.formState.isSubmitting
+  const isPending = useStore(form.store, (s) => s.isSubmitting)
 
   return (
-    <Form {...form}>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div>
-          <p className="text-center font-semibold">Welcome Back!</p>
-          <p className="text-center text-sm text-muted-foreground">
-            Please login with your account to access your calendar
-          </p>
-        </div>
+    <form.Form>
+      <form.FieldSet>
+        <form.Legend>Welcome Back!</form.Legend>
+        <form.Description>
+          Please login with your account to access your calendar
+        </form.Description>
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  autoFocus
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  placeholder="john@example.com"
-                  disabled={isSubmitting}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <form.Group>
+          <form.AppField name="email">
+            {(field) => (
+              <field.Field>
+                <field.Label required htmlFor={field.name}>
+                  Email
+                </field.Label>
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="•••••••"
-                  disabled={isSubmitting}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <field.Control>
+                  <Input
+                    autoFocus
+                    type="email"
+                    autoComplete="email"
+                    placeholder="john@example.com"
+                    disabled={isPending}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </field.Control>
 
-        <Button
-          type="submit"
-          size="lg"
-          loading={isSubmitting}
-          className="w-full"
-        >
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+
+          <form.AppField name="password">
+            {(field) => (
+              <field.Field>
+                <field.Label required>Password</field.Label>
+                <field.Control>
+                  <PasswordInput
+                    id={field.name}
+                    autoComplete="current-password"
+                    disabled={isPending}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </field.Control>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+        </form.Group>
+
+        <Button type="submit" className="w-full" loading={isPending} size="lg">
           Login
         </Button>
-      </form>
-    </Form>
+      </form.FieldSet>
+    </form.Form>
   )
 }

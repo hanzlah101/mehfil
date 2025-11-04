@@ -20,7 +20,7 @@ export function CalendarGrid() {
   return (
     <div
       className={cn(
-        "grid w-full grid-cols-7 border-b [&_div:nth-child(7n)]:border-r-0",
+        "grid w-full grid-cols-7 border-b border-l",
         rows === 6 ? "grid-rows-6" : "grid-rows-5"
       )}
     >

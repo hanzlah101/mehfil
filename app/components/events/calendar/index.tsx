@@ -4,12 +4,12 @@ import { CalendarHeader } from "./calendar-header"
 
 export function EventCalendar() {
   return (
-    <div className="flex w-full flex-1 flex-col">
+    <>
       <CalendarHeader />
-      <div className="lg:flex lg:flex-auto lg:flex-col">
+      <div>
         <CalendarDays />
         <CalendarGrid />
       </div>
-    </div>
+    </>
   )
 }

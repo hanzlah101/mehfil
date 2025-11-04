@@ -4,16 +4,17 @@ import { v } from "convex/values"
 export default defineSchema({
   tenants: defineTable({
     name: v.string(),
-    updatedAt: v.number()
+    updatedAt: v.optional(v.number())
   }),
   venues: defineTable({
     name: v.string(),
+    capacity: v.number(),
     location: v.optional(v.string()),
-    capacity: v.optional(v.number()),
     tenantId: v.id("tenants"),
     color: v.string(),
-    updatedAt: v.number()
-  }).index("tenantId", ["tenantId"]),
+    updatedAt: v.optional(v.number()),
+    deletedAt: v.union(v.null(), v.number())
+  }).index("by_tenantId", ["tenantId", "deletedAt"]),
   events: defineTable({
     title: v.string(),
     notes: v.optional(v.string()),
@@ -31,6 +32,7 @@ export default defineSchema({
     withFood: v.boolean(),
     tenantId: v.id("tenants"),
     venueId: v.id("venues"),
-    updatedAt: v.number()
-  })
+    updatedAt: v.optional(v.number()),
+    deletedAt: v.union(v.null(), v.number())
+  }).index("by_venueId_deletedAt", ["venueId", "deletedAt"])
 })

@@ -8,20 +8,34 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 
+const modalContent = {
+  create: {
+    title: "New Event",
+    description: "Create a new event, meeting, or reservation entry."
+  },
+  update: {
+    title: "Update Event",
+    description: "Modify the details, date, or information of this event."
+  }
+}
+
 export function EventModal() {
-  const { isOpen, onClose } = useEventModal()
+  const { type, isOpen, onClose } = useEventModal()
+
+  const content = type === "update" ? modalContent.update : modalContent.create
 
   return (
-    <Drawer open={isOpen} onClose={onClose}>
+    <Drawer
+      open={isOpen && (type === "create" || type === "update")}
+      onClose={onClose}
+    >
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>New Event</DrawerTitle>
-          <DrawerDescription>
-            Set up event details, date, and customer info.
-          </DrawerDescription>
+          <DrawerTitle>{content.title}</DrawerTitle>
+          <DrawerDescription>{content.description}</DrawerDescription>
         </DrawerHeader>
 
-        <div className="px-4 pb-4 max-w-2xl w-full mx-auto">
+        <div className="mx-auto w-full max-w-2xl px-4">
           <EventForm />
         </div>
       </DrawerContent>

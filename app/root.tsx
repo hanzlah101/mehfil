@@ -49,7 +49,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <ConvexProvider>
             <ThemeProvider>
               {children}
-              <Toaster richColors />
+              <Toaster />
             </ThemeProvider>
           </ConvexProvider>
         </NuqsAdapter>

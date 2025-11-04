@@ -1,5 +1,6 @@
-import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
+import { defineSchema, defineTable } from "convex/server"
+import { PERMISSIONS } from "@/lib/permissions"
 
 export default defineSchema({
   user: defineTable({
@@ -7,8 +8,9 @@ export default defineSchema({
     email: v.string(),
     emailVerified: v.boolean(),
     image: v.optional(v.union(v.null(), v.string())),
-    tenantId: v.string(),
+    tenantId: v.optional(v.string()),
     role: v.union(v.literal("staff"), v.literal("admin")),
+    permissions: v.optional(v.array(v.union(...PERMISSIONS.map(v.literal)))),
     createdAt: v.number(),
     updatedAt: v.number()
   })
@@ -24,7 +26,7 @@ export default defineSchema({
     updatedAt: v.number(),
     ipAddress: v.optional(v.union(v.null(), v.string())),
     userAgent: v.optional(v.union(v.null(), v.string())),
-    userId: v.string()
+    userId: v.id("user")
   })
     .index("expiresAt", ["expiresAt"])
     .index("expiresAt_userId", ["expiresAt", "userId"])
@@ -33,7 +35,7 @@ export default defineSchema({
   account: defineTable({
     accountId: v.string(),
     providerId: v.string(),
-    userId: v.string(),
+    userId: v.id("user"),
     accessToken: v.optional(v.union(v.null(), v.string())),
     refreshToken: v.optional(v.union(v.null(), v.string())),
     idToken: v.optional(v.union(v.null(), v.string())),
