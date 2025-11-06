@@ -94,7 +94,7 @@ export function EventsList() {
             <EmptyMedia variant="icon">
               <RiCalendar2Fill className="text-muted-foreground" />
             </EmptyMedia>
-            <EmptyTitle> No events match your filters</EmptyTitle>
+            <EmptyTitle>No events match your filters</EmptyTitle>
             <EmptyDescription>
               Try adjusting your search or filter criteria
             </EmptyDescription>
