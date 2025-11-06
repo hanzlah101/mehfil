@@ -32,13 +32,15 @@ export function EventModal() {
         onClose={onClose}
       >
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{content.title}</DrawerTitle>
-            <DrawerDescription>{content.description}</DrawerDescription>
-          </DrawerHeader>
+          <div className="overflow-y-auto">
+            <DrawerHeader>
+              <DrawerTitle>{content.title}</DrawerTitle>
+              <DrawerDescription>{content.description}</DrawerDescription>
+            </DrawerHeader>
 
-          <div className="mx-auto w-full max-w-2xl px-4">
-            <EventForm />
+            <div className="mx-auto w-full max-w-2xl px-4">
+              <EventForm />
+            </div>
           </div>
         </DrawerContent>
       </Drawer>

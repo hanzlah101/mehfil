@@ -13,22 +13,27 @@ import {
 } from "@/components/ui/multi-select"
 
 export function EventsVenueFilter() {
-  const venueIds = useEventFiltersStore((s) => s.venueIds)
-  const setVenueIds = useEventFiltersStore((s) => s.setVenueIds)
+  const pendingVenueIds = useEventFiltersStore((s) => s.pendingVenueIds)
+  const setPendingVenueIds = useEventFiltersStore((s) => s.setPendingVenueIds)
 
   const { data: venues = [] } = useQuery(convexQuery(api.venues.list, {}))
 
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium">Venues</Label>
-      <MultiSelect values={venueIds} onValuesChange={setVenueIds}>
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <Label className="text-base font-semibold">Venues</Label>
+        <p className="text-xs text-muted-foreground">
+          Filter events by venue location
+        </p>
+      </div>
+      <MultiSelect values={pendingVenueIds} onValuesChange={setPendingVenueIds}>
         <MultiSelectTrigger className="w-full">
-          <MultiSelectValue placeholder="All venues" />
+          <MultiSelectValue placeholder="Select venues..." />
         </MultiSelectTrigger>
         <MultiSelectContent
           search={{
             emptyMessage: "No venue found",
-            placeholder: "Search Venues..."
+            placeholder: "Search venues..."
           }}
         >
           <MultiSelectGroup>

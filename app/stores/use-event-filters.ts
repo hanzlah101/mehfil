@@ -12,10 +12,18 @@ export type EventFilters = {
 }
 
 type EventFiltersStore = EventFilters & {
+  // Pending filters (not yet applied)
+  pendingVenueIds: string[]
+  pendingEventType: EventFilterType
+  pendingFoodService: EventFoodServiceType
+
+  // Actions
   setSearch: (search: string) => void
-  setVenueIds: (venueIds: string[]) => void
-  setEventType: (eventType: EventFilterType) => void
-  setFoodService: (foodService: EventFoodServiceType) => void
+  setPendingVenueIds: (venueIds: string[]) => void
+  setPendingEventType: (eventType: EventFilterType) => void
+  setPendingFoodService: (foodService: EventFoodServiceType) => void
+  applyFilters: () => void
+  initializePending: () => void
   clear: () => void
 }
 
@@ -26,11 +34,42 @@ const initialState: EventFilters = {
   foodService: "all"
 }
 
-export const useEventFiltersStore = create<EventFiltersStore>((set) => ({
+export const useEventFiltersStore = create<EventFiltersStore>((set, get) => ({
   ...initialState,
+  pendingVenueIds: [],
+  pendingEventType: "all",
+  pendingFoodService: "all",
+
   setSearch: (search) => set({ search }),
-  setVenueIds: (venueIds) => set({ venueIds }),
-  setEventType: (eventType) => set({ eventType }),
-  setFoodService: (foodService) => set({ foodService }),
-  clear: () => set({ venueIds: [], eventType: "all", foodService: "all" })
+  setPendingVenueIds: (pendingVenueIds) => set({ pendingVenueIds }),
+  setPendingEventType: (pendingEventType) => set({ pendingEventType }),
+  setPendingFoodService: (pendingFoodService) => set({ pendingFoodService }),
+
+  applyFilters: () => {
+    const { pendingVenueIds, pendingEventType, pendingFoodService } = get()
+    set({
+      venueIds: pendingVenueIds,
+      eventType: pendingEventType,
+      foodService: pendingFoodService
+    })
+  },
+
+  initializePending: () => {
+    const { venueIds, eventType, foodService } = get()
+    set({
+      pendingVenueIds: venueIds,
+      pendingEventType: eventType,
+      pendingFoodService: foodService
+    })
+  },
+
+  clear: () =>
+    set({
+      venueIds: [],
+      eventType: "all",
+      foodService: "all",
+      pendingVenueIds: [],
+      pendingEventType: "all",
+      pendingFoodService: "all"
+    })
 }))

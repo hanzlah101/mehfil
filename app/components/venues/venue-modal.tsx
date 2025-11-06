@@ -31,13 +31,15 @@ export function VenueModal() {
       open={isOpen && (type === "create" || type === "update")}
     >
       <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{content.title}</DrawerTitle>
-          <DrawerDescription>{content.description}</DrawerDescription>
-        </DrawerHeader>
+        <div className="overflow-y-auto">
+          <DrawerHeader>
+            <DrawerTitle>{content.title}</DrawerTitle>
+            <DrawerDescription>{content.description}</DrawerDescription>
+          </DrawerHeader>
 
-        <div className="mx-auto w-full max-w-2xl px-4 pb-4">
-          <VenueForm />
+          <div className="mx-auto w-full max-w-2xl px-4 pb-4">
+            <VenueForm />
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
