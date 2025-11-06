@@ -63,7 +63,10 @@ export function EventsList() {
             <span className="whitespace-nowrap text-foreground">
               {format(currentMonth, "MMMM yyyy")}
             </span>
-            . To add one, simply click the button below.
+            .{" "}
+            <Protected perm="create:event">
+              To add one, simply click the button below.
+            </Protected>
           </EmptyDescription>
         </EmptyHeader>
 
