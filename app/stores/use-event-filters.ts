@@ -65,6 +65,7 @@ export const useEventFiltersStore = create<EventFiltersStore>((set, get) => ({
 
   clear: () =>
     set({
+      search: "",
       venueIds: [],
       eventType: "all",
       foodService: "all",

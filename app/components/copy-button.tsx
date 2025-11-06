@@ -14,9 +14,10 @@ export function CopyButton({
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
-    setCopied(true)
     try {
       await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1000)
     } catch {
       toast.error("Your browser doesn't support copy")
     } finally {
