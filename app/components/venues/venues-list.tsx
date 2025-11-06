@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useVenueModal } from "@/stores/use-venue-modal"
 import { VenueItem } from "./venue-item"
 import { RiAddLine } from "@remixicon/react"
+import { Protected } from "@/components/protected"
 
 export function VenuesList() {
   const openVenueModal = useVenueModal((s) => s.onOpen)
@@ -14,7 +15,7 @@ export function VenuesList() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl font-semibold md:text-3xl">
+        <h1 className="text-2xl font-semibold text-foreground">
           Venues (
           {isLoading ? (
             <Skeleton asChild className="mx-0.5 h-9">
@@ -25,10 +26,12 @@ export function VenuesList() {
           )}
           )
         </h1>
-        <Button size="sm" onClick={() => openVenueModal("create")}>
-          <RiAddLine />
-          New Venue
-        </Button>
+        <Protected perm="create:venue">
+          <Button size="sm" onClick={() => openVenueModal("create")}>
+            <RiAddLine />
+            New Venue
+          </Button>
+        </Protected>
       </div>
 
       <ul className="grid w-full gap-3 md:grid-cols-2">

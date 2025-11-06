@@ -3,6 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useVenueModal } from "@/stores/use-venue-modal"
 import { EVENT_COLOR_CLASSES, getEventColorStyles } from "@/lib/colors"
+import { Protected } from "@/components/protected"
 import type { Doc } from "@db/_generated/dataModel"
 import {
   Tooltip,
@@ -46,40 +47,46 @@ export function VenueItem(venue: Doc<"venues">) {
         )}
       </div>
 
-      <div
-        className={cn(
-          "absolute top-0 right-4 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-current/30 p-0.5 transition-normal group-hover/item:flex",
-          colorClasses
-        )}
-      >
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={() => openVenueModal("update", venue)}
-              className={btnClasses}
-            >
-              <RiEdit2Fill className="size-3" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Edit Venue</TooltipContent>
-        </Tooltip>
+      <Protected perm={["update:venue", "delete:venue"]} operator="or">
+        <div
+          className={cn(
+            "absolute top-0 right-4 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-current/30 p-0.5 transition-normal group-hover/item:flex",
+            colorClasses
+          )}
+        >
+          <Protected perm="update:venue">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  onClick={() => openVenueModal("update", venue)}
+                  className={btnClasses}
+                >
+                  <RiEdit2Fill className="size-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Edit Venue</TooltipContent>
+            </Tooltip>
+          </Protected>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              className={btnClasses}
-              onClick={() => openVenueModal("delete", venue)}
-            >
-              <RiDeleteBinFill className="size-3" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Delete Venue</TooltipContent>
-        </Tooltip>
-      </div>
+          <Protected perm="delete:venue">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  className={btnClasses}
+                  onClick={() => openVenueModal("delete", venue)}
+                >
+                  <RiDeleteBinFill className="size-3" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete Venue</TooltipContent>
+            </Tooltip>
+          </Protected>
+        </div>
+      </Protected>
     </li>
   )
 }

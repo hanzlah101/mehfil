@@ -46,6 +46,7 @@ function DrawerOverlay({
 function DrawerContent({
   className,
   children,
+
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
   return (
@@ -64,7 +65,7 @@ function DrawerContent({
         {...props}
       >
         <div className="mx-auto my-4 hidden h-2 w-[100px] shrink-0 rounded-full bg-muted group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-        <div className="overflow-y-auto">{children}</div>
+        {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
   )

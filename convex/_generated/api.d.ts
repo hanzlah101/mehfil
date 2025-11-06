@@ -13,6 +13,7 @@ import type * as auth__generated_server from "../auth/_generated/server.js";
 import type * as auth_adapter from "../auth/adapter.js";
 import type * as auth_auth from "../auth/auth.js";
 import type * as auth from "../auth.js";
+import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as util from "../util.js";
 import type * as venues from "../venues.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   "auth/adapter": typeof auth_adapter;
   "auth/auth": typeof auth_auth;
   auth: typeof auth;
+  events: typeof events;
   http: typeof http;
   util: typeof util;
   venues: typeof venues;
@@ -76,6 +78,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role: "staff" | "admin";
                   tenantId?: string;
@@ -591,6 +597,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role?: "staff" | "admin";
                   tenantId?: string;
@@ -830,6 +840,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role?: "staff" | "admin";
                   tenantId?: string;

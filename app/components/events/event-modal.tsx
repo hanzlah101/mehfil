@@ -1,3 +1,4 @@
+import { Protected } from "@/components/protected"
 import { EventForm } from "@/components/events/event-form"
 import { useEventModal } from "@/stores/use-event-modal"
 import {
@@ -22,23 +23,27 @@ const modalContent = {
 export function EventModal() {
   const { type, isOpen, onClose } = useEventModal()
 
-  const content = type === "update" ? modalContent.update : modalContent.create
+  const content = type === "create" ? modalContent.create : modalContent.update
 
   return (
-    <Drawer
-      open={isOpen && (type === "create" || type === "update")}
-      onClose={onClose}
-    >
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>{content.title}</DrawerTitle>
-          <DrawerDescription>{content.description}</DrawerDescription>
-        </DrawerHeader>
+    <Protected perm={type === "create" ? "create:event" : "update:event"}>
+      <Drawer
+        open={isOpen && (type === "create" || type === "update")}
+        onClose={onClose}
+      >
+        <DrawerContent>
+          <div className="overflow-y-auto">
+            <DrawerHeader>
+              <DrawerTitle>{content.title}</DrawerTitle>
+              <DrawerDescription>{content.description}</DrawerDescription>
+            </DrawerHeader>
 
-        <div className="mx-auto w-full max-w-2xl px-4">
-          <EventForm />
-        </div>
-      </DrawerContent>
-    </Drawer>
+            <div className="mx-auto w-full max-w-2xl px-4">
+              <EventForm />
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </Protected>
   )
 }
