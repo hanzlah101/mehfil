@@ -52,6 +52,10 @@ export type Mounts = {
                   | "read:events"
                   | "update:event"
                   | "delete:event"
+                  | "create:staff"
+                  | "update:staff"
+                  | "delete:staff"
+                  | "read:staff"
                 >;
                 role: "staff" | "admin";
                 tenantId?: string;
@@ -567,6 +571,10 @@ export type Mounts = {
                   | "read:events"
                   | "update:event"
                   | "delete:event"
+                  | "create:staff"
+                  | "update:staff"
+                  | "delete:staff"
+                  | "read:staff"
                 >;
                 role?: "staff" | "admin";
                 tenantId?: string;
@@ -806,6 +814,10 @@ export type Mounts = {
                   | "read:events"
                   | "update:event"
                   | "delete:event"
+                  | "create:staff"
+                  | "update:staff"
+                  | "delete:staff"
+                  | "read:staff"
                 >;
                 role?: "staff" | "admin";
                 tenantId?: string;

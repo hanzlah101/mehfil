@@ -78,6 +78,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role: "staff" | "admin";
                   tenantId?: string;
@@ -593,6 +597,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role?: "staff" | "admin";
                   tenantId?: string;
@@ -832,6 +840,10 @@ export declare const components: {
                     | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:staff"
+                    | "update:staff"
+                    | "delete:staff"
+                    | "read:staff"
                   >;
                   role?: "staff" | "admin";
                   tenantId?: string;

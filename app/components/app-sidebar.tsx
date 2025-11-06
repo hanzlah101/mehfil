@@ -5,7 +5,9 @@ import {
   RiCalendar2Fill,
   RiMapPinLine,
   RiMapPinFill,
-  type RemixiconComponentType
+  type RemixiconComponentType,
+  RiGroupLine,
+  RiGroupFill
 } from "@remixicon/react"
 import {
   Sidebar,
@@ -37,6 +39,15 @@ export function AppSidebar() {
                 label="Venues"
                 icon={RiMapPinLine}
                 activeIcon={RiMapPinFill}
+              />
+            </Protected>
+
+            <Protected perm="read:staff">
+              <MenuItem
+                href="/staff"
+                label="Staff"
+                icon={RiGroupLine}
+                activeIcon={RiGroupFill}
               />
             </Protected>
           </SidebarMenu>

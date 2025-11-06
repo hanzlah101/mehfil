@@ -14,8 +14,8 @@ export function EventsSearch() {
   return (
     <InputGroup className="max-w-100">
       <InputGroupInput
-        placeholder="Search events..."
         value={search}
+        placeholder="Search events..."
         onChange={(e) => setSearch(e.target.value)}
       />
 

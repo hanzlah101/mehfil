@@ -7,7 +7,7 @@ import {
 
 export default [
   layout("layouts/app-layout.tsx", [
-    index("routes/home.tsx"),
+    index("routes/events.tsx"),
     route("venues", "routes/venues.tsx")
   ])
 ] satisfies RouteConfig
