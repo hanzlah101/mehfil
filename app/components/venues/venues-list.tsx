@@ -15,7 +15,7 @@ export function VenuesList() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-2xl font-semibold md:text-3xl">
+        <h1 className="text-2xl font-semibold text-foreground">
           Venues (
           {isLoading ? (
             <Skeleton asChild className="mx-0.5 h-9">

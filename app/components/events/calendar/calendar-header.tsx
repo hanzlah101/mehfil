@@ -1,5 +1,7 @@
 import { useMemo } from "react"
 import { add, format } from "date-fns"
+import { useQuery } from "@tanstack/react-query"
+import { convexQuery } from "@convex-dev/react-query"
 import {
   RiArrowLeftSLine,
   RiArrowRightSLine,
@@ -11,6 +13,7 @@ import { useCurrentMonth } from "@/hooks/use-current-month"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { useEventModal } from "@/stores/use-event-modal"
 import { CalendarViews } from "@/components/events/calendar/calendar-views"
+import { api } from "@db/_generated/api"
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +30,12 @@ export function CalendarHeader() {
       prevMonth: add(currentMonth, { months: -1 })
     }),
     [currentMonth]
+  )
+
+  const { data: events } = useQuery(
+    convexQuery(api.events.list, {
+      date: currentMonth.getTime()
+    })
   )
 
   return (
@@ -73,7 +82,12 @@ export function CalendarHeader() {
         </ButtonGroup>
 
         <h2 className="text-lg font-semibold text-foreground">
-          {format(currentMonth, "MMMM, yyyy")}
+          {format(currentMonth, "MMMM, yyyy")}{" "}
+          {events && events.length > 0 && (
+            <span className="font-mono text-xs font-medium">
+              ({events.length} {events.length === 1 ? "Event" : "Events"})
+            </span>
+          )}
         </h2>
       </div>
 

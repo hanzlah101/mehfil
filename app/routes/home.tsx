@@ -1,4 +1,5 @@
 import { EventCalendar } from "@/components/events/calendar"
+import { DeleteEventDialog } from "@/components/events/delete-event-dialog"
 import { EventModal } from "@/components/events/event-modal"
 import { Protected } from "@/components/protected"
 
@@ -14,6 +15,9 @@ export default function Home() {
       </Protected>
       <Protected operator="or" perm={["create:event", "update:event"]}>
         <EventModal />
+      </Protected>
+      <Protected perm="delete:event">
+        <DeleteEventDialog />
       </Protected>
     </>
   )

@@ -1,5 +1,5 @@
 import { RiCalendar2Fill, RiListUnordered } from "@remixicon/react"
-import { parseAsStringEnum, useQueryState } from "nuqs"
+import { useCalendarView } from "@/hooks/use-calendar-view"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   Tooltip,
@@ -8,10 +8,7 @@ import {
 } from "@/components/ui/tooltip"
 
 export function CalendarViews() {
-  const [view, setView] = useQueryState(
-    "view",
-    parseAsStringEnum(["calendar", "list"]).withDefault("calendar")
-  )
+  const { view, setView } = useCalendarView()
 
   return (
     <ToggleGroup

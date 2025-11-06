@@ -17,6 +17,8 @@ import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { FieldControl } from "@/components/ui/field"
+import { NumberInput } from "@/components/ui/number-input"
+import type { Id } from "@db/_generated/dataModel"
 import type { EventType } from "@/lib/types"
 import {
   Select,
@@ -25,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import type { Id } from "@db/_generated/dataModel"
 
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
@@ -119,30 +120,52 @@ export function EventForm() {
           )}
         </form.AppField>
 
-        <form.AppField name="type">
-          {(field) => (
-            <field.Field>
-              <field.Label required>Event Type</field.Label>
-              <Select
-                disabled={isPending}
-                value={field.state.value}
-                onValueChange={(type) => field.handleChange(type as EventType)}
-              >
-                <field.Control>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select event type" />
-                  </SelectTrigger>
-                </field.Control>
+        <div className="grid items-start gap-6 md:grid-cols-2">
+          <form.AppField name="type">
+            {(field) => (
+              <field.Field>
+                <field.Label required>Event Type</field.Label>
+                <Select
+                  disabled={isPending}
+                  value={field.state.value}
+                  onValueChange={(type) =>
+                    field.handleChange(type as EventType)
+                  }
+                >
+                  <field.Control>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select event type" />
+                    </SelectTrigger>
+                  </field.Control>
 
-                <SelectContent>
-                  <SelectItem value="booking">Booking</SelectItem>
-                  <SelectItem value="reservation">Reservation</SelectItem>
-                </SelectContent>
-              </Select>
-              <field.Error />
-            </field.Field>
-          )}
-        </form.AppField>
+                  <SelectContent>
+                    <SelectItem value="booking">Booking</SelectItem>
+                    <SelectItem value="reservation">Reservation</SelectItem>
+                  </SelectContent>
+                </Select>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+
+          <form.AppField name="pax">
+            {(field) => (
+              <field.Field>
+                <field.Label>PAX</field.Label>
+                <field.Control>
+                  <NumberInput
+                    placeholder="300"
+                    disabled={isPending}
+                    value={field.state.value as number}
+                    onChange={(val) => field.handleChange(val!)}
+                    onBlur={field.handleBlur}
+                  />
+                </field.Control>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+        </div>
 
         <div className="grid items-start gap-6 md:grid-cols-2">
           <form.AppField name="bookingDate">
