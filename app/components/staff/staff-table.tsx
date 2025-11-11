@@ -1,6 +1,8 @@
-import * as React from "react"
-import { staffColumns, type StaffMember } from "./staff-table-columns"
+import { staffColumns } from "./staff-table-columns"
 import { StaffTableFilters } from "./staff-table-filters"
+import { useQuery } from "@tanstack/react-query"
+import { convexQuery } from "@convex-dev/react-query"
+import { api } from "@db/_generated/api"
 import {
   flexRender,
   getCoreRowModel,
@@ -17,11 +19,9 @@ import {
   TableRow
 } from "@/components/ui/table"
 
-interface StaffTableProps {
-  data: StaffMember[]
-}
+export function StaffTable() {
+  const { data = [] } = useQuery(convexQuery(api.staff.list, {}))
 
-export function StaffTable({ data }: StaffTableProps) {
   const table = useReactTable({
     data,
     columns: staffColumns,
@@ -86,8 +86,7 @@ export function StaffTable({ data }: StaffTableProps) {
 
       {table.getFilteredRowModel().rows.length > 0 && (
         <div className="text-sm text-muted-foreground">
-          Showing {table.getFilteredRowModel().rows.length} of {data.length}{" "}
-          staff member(s)
+          Showing {table.getFilteredRowModel().rows.length} staff member(s)
         </div>
       )}
     </div>

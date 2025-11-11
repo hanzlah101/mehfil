@@ -136,9 +136,6 @@ export function StaffForm() {
                     onBlur={field.handleBlur}
                   />
                 </field.Control>
-                <field.Description>
-                  Must be at least 8 characters
-                </field.Description>
                 <field.Error />
               </field.Field>
             )}

@@ -1,3 +1,4 @@
+import * as React from "react"
 import { RiAddLine, RiTeamFill } from "@remixicon/react"
 import { useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
@@ -31,7 +32,8 @@ export function meta() {
 
 export default function Staff() {
   const openStaffModal = useStaffModal((s) => s.onOpen)
-  const { data: staff, isLoading } = useQuery(convexQuery(api.staff.list, {}))
+
+  const { data, isLoading } = useQuery(convexQuery(api.staff.list, {}))
 
   if (isLoading) {
     return <PageLoader className="min-h-(--content-height)" />
@@ -39,10 +41,10 @@ export default function Staff() {
 
   return (
     <>
-      {staff && staff.length > 0 ? (
+      {data && data.length > 0 ? (
         <div className="space-y-6">
           <Header />
-          <StaffTable data={staff} />
+          <StaffTable />
         </div>
       ) : (
         <Empty className="min-h-(--content-height)">

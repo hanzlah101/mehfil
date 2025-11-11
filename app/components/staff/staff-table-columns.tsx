@@ -52,7 +52,7 @@ export const staffColumns = [
           <div className="flex flex-wrap gap-1">
             {manageablePerms.map((perm) => (
               <Badge key={perm} variant="outline" className="font-normal">
-                {perm.split(":")[0]}
+                {formatPermission(perm)}
               </Badge>
             ))}
           </div>
@@ -61,19 +61,20 @@ export const staffColumns = [
 
       return (
         <Popover>
-          <PopoverTrigger className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <div className="flex cursor-pointer flex-wrap gap-1">
-              {manageablePerms.slice(0, 2).map((perm) => (
-                <Badge key={perm} variant="outline" className="font-normal">
-                  {formatPermission(perm)}
-                </Badge>
-              ))}
+          <div className="flex flex-wrap gap-1">
+            {manageablePerms.slice(0, 2).map((perm) => (
+              <Badge key={perm} variant="outline" className="font-normal">
+                {formatPermission(perm)}
+              </Badge>
+            ))}
+            <PopoverTrigger className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Badge variant="outline" className="font-normal hover:bg-accent">
                 +{manageablePerms.length - 2}
               </Badge>
-            </div>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto max-w-70 p-3" align="start">
+            </PopoverTrigger>
+          </div>
+
+          <PopoverContent className="w-auto max-w-70 p-3">
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground uppercase">
                 All Permissions
