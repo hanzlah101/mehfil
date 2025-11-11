@@ -154,7 +154,11 @@ export function StaffForm() {
                   }
                 >
                   <MultiSelectTrigger disabled={isPending}>
-                    <MultiSelectValue placeholder="Select permissions" />
+                    <MultiSelectValue
+                      clickToRemove={false}
+                      overflowBehavior="cutoff"
+                      placeholder="Select permissions"
+                    />
                   </MultiSelectTrigger>
                   <MultiSelectContent>
                     <MultiSelectGroup>
