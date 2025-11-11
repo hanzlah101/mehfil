@@ -8,8 +8,8 @@ export const staffCreateSchema = z.object({
   permissions: z.array(z.enum(MANAGEABLE_PERMISSIONS))
 })
 
-export const staffUpdateSchema = staffCreateSchema.extend({
-  password: z.undefined()
+export const staffUpdateSchema = staffCreateSchema.safeExtend({
+  password: z.string()
 })
 
 export type StaffCreateInput = z.infer<typeof staffCreateSchema>

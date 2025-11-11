@@ -8,7 +8,11 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { PasswordInput } from "@/components/ui/password-input"
-import { staffCreateSchema, type StaffCreateInput } from "@/validations/staff"
+import {
+  staffCreateSchema,
+  staffUpdateSchema,
+  type StaffCreateInput
+} from "@/validations/staff"
 import {
   extractManageablePermissions,
   formatPermission,
@@ -46,7 +50,7 @@ export function StaffForm() {
   const form = useAppForm({
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: staffCreateSchema
+      onDynamic: initialValues ? staffUpdateSchema : staffCreateSchema
     },
     defaultValues: {
       name: initialValues?.name ?? "",
@@ -64,9 +68,6 @@ export function StaffForm() {
           id: initialValues._id
         })
       } else {
-        if (!value.password) {
-          throw new Error("Password is required for new staff members")
-        }
         await createStaff({
           ...value,
           password: value.password

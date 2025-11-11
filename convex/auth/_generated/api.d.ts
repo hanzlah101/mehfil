@@ -1071,7 +1071,7 @@ export type Mounts = {
         email?: string;
         id: string;
         name?: string;
-        password?: any;
+        password?: string;
         permissions?: Array<
           | "create:venue"
           | "update:venue"

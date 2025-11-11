@@ -61,7 +61,7 @@ export const staffColumns = [
 
       return (
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <div className="flex cursor-pointer flex-wrap gap-1">
               {manageablePerms.slice(0, 2).map((perm) => (
                 <Badge key={perm} variant="outline" className="font-normal">

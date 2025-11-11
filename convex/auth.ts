@@ -65,7 +65,7 @@ export const createAuth = (
             where: [{ field: "email", value: ctx.body.email }]
           })) as Doc<"user">
 
-          if (user?.deletedAt !== null) {
+          if (user?.deletedAt) {
             throw new APIError("NOT_FOUND", {
               message: "User doesn't exist"
             })

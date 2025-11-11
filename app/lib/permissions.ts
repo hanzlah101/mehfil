@@ -26,7 +26,7 @@ export type ManageablePermission = (typeof MANAGEABLE_PERMISSIONS)[number]
 export type Permission = (typeof PERMISSIONS)[number]
 
 export function extractManageablePermissions(permissions: Permission[]) {
-  return permissions?.filter((p): p is ManageablePermission =>
+  return permissions.filter((p): p is ManageablePermission =>
     MANAGEABLE_PERMISSIONS.includes(p as ManageablePermission)
   )
 }
