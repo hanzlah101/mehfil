@@ -10,6 +10,7 @@
 
 import type * as adapter from "../adapter.js";
 import type * as auth from "../auth.js";
+import type * as staff from "../staff.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   adapter: typeof adapter;
   auth: typeof auth;
+  staff: typeof staff;
 }>;
 export type Mounts = {
   adapter: {
@@ -39,17 +41,18 @@ export type Mounts = {
           | {
               data: {
                 createdAt: number;
+                deletedAt: null | number;
                 email: string;
                 emailVerified: boolean;
                 image?: null | string;
                 name: string;
                 permissions?: Array<
-                  | "create:venue"
                   | "read:venues"
+                  | "read:events"
+                  | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
-                  | "read:events"
                   | "update:event"
                   | "delete:event"
                   | "create:staff"
@@ -132,6 +135,7 @@ export type Mounts = {
                   | "tenantId"
                   | "role"
                   | "permissions"
+                  | "deletedAt"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -316,6 +320,7 @@ export type Mounts = {
                   | "tenantId"
                   | "role"
                   | "permissions"
+                  | "deletedAt"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -558,17 +563,18 @@ export type Mounts = {
               model: "user";
               update: {
                 createdAt?: number;
+                deletedAt?: null | number;
                 email?: string;
                 emailVerified?: boolean;
                 image?: null | string;
                 name?: string;
                 permissions?: Array<
-                  | "create:venue"
                   | "read:venues"
+                  | "read:events"
+                  | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
-                  | "read:events"
                   | "update:event"
                   | "delete:event"
                   | "create:staff"
@@ -590,6 +596,7 @@ export type Mounts = {
                   | "tenantId"
                   | "role"
                   | "permissions"
+                  | "deletedAt"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -801,17 +808,18 @@ export type Mounts = {
               model: "user";
               update: {
                 createdAt?: number;
+                deletedAt?: null | number;
                 email?: string;
                 emailVerified?: boolean;
                 image?: null | string;
                 name?: string;
                 permissions?: Array<
-                  | "create:venue"
                   | "read:venues"
+                  | "read:events"
+                  | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
-                  | "read:events"
                   | "update:event"
                   | "delete:event"
                   | "create:staff"
@@ -833,6 +841,7 @@ export type Mounts = {
                   | "tenantId"
                   | "role"
                   | "permissions"
+                  | "deletedAt"
                   | "createdAt"
                   | "updatedAt"
                   | "_id";
@@ -1024,6 +1033,47 @@ export type Mounts = {
               }>;
             };
         onUpdateHandle?: string;
+      },
+      any
+    >;
+  };
+  staff: {
+    create: FunctionReference<
+      "mutation",
+      "public",
+      {
+        email: string;
+        name: string;
+        password: string;
+        permissions: Array<
+          | "create:venue"
+          | "update:venue"
+          | "delete:venue"
+          | "create:event"
+          | "update:event"
+          | "delete:event"
+        >;
+      },
+      any
+    >;
+    del: FunctionReference<"mutation", "public", { id: string }, any>;
+    list: FunctionReference<"query", "public", {}, any>;
+    update: FunctionReference<
+      "mutation",
+      "public",
+      {
+        email?: string;
+        id: string;
+        name?: string;
+        password?: string;
+        permissions?: Array<
+          | "create:venue"
+          | "update:venue"
+          | "delete:venue"
+          | "create:event"
+          | "update:event"
+          | "delete:event"
+        >;
       },
       any
     >;

@@ -52,7 +52,7 @@ export function EventsList() {
 
   if (!events || events.length === 0) {
     return (
-      <Empty className="h-[calc(100%-32px)]">
+      <Empty className="h-(--content-height)">
         <EmptyHeader className="max-w-md">
           <EmptyMedia variant="icon">
             <RiCalendar2Fill className="text-muted-foreground" />
@@ -85,10 +85,24 @@ export function EventsList() {
   }
 
   return (
-    <div className="flex min-h-[calc(100%-32px)] flex-col gap-4">
+    <div className="flex min-h-(--content-height) flex-col gap-4">
       <EventsFilters />
 
-      {filteredEvents.length === 0 ? (
+      {filteredEvents.length > 0 ? (
+        <>
+          {hasActiveFilters && (
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredCount} of {totalCount} events
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {filteredEvents.map((event) => (
+              <EventListItem key={event._id} event={event} />
+            ))}
+          </div>
+        </>
+      ) : (
         <Empty className="h-full">
           <EmptyHeader className="max-w-md">
             <EmptyMedia variant="icon">
@@ -110,20 +124,6 @@ export function EventsList() {
             </Button>
           </EmptyContent>
         </Empty>
-      ) : (
-        <>
-          {hasActiveFilters && (
-            <div className="text-sm text-muted-foreground">
-              Showing {filteredCount} of {totalCount} events
-            </div>
-          )}
-
-          <div className="space-y-3">
-            {filteredEvents.map((event) => (
-              <EventListItem key={event._id} event={event} />
-            ))}
-          </div>
-        </>
       )}
     </div>
   )
