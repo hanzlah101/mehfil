@@ -28,7 +28,7 @@ export default defineSchema({
     updatedAt: v.number(),
     ipAddress: v.optional(v.union(v.null(), v.string())),
     userAgent: v.optional(v.union(v.null(), v.string())),
-    userId: v.id("user")
+    userId: v.string()
   })
     .index("expiresAt", ["expiresAt"])
     .index("expiresAt_userId", ["expiresAt", "userId"])
@@ -37,7 +37,7 @@ export default defineSchema({
   account: defineTable({
     accountId: v.string(),
     providerId: v.string(),
-    userId: v.id("user"),
+    userId: v.string(),
     accessToken: v.optional(v.union(v.null(), v.string())),
     refreshToken: v.optional(v.union(v.null(), v.string())),
     idToken: v.optional(v.union(v.null(), v.string())),

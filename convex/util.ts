@@ -10,6 +10,6 @@ export const zq = zQueryBuilder(query)
 export const zm = zMutationBuilder(mutation)
 export const za = zActionBuilder(action)
 
-export const authZQ = zMutationBuilder(authQuery)
+export const authZQ = zQueryBuilder(authQuery)
 export const authZM = zMutationBuilder(authMutation)
-export const authZA = zMutationBuilder(authAction)
+export const authZA = zActionBuilder(authAction)

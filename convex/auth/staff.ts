@@ -1,24 +1,18 @@
+import { z } from "zod"
 import { authZM, authZQ } from "../util"
-import { validateAuth } from "../auth"
 import { DEFAULT_PERMISSIONS } from "@/lib/permissions"
 import { ConvexError } from "convex/values"
-import { staffSchema } from "@/validations/staff"
+import { staffCreateSchema, staffUpdateSchema } from "@/validations/staff"
 import { hashPassword } from "better-auth/crypto"
 import { atLeastOne } from "@/validations/_utils"
-import { zid } from "zodvex"
 
 export const create = authZM({
-  args: staffSchema,
-  handler: async (ctx, args) => {
-    const user = await validateAuth(ctx, "create:staff")
-
+  args: staffCreateSchema.safeExtend({ tenantId: z.string() }),
+  handler: async (ctx, { tenantId, ...args }) => {
     const existingUser = await ctx.db
       .query("user")
       .withIndex("email_tenantId_deletedAt", (q) =>
-        q
-          .eq("email", args.email)
-          .eq("tenantId", user.tenantId)
-          .eq("deletedAt", null)
+        q.eq("email", args.email).eq("tenantId", tenantId).eq("deletedAt", null)
       )
       .unique()
 
@@ -29,11 +23,11 @@ export const create = authZM({
     const userPermissions = [...DEFAULT_PERMISSIONS, ...args.permissions]
 
     const userId = await ctx.db.insert("user", {
+      tenantId,
       name: args.name,
       email: args.email,
       emailVerified: false,
       role: "staff",
-      tenantId: user.tenantId,
       permissions: userPermissions,
       deletedAt: null,
       createdAt: Date.now(),
@@ -50,23 +44,27 @@ export const create = authZM({
       createdAt: Date.now(),
       updatedAt: Date.now()
     })
-
-    return userId
   }
 })
 
 export const update = authZM({
-  args: atLeastOne(staffSchema).safeExtend({ id: zid("user") }),
-  handler: async (ctx, args) => {
-    const currentUser = await validateAuth(ctx, "update:staff")
+  args: atLeastOne(staffUpdateSchema).safeExtend({
+    id: z.string(),
+    tenantId: z.string()
+  }),
+  handler: async (ctx, { tenantId, ...args }) => {
+    const userId = ctx.db.normalizeId("user", args.id)
+    if (!userId) {
+      throw new ConvexError("Unauthorized")
+    }
 
-    const user = await ctx.db.get(args.id)
+    const user = await ctx.db.get(userId)
 
     if (!user || user.deletedAt !== null) {
       throw new ConvexError("User doesn't exist")
     }
 
-    if (currentUser.tenantId !== user.tenantId) {
+    if (tenantId !== user.tenantId) {
       throw new ConvexError("Unauthorized")
     }
 
@@ -94,41 +92,30 @@ export const update = authZM({
       ? [...DEFAULT_PERMISSIONS, ...args.permissions]
       : undefined
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch(userId, {
       name: args.name,
       email: args.email,
       permissions: userPermissions,
       updatedAt: Date.now()
     })
-
-    if (args.password) {
-      const account = await ctx.db
-        .query("account")
-        .withIndex("providerId_userId", (q) =>
-          q.eq("providerId", "credential").eq("userId", user._id)
-        )
-        .unique()
-
-      if (account) {
-        const passwordHash = await hashPassword(args.password)
-        await ctx.db.patch(account._id, { password: passwordHash })
-      }
-    }
   }
 })
 
 export const del = authZM({
-  args: { id: zid("user") },
-  handler: async (ctx, { id }) => {
-    const currentUser = await validateAuth(ctx, "delete:staff")
+  args: { id: z.string(), tenantId: z.string() },
+  handler: async (ctx, { id, tenantId }) => {
+    const userId = ctx.db.normalizeId("user", id)
+    if (!userId) {
+      throw new ConvexError("Unauthorized")
+    }
 
-    const user = await ctx.db.get(id)
+    const user = await ctx.db.get(userId)
 
     if (!user || user.deletedAt !== null) {
       throw new ConvexError("User not found")
     }
 
-    if (currentUser.tenantId !== user.tenantId) {
+    if (tenantId !== user.tenantId) {
       throw new ConvexError("Unauthorized")
     }
 
@@ -136,21 +123,19 @@ export const del = authZM({
       throw new ConvexError("Can only delete staff users")
     }
 
-    await ctx.db.patch(id, { deletedAt: Date.now() })
+    await ctx.db.patch(userId, { deletedAt: Date.now() })
   }
 })
 
 export const list = authZQ({
-  args: {},
-  handler: async (ctx) => {
-    const currentUser = await validateAuth(ctx, "read:staff")
-
+  args: { tenantId: z.string() },
+  handler: async (ctx, args) => {
     const staff = await ctx.db
       .query("user")
       .withIndex("role_tenantId_deletedAt", (q) =>
         q
           .eq("role", "staff")
-          .eq("tenantId", currentUser.tenantId)
+          .eq("tenantId", args.tenantId)
           .eq("deletedAt", null)
       )
       .collect()

@@ -1053,11 +1053,17 @@ export type Mounts = {
           | "update:event"
           | "delete:event"
         >;
+        tenantId: string;
       },
       any
     >;
-    del: FunctionReference<"mutation", "public", { id: string }, any>;
-    list: FunctionReference<"query", "public", {}, any>;
+    del: FunctionReference<
+      "mutation",
+      "public",
+      { id: string; tenantId: string },
+      any
+    >;
+    list: FunctionReference<"query", "public", { tenantId: string }, any>;
     update: FunctionReference<
       "mutation",
       "public",
@@ -1065,7 +1071,7 @@ export type Mounts = {
         email?: string;
         id: string;
         name?: string;
-        password?: string;
+        password?: any;
         permissions?: Array<
           | "create:venue"
           | "update:venue"
@@ -1074,6 +1080,7 @@ export type Mounts = {
           | "update:event"
           | "delete:event"
         >;
+        tenantId: string;
       },
       any
     >;

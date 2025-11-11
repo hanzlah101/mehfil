@@ -7,6 +7,7 @@ import { useNavigate } from "react-router"
 import { loginSchema } from "@/validations/auth"
 import { useAppForm } from "@/hooks/form-hooks"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
+import { BRAND_NAME } from "@/lib/constants"
 
 export function LoginForm() {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ export function LoginForm() {
       <form.FieldSet>
         <form.Legend>Welcome Back!</form.Legend>
         <form.Description>
-          Please login with your account to access your calendar
+          Please login with your account to access your {BRAND_NAME} account
         </form.Description>
 
         <form.Group>

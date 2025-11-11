@@ -22,4 +22,17 @@ export const PERMISSIONS = [
   ...ADMIN_ONLY_PERMISSIONS
 ] as const
 
+export type ManageablePermission = (typeof MANAGEABLE_PERMISSIONS)[number]
 export type Permission = (typeof PERMISSIONS)[number]
+
+export function extractManageablePermissions(permissions: Permission[]) {
+  return permissions?.filter((p): p is ManageablePermission =>
+    MANAGEABLE_PERMISSIONS.includes(p as ManageablePermission)
+  )
+}
+
+export function formatPermission(permission: ManageablePermission) {
+  return permission
+    .replace(/:/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}

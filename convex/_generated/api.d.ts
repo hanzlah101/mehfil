@@ -16,6 +16,7 @@ import type * as auth_staff from "../auth/staff.js";
 import type * as auth from "../auth.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
+import type * as staff from "../staff.js";
 import type * as util from "../util.js";
 import type * as venues from "../venues.js";
 
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   events: typeof events;
   http: typeof http;
+  staff: typeof staff;
   util: typeof util;
   venues: typeof venues;
 }>;
@@ -1079,11 +1081,17 @@ export declare const components: {
             | "update:event"
             | "delete:event"
           >;
+          tenantId: string;
         },
         any
       >;
-      del: FunctionReference<"mutation", "internal", { id: string }, any>;
-      list: FunctionReference<"query", "internal", {}, any>;
+      del: FunctionReference<
+        "mutation",
+        "internal",
+        { id: string; tenantId: string },
+        any
+      >;
+      list: FunctionReference<"query", "internal", { tenantId: string }, any>;
       update: FunctionReference<
         "mutation",
         "internal",
@@ -1091,7 +1099,7 @@ export declare const components: {
           email?: string;
           id: string;
           name?: string;
-          password?: string;
+          password?: any;
           permissions?: Array<
             | "create:venue"
             | "update:venue"
@@ -1100,6 +1108,7 @@ export declare const components: {
             | "update:event"
             | "delete:event"
           >;
+          tenantId: string;
         },
         any
       >;
