@@ -9,15 +9,12 @@ import { PERMISSIONS, type Permission } from "@/lib/permissions"
 import { createAuthMiddleware } from "better-auth/plugins"
 import type { Doc } from "./auth/_generated/dataModel"
 import type { DataModel, Id } from "./_generated/dataModel"
+import type { DataModel as AuthDataModel } from "./auth/_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "./_generated/server"
-import type {
-  QueryCtx as AuthQueryCtx,
-  MutationCtx as AuthMutationCtx
-} from "./auth/_generated/server"
 
 const siteUrl = process.env.SITE_URL!
 
-export const authComponent = createClient<DataModel, typeof authSchema>(
+export const authComponent = createClient<AuthDataModel, typeof authSchema>(
   components.betterAuth,
   { local: { schema: authSchema } }
 )
@@ -31,7 +28,7 @@ export const createAuth = (
       disabled: optionsOnly
     },
     trustedOrigins: [siteUrl],
-    database: authComponent.adapter(ctx),
+    database: authComponent.adapter(ctx as MutationCtx),
     emailAndPassword: {
       enabled: true,
       disableSignUp: true,
@@ -78,7 +75,7 @@ export const createAuth = (
 
 export const getCurrentUser = query({
   args: {},
-  handler: async (ctx) => authComponent.getAuthUser(ctx)
+  handler: async (ctx) => authComponent.getAuthUser(ctx as MutationCtx)
 })
 
 type BaseUser = Doc<"user">
@@ -86,7 +83,7 @@ type TenantUser = Omit<Doc<"user">, "tenantId"> & {
   tenantId: Id<"tenants">
 }
 
-type CTX = QueryCtx | AuthQueryCtx | MutationCtx | AuthMutationCtx
+type CTX = QueryCtx | MutationCtx
 
 export async function validateAuth(ctx: CTX): Promise<BaseUser>
 export async function validateAuth(

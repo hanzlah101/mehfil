@@ -76,7 +76,7 @@ export function StaffTable() {
                   colSpan={staffColumns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No staff members found.
+                  No staff members match your search.
                 </TableCell>
               </TableRow>
             )}
@@ -86,7 +86,10 @@ export function StaffTable() {
 
       {table.getFilteredRowModel().rows.length > 0 && (
         <div className="text-sm text-muted-foreground">
-          Showing {table.getFilteredRowModel().rows.length} staff member(s)
+          Showing {table.getFilteredRowModel().rows.length}
+          {table.getFilteredRowModel().rows.length !== data.length &&
+            ` of ${data.length}`}{" "}
+          staff member(s)
         </div>
       )}
     </div>
