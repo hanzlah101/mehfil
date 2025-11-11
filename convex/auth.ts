@@ -2,19 +2,21 @@ import authSchema from "./auth/schema"
 import { createClient, type GenericCtx } from "@convex-dev/better-auth"
 import { convex, crossDomain } from "@convex-dev/better-auth/plugins"
 import { components } from "./_generated/api"
-import { APIError, betterAuth } from "better-auth"
+import { betterAuth } from "better-auth"
 import { ConvexError } from "convex/values"
 import { query } from "./_generated/server"
 import { PERMISSIONS, type Permission } from "@/lib/permissions"
-import { createAuthMiddleware } from "better-auth/plugins"
 import type { Doc } from "./auth/_generated/dataModel"
 import type { DataModel, Id } from "./_generated/dataModel"
-import type { DataModel as AuthDataModel } from "./auth/_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "./_generated/server"
+import type {
+  QueryCtx as AuthQueryCtx,
+  MutationCtx as AuthMutationCtx
+} from "./auth/_generated/server"
 
 const siteUrl = process.env.SITE_URL!
 
-export const authComponent = createClient<AuthDataModel, typeof authSchema>(
+export const authComponent = createClient<DataModel, typeof authSchema>(
   components.betterAuth,
   { local: { schema: authSchema } }
 )
@@ -28,7 +30,7 @@ export const createAuth = (
       disabled: optionsOnly
     },
     trustedOrigins: [siteUrl],
-    database: authComponent.adapter(ctx as MutationCtx),
+    database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
       disableSignUp: true,
@@ -53,29 +55,13 @@ export const createAuth = (
           input: false
         }
       }
-    },
-    hooks: {
-      before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === "/sign-in/email") {
-          const user = (await ctx.context.adapter.findOne({
-            model: "user",
-            where: [{ field: "email", value: ctx.body.email }]
-          })) as Doc<"user">
-
-          if (user?.deletedAt) {
-            throw new APIError("NOT_FOUND", {
-              message: "User doesn't exist"
-            })
-          }
-        }
-      })
     }
   })
 }
 
 export const getCurrentUser = query({
   args: {},
-  handler: async (ctx) => authComponent.getAuthUser(ctx as MutationCtx)
+  handler: async (ctx) => authComponent.getAuthUser(ctx)
 })
 
 type BaseUser = Doc<"user">
@@ -83,7 +69,7 @@ type TenantUser = Omit<Doc<"user">, "tenantId"> & {
   tenantId: Id<"tenants">
 }
 
-type CTX = QueryCtx | MutationCtx
+type CTX = QueryCtx | AuthQueryCtx | MutationCtx | AuthMutationCtx
 
 export async function validateAuth(ctx: CTX): Promise<BaseUser>
 export async function validateAuth(

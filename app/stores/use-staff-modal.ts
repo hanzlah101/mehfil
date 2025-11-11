@@ -21,10 +21,8 @@ export const useStaffModal = create<StaffModalStore>((set) => ({
       isOpen: true,
       staff: staff || null
     }),
-  onClose: () =>
-    set({
-      type: null,
-      isOpen: false,
-      staff: null
-    })
+  onClose: () => {
+    set({ type: null, isOpen: false })
+    setTimeout(() => set({ staff: null }), 500)
+  }
 }))

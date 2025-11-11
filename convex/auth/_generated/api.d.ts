@@ -10,6 +10,7 @@
 
 import type * as adapter from "../adapter.js";
 import type * as auth from "../auth.js";
+import type * as staff from "../staff.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   adapter: typeof adapter;
   auth: typeof auth;
+  staff: typeof staff;
 }>;
 export type Mounts = {
   adapter: {
@@ -39,7 +41,7 @@ export type Mounts = {
           | {
               data: {
                 createdAt: number;
-                deletedAt: null | number;
+                deletedAt?: null | number;
                 email: string;
                 emailVerified: boolean;
                 image?: null | string;
@@ -1031,6 +1033,54 @@ export type Mounts = {
               }>;
             };
         onUpdateHandle?: string;
+      },
+      any
+    >;
+  };
+  staff: {
+    create: FunctionReference<
+      "mutation",
+      "public",
+      {
+        email: string;
+        name: string;
+        password: string;
+        permissions: Array<
+          | "create:venue"
+          | "update:venue"
+          | "delete:venue"
+          | "create:event"
+          | "update:event"
+          | "delete:event"
+        >;
+        tenantId: string;
+      },
+      any
+    >;
+    del: FunctionReference<
+      "mutation",
+      "public",
+      { id: string; tenantId: string },
+      any
+    >;
+    list: FunctionReference<"query", "public", { tenantId: string }, any>;
+    update: FunctionReference<
+      "mutation",
+      "public",
+      {
+        email?: string;
+        id: string;
+        name?: string;
+        password?: string;
+        permissions?: Array<
+          | "create:venue"
+          | "update:venue"
+          | "delete:venue"
+          | "create:event"
+          | "update:event"
+          | "delete:event"
+        >;
+        tenantId: string;
       },
       any
     >;
