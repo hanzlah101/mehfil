@@ -44,8 +44,8 @@ export function VenueForm() {
     },
     defaultValues: {
       name: initialValues?.name ?? "",
-      capacity: (initialValues?.capacity ?? null) as number,
-      charges: (initialValues?.charges ?? null) as number,
+      capacity: initialValues?.capacity as number,
+      charges: initialValues?.charges as number,
       location: initialValues?.location ?? "",
       color: initialValues?.color ?? VENUE_COLORS[0]
     } satisfies VenueSchema as VenueSchema,
