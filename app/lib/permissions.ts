@@ -1,4 +1,8 @@
-export const DEFAULT_PERMISSIONS = ["read:venues", "read:events"] as const
+export const DEFAULT_PERMISSIONS = [
+  "read:venues",
+  "read:events",
+  "read:meals"
+] as const
 
 export const MANAGEABLE_PERMISSIONS = [
   "create:venue",
@@ -6,7 +10,10 @@ export const MANAGEABLE_PERMISSIONS = [
   "delete:venue",
   "create:event",
   "update:event",
-  "delete:event"
+  "delete:event",
+  "create:meals",
+  "update:meals",
+  "delete:meals"
 ] as const
 
 export const ADMIN_ONLY_PERMISSIONS = [

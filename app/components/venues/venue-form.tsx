@@ -44,7 +44,8 @@ export function VenueForm() {
     },
     defaultValues: {
       name: initialValues?.name ?? "",
-      capacity: initialValues?.capacity ?? NaN,
+      capacity: (initialValues?.capacity ?? null) as number,
+      charges: (initialValues?.charges ?? null) as number,
       location: initialValues?.location ?? "",
       color: initialValues?.color ?? VENUE_COLORS[0]
     } satisfies VenueSchema as VenueSchema,
@@ -102,6 +103,27 @@ export function VenueForm() {
           )}
         </form.AppField>
 
+        <form.AppField name="charges">
+          {(field) => (
+            <field.Field>
+              <field.Label required>Charges</field.Label>
+              <field.Control>
+                <NumberInput
+                  min={1}
+                  inputMode="numeric"
+                  placeholder="55000"
+                  disabled={isPending}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(value) => field.handleChange(value as number)}
+                />
+              </field.Control>
+              <field.Description>Hall charges for the event</field.Description>
+              <field.Error />
+            </field.Field>
+          )}
+        </form.AppField>
+
         <form.AppField name="location">
           {(field) => (
             <field.Field>
@@ -126,6 +148,7 @@ export function VenueForm() {
               <field.Label>Color</field.Label>
               <field.Control>
                 <RadioGroup
+                  disabled={isPending}
                   onValueChange={field.handleChange}
                   value={field.state.value}
                   className="flex flex-wrap gap-3"
@@ -136,7 +159,7 @@ export function VenueForm() {
                       value={color}
                       style={getVenueColorStyles(color)}
                       className={cn(
-                        "aspect-square size-7 shrink-0 rounded-full outline-none",
+                        "aspect-square size-7 shrink-0 rounded-full outline-none disabled:opacity-50",
                         VENUE_COLOR_CLASSES
                       )}
                     />

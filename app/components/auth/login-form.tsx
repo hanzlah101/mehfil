@@ -3,15 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { authClient } from "@/lib/auth-client"
-import { useNavigate } from "react-router"
 import { loginSchema } from "@/validations/auth"
 import { useAppForm } from "@/hooks/form-hooks"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { BRAND_NAME } from "@/lib/constants"
 
 export function LoginForm() {
-  const navigate = useNavigate()
-
   const form = useAppForm({
     validationLogic: revalidateLogic(),
     validators: {
@@ -28,7 +25,6 @@ export function LoginForm() {
         return
       }
       toast.success("Successfully logged in!")
-      navigate("/", { replace: true })
       formApi.reset()
     }
   })

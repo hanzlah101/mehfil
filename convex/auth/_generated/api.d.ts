@@ -49,12 +49,16 @@ export type Mounts = {
                 permissions?: Array<
                   | "read:venues"
                   | "read:events"
+                  | "read:meals"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
                   | "update:event"
                   | "delete:event"
+                  | "create:meals"
+                  | "update:meals"
+                  | "delete:meals"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -571,12 +575,16 @@ export type Mounts = {
                 permissions?: Array<
                   | "read:venues"
                   | "read:events"
+                  | "read:meals"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
                   | "update:event"
                   | "delete:event"
+                  | "create:meals"
+                  | "update:meals"
+                  | "delete:meals"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -816,12 +824,16 @@ export type Mounts = {
                 permissions?: Array<
                   | "read:venues"
                   | "read:events"
+                  | "read:meals"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
                   | "create:event"
                   | "update:event"
                   | "delete:event"
+                  | "create:meals"
+                  | "update:meals"
+                  | "delete:meals"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -1052,6 +1064,9 @@ export type Mounts = {
           | "create:event"
           | "update:event"
           | "delete:event"
+          | "create:meals"
+          | "update:meals"
+          | "delete:meals"
         >;
         tenantId: string;
       },
@@ -1079,6 +1094,9 @@ export type Mounts = {
           | "create:event"
           | "update:event"
           | "delete:event"
+          | "create:meals"
+          | "update:meals"
+          | "delete:meals"
         >;
         tenantId: string;
       },
