@@ -12,9 +12,11 @@ import type * as auth__generated_api from "../auth/_generated/api.js";
 import type * as auth__generated_server from "../auth/_generated/server.js";
 import type * as auth_adapter from "../auth/adapter.js";
 import type * as auth_auth from "../auth/auth.js";
+import type * as auth_staff from "../auth/staff.js";
 import type * as auth from "../auth.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
+import type * as staff from "../staff.js";
 import type * as util from "../util.js";
 import type * as venues from "../venues.js";
 
@@ -37,9 +39,11 @@ declare const fullApi: ApiFromModules<{
   "auth/_generated/server": typeof auth__generated_server;
   "auth/adapter": typeof auth_adapter;
   "auth/auth": typeof auth_auth;
+  "auth/staff": typeof auth_staff;
   auth: typeof auth;
   events: typeof events;
   http: typeof http;
+  staff: typeof staff;
   util: typeof util;
   venues: typeof venues;
 }>;
@@ -65,19 +69,24 @@ export declare const components: {
             | {
                 data: {
                   createdAt: number;
+                  deletedAt?: null | number;
                   email: string;
                   emailVerified: boolean;
                   image?: null | string;
                   name: string;
                   permissions?: Array<
-                    | "create:venue"
                     | "read:venues"
+                    | "read:events"
+                    | "read:meals"
+                    | "create:venue"
                     | "update:venue"
                     | "delete:venue"
                     | "create:event"
-                    | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:meals"
+                    | "update:meals"
+                    | "delete:meals"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -158,6 +167,7 @@ export declare const components: {
                     | "tenantId"
                     | "role"
                     | "permissions"
+                    | "deletedAt"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -342,6 +352,7 @@ export declare const components: {
                     | "tenantId"
                     | "role"
                     | "permissions"
+                    | "deletedAt"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -584,19 +595,24 @@ export declare const components: {
                 model: "user";
                 update: {
                   createdAt?: number;
+                  deletedAt?: null | number;
                   email?: string;
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
                   permissions?: Array<
-                    | "create:venue"
                     | "read:venues"
+                    | "read:events"
+                    | "read:meals"
+                    | "create:venue"
                     | "update:venue"
                     | "delete:venue"
                     | "create:event"
-                    | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:meals"
+                    | "update:meals"
+                    | "delete:meals"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -616,6 +632,7 @@ export declare const components: {
                     | "tenantId"
                     | "role"
                     | "permissions"
+                    | "deletedAt"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -827,19 +844,24 @@ export declare const components: {
                 model: "user";
                 update: {
                   createdAt?: number;
+                  deletedAt?: null | number;
                   email?: string;
                   emailVerified?: boolean;
                   image?: null | string;
                   name?: string;
                   permissions?: Array<
-                    | "create:venue"
                     | "read:venues"
+                    | "read:events"
+                    | "read:meals"
+                    | "create:venue"
                     | "update:venue"
                     | "delete:venue"
                     | "create:event"
-                    | "read:events"
                     | "update:event"
                     | "delete:event"
+                    | "create:meals"
+                    | "update:meals"
+                    | "delete:meals"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -859,6 +881,7 @@ export declare const components: {
                     | "tenantId"
                     | "role"
                     | "permissions"
+                    | "deletedAt"
                     | "createdAt"
                     | "updatedAt"
                     | "_id";
@@ -1050,6 +1073,60 @@ export declare const components: {
                 }>;
               };
           onUpdateHandle?: string;
+        },
+        any
+      >;
+    };
+    staff: {
+      create: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          email: string;
+          name: string;
+          password: string;
+          permissions: Array<
+            | "create:venue"
+            | "update:venue"
+            | "delete:venue"
+            | "create:event"
+            | "update:event"
+            | "delete:event"
+            | "create:meals"
+            | "update:meals"
+            | "delete:meals"
+          >;
+          tenantId: string;
+        },
+        any
+      >;
+      del: FunctionReference<
+        "mutation",
+        "internal",
+        { id: string; tenantId: string },
+        any
+      >;
+      list: FunctionReference<"query", "internal", { tenantId: string }, any>;
+      update: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          email?: string;
+          id: string;
+          name?: string;
+          password?: string;
+          permissions?: Array<
+            | "create:venue"
+            | "update:venue"
+            | "delete:venue"
+            | "create:event"
+            | "update:event"
+            | "delete:event"
+            | "create:meals"
+            | "update:meals"
+            | "delete:meals"
+          >;
+          tenantId: string;
         },
         any
       >;

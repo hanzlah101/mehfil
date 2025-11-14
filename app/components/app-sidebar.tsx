@@ -1,17 +1,22 @@
 import { Link, useLocation } from "react-router"
 import { Protected } from "@/components/protected"
+import { authClient } from "@/lib/auth-client"
 import {
   RiCalendar2Line,
   RiCalendar2Fill,
   RiMapPinLine,
   RiMapPinFill,
-  type RemixiconComponentType,
   RiGroupLine,
-  RiGroupFill
+  RiGroupFill,
+  RiLogoutBoxLine,
+  type RemixiconComponentType,
+  RiRestaurantLine,
+  RiRestaurantFill
 } from "@remixicon/react"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarMenu,
   SidebarMenuButton,
@@ -50,9 +55,32 @@ export function AppSidebar() {
                 activeIcon={RiGroupFill}
               />
             </Protected>
+
+            <Protected perm="read:meals">
+              <MenuItem
+                href="/meals"
+                label="Meals"
+                icon={RiRestaurantLine}
+                activeIcon={RiRestaurantFill}
+              />
+            </Protected>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              onClick={async () => authClient.signOut()}
+            >
+              <RiLogoutBoxLine />
+              Logout
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

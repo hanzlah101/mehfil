@@ -6,15 +6,15 @@ import { betterAuth } from "better-auth"
 import { ConvexError } from "convex/values"
 import { query } from "./_generated/server"
 import { PERMISSIONS, type Permission } from "@/lib/permissions"
-import type { MutationCtx, QueryCtx } from "./_generated/server"
-import type { DataModelFromSchemaDefinition } from "convex/server"
-import type schema from "./schema"
 import type { Doc } from "./auth/_generated/dataModel"
-import type { Id } from "./_generated/dataModel"
+import type { DataModel, Id } from "./_generated/dataModel"
+import type { MutationCtx, QueryCtx } from "./_generated/server"
+import type {
+  QueryCtx as AuthQueryCtx,
+  MutationCtx as AuthMutationCtx
+} from "./auth/_generated/server"
 
 const siteUrl = process.env.SITE_URL!
-
-type DataModel = DataModelFromSchemaDefinition<typeof schema>
 
 export const authComponent = createClient<DataModel, typeof authSchema>(
   components.betterAuth,
@@ -69,7 +69,7 @@ type TenantUser = Omit<Doc<"user">, "tenantId"> & {
   tenantId: Id<"tenants">
 }
 
-type CTX = QueryCtx | MutationCtx
+type CTX = QueryCtx | AuthQueryCtx | MutationCtx | AuthMutationCtx
 
 export async function validateAuth(ctx: CTX): Promise<BaseUser>
 export async function validateAuth(
@@ -77,7 +77,7 @@ export async function validateAuth(
   permission: Permission
 ): Promise<TenantUser>
 export async function validateAuth(ctx: CTX, permission?: Permission) {
-  const user = await authComponent.getAuthUser(ctx)
+  const user = await authComponent.getAuthUser(ctx as MutationCtx)
   if (!user) throw new ConvexError("Unauthorized")
 
   if (!permission) return user

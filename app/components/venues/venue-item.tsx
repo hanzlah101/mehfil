@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn, formatPrice } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useVenueModal } from "@/stores/use-venue-modal"
@@ -14,7 +14,8 @@ import {
   RiDeleteBinFill,
   RiEdit2Fill,
   RiGroupLine,
-  RiMapPinLine
+  RiMapPinLine,
+  RiMoneyDollarCircleLine
 } from "@remixicon/react"
 
 const btnClasses =
@@ -29,20 +30,27 @@ export function VenueItem(venue: Doc<"venues">) {
       key={venue._id}
       style={getEventColorStyles(venue.color)}
       className={cn(
-        "group/item relative w-full space-y-1 rounded-md px-4 py-3",
+        "group/item relative w-full space-y-2 rounded-md px-4 py-3",
         colorClasses
       )}
     >
-      <h3 className="font-semibold">{venue.name}</h3>
-      <div className="flex items-center gap-4 text-sm">
-        <div className="flex items-center gap-1.5 opacity-60">
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="text-lg font-semibold">{venue.name}</h3>
+        <div className="flex items-center gap-1.5 rounded-md bg-black/5 px-2 py-1 text-sm font-medium dark:bg-white/5">
+          <RiMoneyDollarCircleLine className="size-4" />
+          <span>{formatPrice(venue.charges)}</span>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        <div className="flex items-center gap-1.5 opacity-70">
           <RiGroupLine className="size-3.5" />
-          <span>{venue.capacity}</span>
+          <span>{venue.capacity} guests</span>
         </div>
         {venue.location && (
-          <div className="flex items-center gap-1.5 opacity-60">
+          <div className="flex items-center gap-1.5 opacity-70">
             <RiMapPinLine className="size-3.5" />
-            <span>{venue.location}</span>
+            <span className="line-clamp-1">{venue.location}</span>
           </div>
         )}
       </div>

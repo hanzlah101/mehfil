@@ -2,12 +2,16 @@ import { EventCalendar } from "@/components/events/calendar"
 import { DeleteEventDialog } from "@/components/events/delete-event-dialog"
 import { EventModal } from "@/components/events/event-modal"
 import { Protected } from "@/components/protected"
+import { BRAND_NAME } from "@/lib/constants"
 
 export function meta() {
-  return [{ title: "Calendar" }, { name: "description", content: "Calendar" }]
+  return [
+    { title: `${BRAND_NAME} - Events` },
+    { name: "description", content: "View and manage events in the calendar" }
+  ]
 }
 
-export default function Home() {
+export default function Events() {
   return (
     <>
       <Protected perm="read:events">

@@ -24,5 +24,8 @@ export const useVenueModal = create<VenueModalStore>((set) => ({
       set({ isOpen: true, type, venue })
     }
   },
-  onClose: () => set({ isOpen: false, type: undefined, venue: undefined })
+  onClose: () => {
+    set({ type: undefined, isOpen: false })
+    setTimeout(() => set({ venue: undefined }), 500)
+  }
 }))

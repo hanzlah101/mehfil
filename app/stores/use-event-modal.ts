@@ -38,6 +38,8 @@ export const useEventModal = create<EventModalStore>((set) => ({
       })
     }
   },
-  onClose: () =>
+  onClose: () => {
     set({ isOpen: false, type: undefined, event: undefined, date: null })
+    setTimeout(() => set({ event: undefined, date: null }), 500)
+  }
 }))

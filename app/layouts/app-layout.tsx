@@ -11,7 +11,14 @@ export default function AppLayout() {
         <AppSidebar />
         <SidebarInset>
           <AppHeader />
-          <div className="flex-1 space-y-4 p-4">
+          <div
+            className="flex-1 space-y-4 p-4"
+            style={
+              {
+                "--content-height": "calc(100% - 32px)"
+              } as React.CSSProperties
+            }
+          >
             <Outlet />
           </div>
         </SidebarInset>

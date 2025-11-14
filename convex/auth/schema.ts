@@ -11,12 +11,14 @@ export default defineSchema({
     tenantId: v.optional(v.string()),
     role: v.union(v.literal("staff"), v.literal("admin")),
     permissions: v.optional(v.array(v.union(...PERMISSIONS.map(v.literal)))),
+    deletedAt: v.optional(v.union(v.null(), v.number())),
     createdAt: v.number(),
     updatedAt: v.number()
   })
     .index("email_name", ["email", "name"])
     .index("email", ["email"])
     .index("name", ["name"])
+    .index("email_tenantId", ["email", "tenantId"])
     .index("tenantId", ["tenantId"])
     .index("role_tenantId", ["role", "tenantId"]),
   session: defineTable({
@@ -26,7 +28,7 @@ export default defineSchema({
     updatedAt: v.number(),
     ipAddress: v.optional(v.union(v.null(), v.string())),
     userAgent: v.optional(v.union(v.null(), v.string())),
-    userId: v.id("user")
+    userId: v.string()
   })
     .index("expiresAt", ["expiresAt"])
     .index("expiresAt_userId", ["expiresAt", "userId"])
@@ -35,7 +37,7 @@ export default defineSchema({
   account: defineTable({
     accountId: v.string(),
     providerId: v.string(),
-    userId: v.id("user"),
+    userId: v.string(),
     accessToken: v.optional(v.union(v.null(), v.string())),
     refreshToken: v.optional(v.union(v.null(), v.string())),
     idToken: v.optional(v.union(v.null(), v.string())),
