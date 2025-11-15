@@ -12,7 +12,10 @@ import {
   RiDeleteBinFill,
   RiRestaurantFill,
   RiCalendarCheckFill,
-  RiArrowDownSLine
+  RiArrowDownSLine,
+  RiMoneyDollarCircleFill,
+  RiPriceTag3Fill,
+  RiPrinterFill
 } from "@remixicon/react"
 
 import { cn } from "@/lib/utils"
@@ -42,6 +45,15 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
   const startTime = new Date(event.startTime)
   const endTime = new Date(event.endTime)
   const bookingDate = new Date(event.bookingDate)
+
+  // Calculate totals
+  const mealTotal = event.meal
+    ? event.meal.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
+    : 0
+  const subtotal = event.hallCharges + mealTotal
+  const grandTotal = event.discountedTotal ?? subtotal
+  const discount =
+    event.discountedTotal !== null ? subtotal - event.discountedTotal : 0
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
@@ -77,39 +89,46 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
               </div>
             </div>
 
-            <Protected perm={["update:event", "delete:event"]} operator="or">
-              <div className="flex items-center gap-1">
-                <Protected perm="update:event">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="secondary"
-                        onClick={() => openEventModal("update", event)}
-                      >
-                        <RiEdit2Fill className="size-3.5 text-muted-foreground" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Edit Event</TooltipContent>
-                  </Tooltip>
-                </Protected>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon-sm" variant="secondary">
+                    <RiPrinterFill className="size-3.5 text-muted-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Print Bill</TooltipContent>
+              </Tooltip>
 
-                <Protected perm="delete:event">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="destructive"
-                        onClick={() => openEventModal("delete", event)}
-                      >
-                        <RiDeleteBinFill className="size-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete Event</TooltipContent>
-                  </Tooltip>
-                </Protected>
-              </div>
-            </Protected>
+              <Protected perm="update:event">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="secondary"
+                      onClick={() => openEventModal("update", event)}
+                    >
+                      <RiEdit2Fill className="size-3.5 text-muted-foreground" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit Event</TooltipContent>
+                </Tooltip>
+              </Protected>
+
+              <Protected perm="delete:event">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="destructive"
+                      onClick={() => openEventModal("delete", event)}
+                    >
+                      <RiDeleteBinFill className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete Event</TooltipContent>
+                </Tooltip>
+              </Protected>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
@@ -168,6 +187,76 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
               <RiRestaurantFill className="size-3.5 text-muted-foreground" />
               <span className="font-medium">Food Service:</span>
               <span>{event.withFood ? "Yes" : "No"}</span>
+            </div>
+
+            <div className="space-y-3 rounded-md border bg-muted/30 p-3">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Billing Summary
+              </p>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5 opacity-70">
+                    <RiMoneyDollarCircleFill className="size-3.5 text-muted-foreground" />
+                    <span>Hall Charges</span>
+                  </div>
+                  <span className="font-medium opacity-70">
+                    ${event.hallCharges.toLocaleString()}
+                  </span>
+                </div>
+
+                {event.meal && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-sm opacity-70">
+                      <RiRestaurantFill className="size-3.5 text-muted-foreground" />
+                      <span>Meal Items</span>
+                    </div>
+                    <div className="ml-5 space-y-1">
+                      {event.meal.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="opacity-60">
+                            {item.name} ({item.qty} {item.unit})
+                          </span>
+                          <span className="font-medium opacity-60">
+                            ${(item.qty * item.unitPrice).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="border-t pt-2">
+                  <div className="flex items-center justify-between text-sm font-medium">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {discount > 0 && (
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                      <RiPriceTag3Fill className="size-3.5" />
+                      <span>Discount</span>
+                    </div>
+                    <span className="font-medium text-green-600 dark:text-green-400">
+                      -${discount.toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+                <div className="rounded-md border bg-background/50 p-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Grand Total</span>
+                    <span className="text-lg font-bold">
+                      ${grandTotal.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {(event.customerName ||
