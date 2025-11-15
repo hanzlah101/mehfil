@@ -2,6 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { StaffActions } from "./staff-actions"
 import { SortableHeader } from "./staff-table-sortable-header"
+import { formatDate } from "date-fns"
 import type { Doc } from "@db/auth/_generated/dataModel"
 import {
   extractManageablePermissions,
@@ -99,13 +100,7 @@ export const staffColumns = [
     cell: ({ row }) => {
       const date = new Date(row.getValue("createdAt"))
       return (
-        <div className="text-muted-foreground">
-          {date.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
-          })}
-        </div>
+        <div className="text-muted-foreground">{formatDate(date, "PPP")}</div>
       )
     }
   }),

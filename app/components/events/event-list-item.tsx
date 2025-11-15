@@ -18,7 +18,7 @@ import {
   RiPrinterFill
 } from "@remixicon/react"
 
-import { cn } from "@/lib/utils"
+import { cn, formatPrice } from "@/lib/utils"
 import { Protected } from "@/components/protected"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEventModal } from "@/stores/use-event-modal"
@@ -204,7 +204,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                     <span>Hall Charges</span>
                   </div>
                   <span className="font-medium opacity-70">
-                    ${event.hallCharges.toLocaleString()}
+                    {formatPrice(event.hallCharges)}
                   </span>
                 </div>
 
@@ -224,7 +224,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                             {item.name} ({item.qty} {item.unit})
                           </span>
                           <span className="font-medium opacity-60">
-                            ${(item.qty * item.unitPrice).toLocaleString()}
+                            {formatPrice(item.qty * item.unitPrice)}
                           </span>
                         </div>
                       ))}
@@ -235,7 +235,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                 <div className="border-t pt-2">
                   <div className="flex items-center justify-between text-sm font-medium">
                     <span>Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                    <span>{formatPrice(subtotal)}</span>
                   </div>
                 </div>
 
@@ -246,7 +246,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                       <span>Discount</span>
                     </div>
                     <span className="font-medium text-green-600 dark:text-green-400">
-                      -${discount.toLocaleString()}
+                      -{formatPrice(discount)}
                     </span>
                   </div>
                 )}
@@ -255,7 +255,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Grand Total</span>
                     <span className="text-lg font-bold">
-                      ${grandTotal.toLocaleString()}
+                      {formatPrice(grandTotal)}
                     </span>
                   </div>
                 </div>
