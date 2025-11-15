@@ -11,13 +11,16 @@ import { Switch } from "@/components/ui/switch"
 import { TimeField } from "@/components/ui/time-field"
 import { RiRestaurantFill } from "@remixicon/react"
 import { setDatePreserveTime, defaultEventTime } from "@/lib/date"
-import { useAppForm, useFieldContext } from "@/hooks/form-hooks"
-import { useQuery, useMutation } from "@tanstack/react-query"
-import { convexQuery, useConvexMutation } from "@convex-dev/react-query"
+import { useAppForm, useFormContext } from "@/hooks/form-hooks"
+import { useMutation } from "@tanstack/react-query"
+import { useConvexMutation } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
-import { FieldControl } from "@/components/ui/field"
 import { NumberInput } from "@/components/ui/number-input"
+import { EMPTY_NUMBER } from "@/lib/constants"
+import { MealSelect } from "./meal-select"
+import { VenueSelect } from "./venue-select"
+import { MealItemsField } from "@/components/meals/meal-items-field"
 import type { Id } from "@db/_generated/dataModel"
 import type { EventType } from "@/lib/types"
 import {
@@ -76,7 +79,10 @@ export function EventForm() {
       startTime: initialValues
         ? new Date(initialValues.startTime)
         : defaultStartTime,
-      endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime
+      endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime,
+      hallCharges: initialValues?.hallCharges ?? EMPTY_NUMBER,
+      discountedTotal: initialValues?.discountedTotal ?? null,
+      meal: initialValues?.meal ?? undefined
     } satisfies EventSchema as EventSchema,
     onSubmit: async ({ formApi, value }) => {
       const body = {
@@ -332,15 +338,29 @@ export function EventForm() {
           </form.AppField>
         </div>
 
-        <form.AppField name="venueId">
-          {(field) => (
-            <field.Field>
-              <field.Label required>Venue</field.Label>
-              <VenueSelect />
-              <field.Error />
-            </field.Field>
-          )}
-        </form.AppField>
+        <div className="grid items-start gap-6 md:grid-cols-2">
+          <VenueSelect />
+
+          <form.AppField name="hallCharges">
+            {(field) => (
+              <field.Field>
+                <field.Label required>Hall Charges</field.Label>
+                <field.Control>
+                  <NumberInput
+                    min={1}
+                    inputMode="numeric"
+                    placeholder="55,000"
+                    disabled={isPending}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(value) => field.handleChange(value as number)}
+                  />
+                </field.Control>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+        </div>
 
         <form.AppField name="notes">
           {(field) => (
@@ -396,6 +416,8 @@ export function EventForm() {
           )}
         </form.AppField>
 
+        <MealFields />
+
         <div className="sticky bottom-0 z-10 w-full bg-background py-4">
           <Button type="submit" className="w-full" loading={isPending}>
             {initialValues ? "Save Changes" : "Create Event"}
@@ -406,31 +428,19 @@ export function EventForm() {
   )
 }
 
-function VenueSelect() {
-  const field = useFieldContext<string>()
-  const { data } = useQuery(convexQuery(api.venues.list, {}))
+function MealFields() {
+  const form = useFormContext<EventSchema>()
+  const [withFood, mealId] = useStore(form.store, (s) => [
+    s.values.withFood,
+    s.values.meal?.mealId
+  ])
 
-  const isPending = useStore(field.form.store, (s) => s.isSubmitting)
+  if (!withFood) return null
 
   return (
-    <Select
-      disabled={isPending}
-      value={field.state.value}
-      onValueChange={field.handleChange}
-    >
-      <FieldControl>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Pick a venue" />
-        </SelectTrigger>
-      </FieldControl>
-
-      <SelectContent>
-        {data?.map((venue) => (
-          <SelectItem key={venue._id} value={venue._id}>
-            {venue.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <>
+      <MealSelect />
+      {mealId && <MealItemsField fieldName="meal.items" />}
+    </>
   )
 }

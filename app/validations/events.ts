@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { isAfter } from "date-fns"
+import { zid } from "zodvex"
 import { dateSchema, emailSchema } from "@/validations/_utils"
 import { mealSchema } from "./meals"
 
@@ -30,11 +31,19 @@ export const eventSchema = z
       ])
     ),
     withFood: z.boolean(),
-    meal: z
-      .object({
-        mealId: z.string(),
-        items: mealSchema.pick({ items: true })
+    hallCharges: z
+      .number({
+        error: ({ code }) =>
+          code === "invalid_type" ? "Please enter valid charges" : undefined
       })
+      .nonnegative("Hall charges cannot be negative"),
+    discountedTotal: z
+      .number()
+      .nonnegative("Discounted total cannot be negative")
+      .nullable(),
+    meal: mealSchema
+      .pick({ items: true })
+      .extend({ mealId: zid("meals") })
       .optional(),
     venueId: z.string().min(1, "Please select a venue")
   })

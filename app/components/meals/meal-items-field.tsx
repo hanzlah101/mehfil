@@ -7,24 +7,26 @@ import { EMPTY_NUMBER } from "@/lib/constants"
 import { NumberInput } from "@/components//ui/number-input"
 import type { MealSchema } from "@/validations/meals"
 
-export function MealItemsField() {
+export function MealItemsField({ fieldName }: { fieldName: string }) {
   const form = useFormContext<MealSchema>()
   const isPending = useStore(form.store, (s) => s.isSubmitting)
+
+  const itemsFieldName = fieldName as "items"
 
   return (
     <div>
       <h3 className="mb-3 text-sm font-semibold">Meal Items</h3>
 
-      <form.AppField name="items" mode="array">
+      <form.AppField name={itemsFieldName} mode="array">
         {(itemsField) => (
           <itemsField.Field>
-            {itemsField.state.value.map((_, i) => (
+            {itemsField.state.value?.map((_, i) => (
               <div
                 key={i}
                 className="flex flex-col gap-4 rounded-lg border p-4"
               >
                 <div className="grid gap-[inherit] md:grid-cols-2">
-                  <form.AppField name={`items[${i}].name`}>
+                  <form.AppField name={`${itemsFieldName}[${i}].name`}>
                     {(field) => (
                       <field.Field>
                         <field.Label required>Item Name</field.Label>
@@ -42,7 +44,7 @@ export function MealItemsField() {
                     )}
                   </form.AppField>
 
-                  <form.AppField name={`items[${i}].unit`}>
+                  <form.AppField name={`${itemsFieldName}[${i}].unit`}>
                     {(field) => (
                       <field.Field>
                         <field.Label required>Unit</field.Label>
@@ -60,7 +62,7 @@ export function MealItemsField() {
                     )}
                   </form.AppField>
 
-                  <form.AppField name={`items[${i}].qty`}>
+                  <form.AppField name={`${itemsFieldName}[${i}].qty`}>
                     {(field) => (
                       <field.Field>
                         <field.Label required>Quantity</field.Label>
@@ -82,7 +84,7 @@ export function MealItemsField() {
                     )}
                   </form.AppField>
 
-                  <form.AppField name={`items[${i}].unitPrice`}>
+                  <form.AppField name={`${itemsFieldName}[${i}].unitPrice`}>
                     {(field) => (
                       <field.Field>
                         <field.Label required>Unit Price</field.Label>
@@ -105,7 +107,7 @@ export function MealItemsField() {
                   </form.AppField>
                 </div>
 
-                {itemsField.state.value.length > 1 && (
+                {itemsField.state.value?.length > 1 && (
                   <Button
                     size="sm"
                     type="button"
@@ -120,7 +122,7 @@ export function MealItemsField() {
               </div>
             ))}
 
-            {itemsField.state.value.length < 50 && (
+            {itemsField.state.value?.length < 50 && (
               <Button
                 type="button"
                 variant="outline"
@@ -141,11 +143,7 @@ export function MealItemsField() {
               </Button>
             )}
 
-            {itemsField.state.meta.errors[0] && (
-              <p className="text-sm text-destructive">
-                {String(itemsField.state.meta.errors[0])}
-              </p>
-            )}
+            <itemsField.Error />
           </itemsField.Field>
         )}
       </form.AppField>

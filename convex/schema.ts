@@ -40,7 +40,7 @@ export default defineSchema({
       v.union(v.object({ from: v.number(), to: v.number() }), v.number())
     ),
     hallCharges: v.number(),
-    discountedAmt: v.union(v.number(), v.null()),
+    discountedTotal: v.union(v.number(), v.null()),
     withFood: v.boolean(),
     meal: v.optional(
       v.object({

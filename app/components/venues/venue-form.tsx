@@ -111,7 +111,7 @@ export function VenueForm() {
                 <NumberInput
                   min={1}
                   inputMode="numeric"
-                  placeholder="55000"
+                  placeholder="55,000"
                   disabled={isPending}
                   value={field.state.value}
                   onBlur={field.handleBlur}

@@ -91,7 +91,7 @@ export function MealForm() {
           )}
         </form.AppField>
 
-        <MealItemsField />
+        <MealItemsField fieldName="items" />
 
         <div className="sticky bottom-0 z-10 w-full bg-background py-4">
           <Button type="submit" className="w-full" loading={isPending}>
