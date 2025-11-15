@@ -18,8 +18,12 @@ import type {
   FormValidateOrFn
 } from "@tanstack/react-form"
 
-const { useFieldContext, useFormContext, fieldContext, formContext } =
-  createFormHookContexts()
+const {
+  useFieldContext,
+  useFormContext: useUntypedFOrmContext,
+  fieldContext,
+  formContext
+} = createFormHookContexts()
 
 const {
   useAppForm: useTanstackAppForm,
@@ -50,16 +54,22 @@ type Inputs = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
 function useAppForm<
   TFormData,
-  TOnMount extends FormValidateOrFn<TFormData> | undefined,
-  TOnChange extends FormValidateOrFn<TFormData> | undefined,
-  TOnChangeAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnBlur extends FormValidateOrFn<TFormData> | undefined,
-  TOnBlurAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnSubmit extends FormValidateOrFn<TFormData> | undefined,
-  TOnSubmitAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnDynamic extends FormValidateOrFn<TFormData> | undefined,
-  TOnDynamicAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnServer extends FormAsyncValidateOrFn<TFormData> | undefined,
+  TOnMount extends FormValidateOrFn<TFormData> | undefined = undefined,
+  TOnChange extends FormValidateOrFn<TFormData> | undefined = undefined,
+  TOnChangeAsync extends
+    | FormAsyncValidateOrFn<TFormData>
+    | undefined = undefined,
+  TOnBlur extends FormValidateOrFn<TFormData> | undefined = undefined,
+  TOnBlurAsync extends FormAsyncValidateOrFn<TFormData> | undefined = undefined,
+  TOnSubmit extends FormValidateOrFn<TFormData> | undefined = undefined,
+  TOnSubmitAsync extends
+    | FormAsyncValidateOrFn<TFormData>
+    | undefined = undefined,
+  TOnDynamic extends FormValidateOrFn<TFormData> | undefined = undefined,
+  TOnDynamicAsync extends
+    | FormAsyncValidateOrFn<TFormData>
+    | undefined = undefined,
+  TOnServer extends FormAsyncValidateOrFn<TFormData> | undefined = undefined,
   TSubmitMeta = never
 >(
   params: FormOptions<
@@ -86,7 +96,7 @@ function useAppForm<
       const inputs = formRef.current.querySelectorAll<Inputs>(
         "input, textarea, select"
       )
-      let firstInput: Inputs | undefined
+      let firstInput: Inputs | undefined = undefined
       for (const input of inputs) {
         if (!!errMap?.[input.name]) {
           firstInput = input
@@ -106,6 +116,13 @@ function useAppForm<
   }
 
   return { ...form, Form }
+}
+
+function useFormContext<T>() {
+  return useUntypedFOrmContext() as unknown as Omit<
+    ReturnType<typeof useAppForm<T>>,
+    "Form"
+  >
 }
 
 export { useAppForm, withForm, withFieldGroup, useFieldContext, useFormContext }

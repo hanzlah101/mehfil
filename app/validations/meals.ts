@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const mealItemSchema = z.object({
+const mealItemSchema = z.object({
   name: z.string().min(1, "Please enter item name"),
   unit: z.string().min(1, "Please enter unit"),
   qty: z

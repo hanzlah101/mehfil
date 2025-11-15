@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { isAfter } from "date-fns"
 import { dateSchema, emailSchema } from "@/validations/_utils"
+import { mealSchema } from "./meals"
 
 export const eventSchema = z
   .object({
@@ -29,6 +30,12 @@ export const eventSchema = z
       ])
     ),
     withFood: z.boolean(),
+    meal: z
+      .object({
+        mealId: z.string(),
+        items: mealSchema.pick({ items: true })
+      })
+      .optional(),
     venueId: z.string().min(1, "Please select a venue")
   })
   .refine((val) => isAfter(val.endTime, val.startTime), {
