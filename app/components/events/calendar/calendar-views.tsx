@@ -19,20 +19,21 @@ export function CalendarViews() {
       onValueChange={(v) => (v ? setView(v as typeof view) : {})}
     >
       <Tooltip>
-        <ToggleGroupItem asChild value="calendar" className="not-md:w-1/2">
-          <TooltipTrigger>
-            <RiCalendar2Fill className="text-muted-foreground" />
-          </TooltipTrigger>
-        </ToggleGroupItem>
-        <TooltipContent>Calendar View</TooltipContent>
-      </Tooltip>
-      <Tooltip>
         <ToggleGroupItem asChild value="list" className="not-md:w-1/2">
           <TooltipTrigger>
             <RiListUnordered className="text-muted-foreground" />
           </TooltipTrigger>
         </ToggleGroupItem>
         <TooltipContent>List View</TooltipContent>
+      </Tooltip>
+
+      <Tooltip>
+        <ToggleGroupItem asChild value="calendar" className="not-md:w-1/2">
+          <TooltipTrigger>
+            <RiCalendar2Fill className="text-muted-foreground" />
+          </TooltipTrigger>
+        </ToggleGroupItem>
+        <TooltipContent>Calendar View</TooltipContent>
       </Tooltip>
     </ToggleGroup>
   )

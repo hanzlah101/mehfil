@@ -36,7 +36,10 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 
-type EventWithVenue = Doc<"events"> & { venue: Doc<"venues"> }
+type EventWithVenue = Doc<"events"> & {
+  mealName?: string | null
+  venue: Doc<"venues">
+}
 
 export function EventListItem({ event }: { event: EventWithVenue }) {
   const openEventModal = useEventModal((s) => s.onOpen)
@@ -209,7 +212,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-1.5 text-sm opacity-70">
                       <RiRestaurantFill className="size-3.5 text-muted-foreground" />
-                      <span>Meal Items</span>
+                      <span>{event.mealName || "Meal Items"}</span>
                     </div>
                     <div className="ml-5 space-y-1">
                       {event.meal.items.map((item, index) => (

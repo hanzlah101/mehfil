@@ -103,10 +103,11 @@ export const list = query({
 
     const eventsWithVenues = await asyncMap(events, async (event) => {
       const venue = await ctx.db.get(event.venueId)
+      const meal = event.meal ? await ctx.db.get(event.meal.mealId) : null
       if (!venue) {
         throw new ConvexError("Venue not found")
       }
-      return { ...event, venue }
+      return { ...event, mealName: meal?.title ?? null, venue }
     })
 
     return eventsWithVenues
