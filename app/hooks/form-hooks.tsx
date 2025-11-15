@@ -21,7 +21,11 @@ import type {
 const { useFieldContext, useFormContext, fieldContext, formContext } =
   createFormHookContexts()
 
-const { useAppForm: useTanstackAppForm, withForm } = createFormHook({
+const {
+  useAppForm: useTanstackAppForm,
+  withForm,
+  withFieldGroup
+} = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {
@@ -104,4 +108,4 @@ function useAppForm<
   return { ...form, Form }
 }
 
-export { useAppForm, withForm, useFieldContext, useFormContext }
+export { useAppForm, withForm, withFieldGroup, useFieldContext, useFormContext }

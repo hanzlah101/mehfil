@@ -11,9 +11,9 @@ export const MANAGEABLE_PERMISSIONS = [
   "create:event",
   "update:event",
   "delete:event",
-  "create:meals",
-  "update:meals",
-  "delete:meals"
+  "create:meal",
+  "update:meal",
+  "delete:meal"
 ] as const
 
 export const ADMIN_ONLY_PERMISSIONS = [

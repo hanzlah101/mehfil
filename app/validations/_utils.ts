@@ -11,9 +11,7 @@ export function dateSchema(err: string) {
 }
 
 export function atLeastOne<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
-  return schema
-    .partial()
-    .refine((data) => Object.keys(data).length > 0, {
-      message: "At least one field must be provided"
-    })
+  return schema.partial().refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided"
+  })
 }

@@ -16,6 +16,7 @@ import type * as auth_staff from "../auth/staff.js";
 import type * as auth from "../auth.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
+import type * as meals from "../meals.js";
 import type * as staff from "../staff.js";
 import type * as util from "../util.js";
 import type * as venues from "../venues.js";
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   events: typeof events;
   http: typeof http;
+  meals: typeof meals;
   staff: typeof staff;
   util: typeof util;
   venues: typeof venues;
@@ -84,9 +86,9 @@ export declare const components: {
                     | "create:event"
                     | "update:event"
                     | "delete:event"
-                    | "create:meals"
-                    | "update:meals"
-                    | "delete:meals"
+                    | "create:meal"
+                    | "update:meal"
+                    | "delete:meal"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -610,9 +612,9 @@ export declare const components: {
                     | "create:event"
                     | "update:event"
                     | "delete:event"
-                    | "create:meals"
-                    | "update:meals"
-                    | "delete:meals"
+                    | "create:meal"
+                    | "update:meal"
+                    | "delete:meal"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -859,9 +861,9 @@ export declare const components: {
                     | "create:event"
                     | "update:event"
                     | "delete:event"
-                    | "create:meals"
-                    | "update:meals"
-                    | "delete:meals"
+                    | "create:meal"
+                    | "update:meal"
+                    | "delete:meal"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -1092,9 +1094,9 @@ export declare const components: {
             | "create:event"
             | "update:event"
             | "delete:event"
-            | "create:meals"
-            | "update:meals"
-            | "delete:meals"
+            | "create:meal"
+            | "update:meal"
+            | "delete:meal"
           >;
           tenantId: string;
         },
@@ -1122,9 +1124,9 @@ export declare const components: {
             | "create:event"
             | "update:event"
             | "delete:event"
-            | "create:meals"
-            | "update:meals"
-            | "delete:meals"
+            | "create:meal"
+            | "update:meal"
+            | "delete:meal"
           >;
           tenantId: string;
         },

@@ -58,7 +58,7 @@ export function VenueItem(venue: Doc<"venues">) {
       <Protected perm={["update:venue", "delete:venue"]} operator="or">
         <div
           className={cn(
-            "absolute top-0 right-4 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-current/30 p-0.5 transition-normal group-hover/item:flex",
+            "absolute top-0 right-4 z-10 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border border-current/30 p-0.5 transition-normal group-hover/item:flex",
             colorClasses
           )}
         >
