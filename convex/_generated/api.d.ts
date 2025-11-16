@@ -18,6 +18,7 @@ import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as meals from "../meals.js";
 import type * as staff from "../staff.js";
+import type * as tenant from "../tenant.js";
 import type * as util from "../util.js";
 import type * as venues from "../venues.js";
 
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   meals: typeof meals;
   staff: typeof staff;
+  tenant: typeof tenant;
   util: typeof util;
   venues: typeof venues;
 }>;

@@ -8,38 +8,53 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "@/components/ui/drawer"
+import { EventBill } from "./event-bill"
 
 const modalContent = {
   create: {
     title: "New Event",
-    description: "Create a new event, meeting, or reservation entry."
+    permission: "create:event",
+    description: "Create a new event, meeting, or reservation entry.",
+    Component: EventForm
   },
   update: {
     title: "Update Event",
-    description: "Modify the details, date, or information of this event."
+    permission: "update:event",
+    description: "Modify the details, date, or information of this event.",
+    Component: EventForm
+  },
+  "print-bill": {
+    title: "Print Bill",
+    permission: "read:events",
+    description: "Print the bill for this event.",
+    Component: EventBill
   }
-}
+} as const
 
 export function EventModal() {
   const { type, isOpen, onClose } = useEventModal()
 
-  const content = type === "create" ? modalContent.create : modalContent.update
+  const { permission, title, description, Component } =
+    type === "create"
+      ? modalContent.create
+      : type === "update"
+        ? modalContent.update
+        : type === "print-bill"
+          ? modalContent["print-bill"]
+          : modalContent.create
 
   return (
-    <Protected perm={type === "create" ? "create:event" : "update:event"}>
-      <Drawer
-        open={isOpen && (type === "create" || type === "update")}
-        onClose={onClose}
-      >
+    <Protected perm={permission}>
+      <Drawer open={isOpen && type !== "delete"} onClose={onClose}>
         <DrawerContent>
           <div className="overflow-y-auto">
             <DrawerHeader>
-              <DrawerTitle>{content.title}</DrawerTitle>
-              <DrawerDescription>{content.description}</DrawerDescription>
+              <DrawerTitle>{title}</DrawerTitle>
+              <DrawerDescription>{description}</DrawerDescription>
             </DrawerHeader>
 
             <div className="mx-auto w-full max-w-2xl px-4">
-              <EventForm />
+              <Component />
             </div>
           </div>
         </DrawerContent>

@@ -1,5 +1,7 @@
 import { useRef } from "react"
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form"
+import type { FormOptions } from "@tanstack/react-form"
+import type { FormApiArgs } from "@/lib/types"
 import {
   Form as CoreForm,
   Field,
@@ -12,11 +14,6 @@ import {
   FieldContent,
   FieldGroup
 } from "@/components/ui/field"
-import type {
-  FormAsyncValidateOrFn,
-  FormOptions,
-  FormValidateOrFn
-} from "@tanstack/react-form"
 
 const {
   useFieldContext,
@@ -52,39 +49,20 @@ const {
 
 type Inputs = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
-function useAppForm<
-  TFormData,
-  TOnMount extends FormValidateOrFn<TFormData> | undefined = undefined,
-  TOnChange extends FormValidateOrFn<TFormData> | undefined = undefined,
-  TOnChangeAsync extends
-    | FormAsyncValidateOrFn<TFormData>
-    | undefined = undefined,
-  TOnBlur extends FormValidateOrFn<TFormData> | undefined = undefined,
-  TOnBlurAsync extends FormAsyncValidateOrFn<TFormData> | undefined = undefined,
-  TOnSubmit extends FormValidateOrFn<TFormData> | undefined = undefined,
-  TOnSubmitAsync extends
-    | FormAsyncValidateOrFn<TFormData>
-    | undefined = undefined,
-  TOnDynamic extends FormValidateOrFn<TFormData> | undefined = undefined,
-  TOnDynamicAsync extends
-    | FormAsyncValidateOrFn<TFormData>
-    | undefined = undefined,
-  TOnServer extends FormAsyncValidateOrFn<TFormData> | undefined = undefined,
-  TSubmitMeta = never
->(
+function useAppForm<T>(
   params: FormOptions<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnDynamic,
-    TOnDynamicAsync,
-    TOnServer,
-    TSubmitMeta
+    FormApiArgs<T>[0],
+    FormApiArgs<T>[1],
+    FormApiArgs<T>[2],
+    FormApiArgs<T>[3],
+    FormApiArgs<T>[4],
+    FormApiArgs<T>[5],
+    FormApiArgs<T>[6],
+    FormApiArgs<T>[7],
+    FormApiArgs<T>[8],
+    FormApiArgs<T>[9],
+    FormApiArgs<T>[10],
+    FormApiArgs<T>[11]
   >
 ) {
   const formRef = useRef<HTMLFormElement>(null)

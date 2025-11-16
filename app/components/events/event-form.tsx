@@ -81,6 +81,7 @@ export function EventForm() {
         : defaultStartTime,
       endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime,
       hallCharges: initialValues?.hallCharges ?? EMPTY_NUMBER,
+      amountPaid: initialValues?.amountPaid ?? 0,
       discountedTotal: initialValues?.discountedTotal ?? null,
       meal: initialValues?.meal ?? undefined
     } satisfies EventSchema as EventSchema,
@@ -91,7 +92,7 @@ export function EventForm() {
         bookingDate: value.bookingDate.getTime(),
         startTime: value.startTime.getTime(),
         endTime: value.endTime.getTime()
-      }
+      } as Parameters<(typeof createEvent)[0]>
 
       if (initialValues) {
         await updateEvent({ ...body, id: initialValues._id })

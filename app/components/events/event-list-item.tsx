@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useMemo } from "react"
 import { format } from "date-fns"
 import {
   RiCalendarFill,
@@ -18,13 +19,14 @@ import {
   RiPrinterFill
 } from "@remixicon/react"
 
-import { cn, formatPrice } from "@/lib/utils"
+import { cn, formatPrice, calculateBillTotals } from "@/lib/utils"
 import { Protected } from "@/components/protected"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useEventModal } from "@/stores/use-event-modal"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/copy-button"
-import type { Doc } from "@db/_generated/dataModel"
+import { DAY_DATE_FORMAT } from "@/lib/constants"
+import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
+import { PaymentStatusAlert } from "@/components/events/event-bill/payment-status-alert"
 import {
   Tooltip,
   TooltipContent,
@@ -36,27 +38,20 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 
-type EventWithVenue = Doc<"events"> & {
-  mealName?: string | null
-  venue: Doc<"venues">
-}
-
 export function EventListItem({ event }: { event: EventWithVenue }) {
   const openEventModal = useEventModal((s) => s.onOpen)
   const [isOpen, setIsOpen] = React.useState(false)
 
-  const startTime = new Date(event.startTime)
-  const endTime = new Date(event.endTime)
-  const bookingDate = new Date(event.bookingDate)
-
-  // Calculate totals
-  const mealTotal = event.meal
-    ? event.meal.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
-    : 0
-  const subtotal = event.hallCharges + mealTotal
-  const grandTotal = event.discountedTotal ?? subtotal
-  const discount =
-    event.discountedTotal !== null ? subtotal - event.discountedTotal : 0
+  const billTotals = useMemo(
+    () =>
+      calculateBillTotals({
+        hallCharges: event.hallCharges,
+        meal: event.meal,
+        discountedTotal: event.discountedTotal
+      }),
+    [event.hallCharges, event.meal, event.discountedTotal]
+  )
+  const { subtotal, grandTotal, discountAmount: discount } = billTotals
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
@@ -95,7 +90,11 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             <div className="flex items-center gap-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon-sm" variant="secondary">
+                  <Button
+                    size="icon-sm"
+                    variant="secondary"
+                    onClick={() => openEventModal("print-bill", event)}
+                  >
                     <RiPrinterFill className="size-3.5 text-muted-foreground" />
                   </Button>
                 </TooltipTrigger>
@@ -137,12 +136,13 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
             <div className="flex items-center gap-1.5 opacity-70">
               <RiCalendarFill className="size-3.5 text-muted-foreground" />
-              <span>{format(startTime, "MMM d, yyyy")}</span>
+              <span>{format(event.startTime, DAY_DATE_FORMAT)}</span>
             </div>
             <div className="flex items-center gap-1.5 opacity-70">
               <RiTimeFill className="size-3.5 text-muted-foreground" />
               <span>
-                {format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
+                {format(event.startTime, "h:mm a")} -{" "}
+                {format(event.endTime, "h:mm a")}
               </span>
             </div>
             {event.pax && (
@@ -175,7 +175,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             <div className="flex items-center gap-1.5 text-sm opacity-70">
               <RiCalendarCheckFill className="size-3.5 text-muted-foreground" />
               <span className="font-medium">Booked on:</span>
-              <span>{format(bookingDate, "MMM d, yyyy")}</span>
+              <span>{format(event.bookingDate, DAY_DATE_FORMAT)}</span>
             </div>
 
             {event.guestArrival && (
@@ -258,6 +258,22 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                       {formatPrice(grandTotal)}
                     </span>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="opacity-70">Amount Paid</span>
+                    <span className="font-medium opacity-70">
+                      {formatPrice(event.amountPaid)}
+                    </span>
+                  </div>
+                  <PaymentStatusAlert
+                    hallCharges={event.hallCharges}
+                    meal={event.meal}
+                    discountedTotal={event.discountedTotal}
+                    amountPaid={event.amountPaid}
+                    variant="minimal"
+                  />
                 </div>
               </div>
             </div>

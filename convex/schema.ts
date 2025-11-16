@@ -13,6 +13,9 @@ const mealItemsSchema = v.array(
 export default defineSchema({
   tenants: defineTable({
     name: v.string(),
+    mail: v.optional(v.string()),
+    managerPhone: v.optional(v.string()),
+    complainPhone: v.optional(v.string()),
     updatedAt: v.optional(v.number())
   }),
   venues: defineTable({
@@ -40,6 +43,7 @@ export default defineSchema({
       v.union(v.object({ from: v.number(), to: v.number() }), v.number())
     ),
     hallCharges: v.number(),
+    amountPaid: v.number(),
     discountedTotal: v.union(v.number(), v.null()),
     withFood: v.boolean(),
     meal: v.optional(

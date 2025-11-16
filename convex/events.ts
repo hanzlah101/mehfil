@@ -1,3 +1,4 @@
+import { z } from "zod"
 import { zid } from "zodvex"
 import { zm } from "./util"
 import { validateAuth } from "./auth"
@@ -5,22 +6,24 @@ import { eventSchema as _eventSchema } from "@/validations/events"
 import { ConvexError } from "convex/values"
 import { query } from "./_generated/server"
 import { v } from "convex/values"
-import { z } from "zod"
 import { atLeastOne } from "@/validations/_utils"
 import { asyncMap } from "convex-helpers"
+import { mealSchema } from "@/validations/meals"
 
 const eventSchema = _eventSchema
   .omit({
     venueId: true,
     bookingDate: true,
     startTime: true,
-    endTime: true
+    endTime: true,
+    meal: true
   })
   .safeExtend({
     venueId: zid("venues"),
     bookingDate: z.number(),
     startTime: z.number(),
-    endTime: z.number()
+    endTime: z.number(),
+    meal: mealSchema.pick({ items: true }).safeExtend({ mealId: zid("meals") })
   })
 
 export const create = zm({
@@ -111,5 +114,31 @@ export const list = query({
     })
 
     return eventsWithVenues
+  }
+})
+
+export const getById = query({
+  args: { id: v.id("events") },
+  handler: async (ctx, { id }) => {
+    const user = await validateAuth(ctx, "read:events")
+
+    const event = await ctx.db.get(id)
+
+    if (!event) {
+      throw new ConvexError("Event not found")
+    }
+
+    if (event.tenantId !== user.tenantId) {
+      throw new ConvexError("Forbidden")
+    }
+
+    const venue = await ctx.db.get(event.venueId)
+    const meal = event.meal ? await ctx.db.get(event.meal.mealId) : null
+
+    if (!venue) {
+      throw new ConvexError("Venue not found")
+    }
+
+    return { ...event, mealName: meal?.title ?? null, venue }
   }
 })
