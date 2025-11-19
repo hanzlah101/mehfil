@@ -147,11 +147,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             {event.pax && (
               <div className="flex items-center gap-1.5 opacity-70">
                 <RiGroupFill className="size-3.5 text-muted-foreground" />
-                <span>
-                  {typeof event.pax === "number"
-                    ? `${event.pax} guests`
-                    : `${event.pax.from}-${event.pax.to} guests`}
-                </span>
+                <span>{event.pax} guests</span>
               </div>
             )}
           </div>

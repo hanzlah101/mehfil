@@ -382,11 +382,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
                 <View style={styles.iconWrapper}>
                   <UserIcon size={12} color="#6B7280" />
                 </View>
-                <Text style={styles.detailText}>
-                  {typeof event.pax === "number"
-                    ? `${event.pax} guests`
-                    : `${event.pax.from}-${event.pax.to} guests`}
-                </Text>
+                <Text style={styles.detailText}>{event.pax} guests</Text>
               </View>
             )}
 

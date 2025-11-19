@@ -26,6 +26,8 @@ export const useMealModal = create<MealModalStore>((set) => ({
   },
   onClose: () => {
     set({ type: undefined, isOpen: false })
-    setTimeout(() => set({ meal: undefined }), 500)
+    setTimeout(() => {
+      set((state) => (state.isOpen ? state : { ...state, meal: undefined }))
+    }, 500)
   }
 }))

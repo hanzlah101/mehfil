@@ -59,16 +59,18 @@ export function MealSelect() {
                       key={meal._id}
                       value={meal.title}
                       onSelect={() => {
-                        const shouldUpdate = field.state.value
-                          ? confirm(
-                              "Previous meal items will be reset. Continue?"
-                            )
-                          : true
+                        const shouldUpdate =
+                          !field.state.value ||
+                          confirm(
+                            "Previous meal items will be reset. Continue?"
+                          )
 
                         if (shouldUpdate) {
                           field.handleChange(meal._id)
                           form.setFieldValue("meal.items", meal.items)
+                          setOpen(false)
                         }
+
                         setOpen(false)
                       }}
                     >

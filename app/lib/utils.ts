@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import type { AnyFormApi } from "./types"
+import type { TFormApi } from "@/lib/types"
 import type { DeepKeys } from "@tanstack/react-form"
 import type { Doc, Id } from "@db/_generated/dataModel"
 
@@ -22,7 +22,7 @@ export function formatPrice(
 }
 
 export function getDirtyValues<TData>(
-  form: AnyFormApi<TData>
+  form: TFormApi<TData>
 ): Partial<TData> | null {
   const fieldMeta = form.state.fieldMeta
 

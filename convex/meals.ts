@@ -16,8 +16,6 @@ export const create = zm({
       deletedAt: null,
       tenantId: user.tenantId
     })
-
-    return user
   }
 })
 

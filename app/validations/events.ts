@@ -15,20 +15,7 @@ const baseEventSchema = z.object({
   guestArrival: z.string().optional(),
   customerEmail: z.union([z.literal(""), emailSchema.optional()]),
   customerPhone: z.string().optional(),
-  pax: z.optional(
-    z.union([
-      z.int("Invalid Pax").positive("Pax must be greater than 0"),
-      z
-        .object({
-          from: z.int("Invalid Pax").positive("Pax must be greater than 0"),
-          to: z.int("Invalid Pax").positive("Pax must be greater than 0")
-        })
-        .refine((val) => val.to > val.from, {
-          error: "Max guests must be greater than start",
-          path: ["to"]
-        })
-    ])
-  ),
+  pax: z.int("Invalid Pax").positive("Pax must be greater than 0").nullable(),
   withFood: z.boolean(),
   hallCharges: z
     .number({

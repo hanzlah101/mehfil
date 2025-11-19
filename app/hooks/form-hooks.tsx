@@ -1,7 +1,6 @@
 import { useRef } from "react"
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form"
-import type { FormOptions } from "@tanstack/react-form"
-import type { FormApiArgs } from "@/lib/types"
+import type { FormApiArgs, TFormOptions } from "@/lib/types"
 import {
   Form as CoreForm,
   Field,
@@ -17,7 +16,7 @@ import {
 
 const {
   useFieldContext,
-  useFormContext: useUntypedFOrmContext,
+  useFormContext: useUntypedFormContext,
   fieldContext,
   formContext
 } = createFormHookContexts()
@@ -49,22 +48,7 @@ const {
 
 type Inputs = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
-function useAppForm<T>(
-  params: FormOptions<
-    FormApiArgs<T>[0],
-    FormApiArgs<T>[1],
-    FormApiArgs<T>[2],
-    FormApiArgs<T>[3],
-    FormApiArgs<T>[4],
-    FormApiArgs<T>[5],
-    FormApiArgs<T>[6],
-    FormApiArgs<T>[7],
-    FormApiArgs<T>[8],
-    FormApiArgs<T>[9],
-    FormApiArgs<T>[10],
-    FormApiArgs<T>[11]
-  >
-) {
+function useAppForm<T>(params: TFormOptions<T>) {
   const formRef = useRef<HTMLFormElement>(null)
   const form = useTanstackAppForm({
     ...params,
@@ -97,7 +81,7 @@ function useAppForm<T>(
 }
 
 function useFormContext<T>() {
-  return useUntypedFOrmContext() as unknown as ReturnType<
+  return useUntypedFormContext() as unknown as ReturnType<
     typeof useTanstackAppForm<
       FormApiArgs<T>[0],
       FormApiArgs<T>[1],

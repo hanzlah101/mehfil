@@ -39,9 +39,7 @@ export default defineSchema({
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
     guestArrival: v.optional(v.string()),
-    pax: v.optional(
-      v.union(v.object({ from: v.number(), to: v.number() }), v.number())
-    ),
+    pax: v.optional(v.union(v.number(), v.null())),
     hallCharges: v.number(),
     amountPaid: v.number(),
     discountedTotal: v.union(v.number(), v.null()),

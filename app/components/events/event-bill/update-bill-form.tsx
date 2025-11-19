@@ -82,8 +82,8 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
                   <NumberInput
                     placeholder="300"
                     disabled={isPending}
-                    value={field.state.value as number}
-                    onChange={(val) => field.handleChange(val!)}
+                    value={field.state.value}
+                    onChange={(val) => field.handleChange(val)}
                     onBlur={field.handleBlur}
                   />
                 </field.Control>

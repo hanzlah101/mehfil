@@ -4,7 +4,7 @@ import { useStore } from "@tanstack/react-form"
 import { Button } from "@/components/ui/button"
 import { RiAddLine, RiDeleteBin6Line } from "@remixicon/react"
 import { EMPTY_NUMBER } from "@/lib/constants"
-import { NumberInput } from "@/components//ui/number-input"
+import { NumberInput } from "@/components/ui/number-input"
 import type { MealSchema } from "@/validations/meals"
 
 export function MealItemsField({ fieldName }: { fieldName: string }) {
