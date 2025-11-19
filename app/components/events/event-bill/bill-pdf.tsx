@@ -191,12 +191,12 @@ const styles = StyleSheet.create({
   quantity: {
     width: "15%",
     textAlign: "center",
-    color: "##737373"
+    color: "#737373"
   },
   unitPrice: {
     width: "18%",
     textAlign: "right",
-    color: "##737373"
+    color: "#737373"
   },
   total: {
     width: "19%",
@@ -377,7 +377,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
               </Text>
             </View>
 
-            {event.pax && (
+            {typeof event.pax === "number" && (
               <View style={styles.detailItem}>
                 <View style={styles.iconWrapper}>
                   <UserIcon size={12} color="#6B7280" />

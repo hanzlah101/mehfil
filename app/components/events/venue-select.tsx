@@ -6,8 +6,8 @@ import { useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { Button } from "@/components/ui/button"
-import { RiCheckLine } from "@remixicon/react"
 import { useStore } from "@tanstack/react-form"
+import { RiArrowDownSLine, RiCheckLine, RiMapPinFill } from "@remixicon/react"
 import type { EventSchema } from "@/validations/events"
 import {
   Popover,
@@ -40,11 +40,10 @@ export function VenueSelect() {
           <Popover modal open={open} onOpenChange={setOpen}>
             <field.Control>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between px-3"
-                >
+                <Button variant="outline" className="w-full px-3">
+                  <RiMapPinFill className="text-muted-foreground opacity-50" />
                   {selectedVenue ? selectedVenue.name : "Pick a venue"}
+                  <RiArrowDownSLine className="ml-auto text-muted-foreground opacity-50" />
                 </Button>
               </PopoverTrigger>
             </field.Control>
@@ -70,6 +69,7 @@ export function VenueSelect() {
                         setOpen(false)
                       }}
                     >
+                      <RiMapPinFill className="text-muted-foreground opacity-50" />
                       {venue.name}
                       {venue._id === field.state.value && (
                         <RiCheckLine className="ml-auto" />

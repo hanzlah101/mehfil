@@ -7,8 +7,12 @@ import { Button } from "@/components/ui/button"
 import { useFormContext } from "@/hooks/form-hooks"
 import { useQuery } from "@tanstack/react-query"
 import { FieldControl } from "@/components/ui/field"
-import { RiCheckLine } from "@remixicon/react"
 import type { EventSchema } from "@/validations/events"
+import {
+  RiArrowDownSLine,
+  RiCheckLine,
+  RiRestaurantFill
+} from "@remixicon/react"
 import {
   Popover,
   PopoverTrigger,
@@ -37,13 +41,12 @@ export function MealSelect() {
           <Popover modal open={open} onOpenChange={setOpen}>
             <FieldControl>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between px-3"
-                >
+                <Button variant="outline" className="w-full px-3">
+                  <RiRestaurantFill className="text-muted-foreground opacity-50" />
                   {field.state.value
                     ? meals?.find((m) => m._id === field.state.value)?.title
                     : "Select meal"}
+                  <RiArrowDownSLine className="ml-auto text-muted-foreground opacity-50" />
                 </Button>
               </PopoverTrigger>
             </FieldControl>
@@ -74,6 +77,7 @@ export function MealSelect() {
                         setOpen(false)
                       }}
                     >
+                      <RiRestaurantFill className="text-muted-foreground opacity-50" />
                       {meal.title}
                       {meal._id === field.state.value && (
                         <RiCheckLine className="ml-auto" />

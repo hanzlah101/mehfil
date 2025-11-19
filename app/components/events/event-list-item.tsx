@@ -144,7 +144,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                 {format(event.endTime, "h:mm a")}
               </span>
             </div>
-            {event.pax && (
+            {typeof event.pax === "number" && (
               <div className="flex items-center gap-1.5 opacity-70">
                 <RiGroupFill className="size-3.5 text-muted-foreground" />
                 <span>{event.pax} guests</span>

@@ -55,14 +55,12 @@ export const updateEventBillSchema = baseEventSchema
   })
   .refine(
     (val) => {
-      if (typeof val.hallCharges !== "number" || val.hallCharges <= 0) {
-        return true
-      }
       const { grandTotal } = calculateBillTotals({
         hallCharges: val.hallCharges,
         meal: val.meal,
         discountedTotal: val.discountedTotal
       })
+      if (grandTotal <= 0) return true
       return val.amountPaid <= grandTotal
     },
     {
