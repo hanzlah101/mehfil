@@ -92,7 +92,7 @@ export function EventForm() {
         bookingDate: value.bookingDate.getTime(),
         startTime: value.startTime.getTime(),
         endTime: value.endTime.getTime()
-      } as Parameters<(typeof createEvent)[0]>
+      } as Parameters<typeof createEvent>[0]
 
       if (initialValues) {
         await updateEvent({ ...body, id: initialValues._id })

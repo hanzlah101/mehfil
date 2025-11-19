@@ -1,9 +1,7 @@
 import * as React from "react"
 import Fuse from "fuse.js"
 import { useEventFiltersStore } from "@/stores/use-event-filters"
-import type { Doc } from "@db/_generated/dataModel"
-
-type EventWithVenue = Doc<"events"> & { venue: Doc<"venues"> }
+import type { EventWithVenue } from "@/stores/use-event-modal"
 
 export function useFilteredEvents(events: EventWithVenue[]) {
   const search = useEventFiltersStore((s) => s.search)

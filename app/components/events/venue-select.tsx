@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { Button } from "@/components/ui/button"
-import { FieldControl } from "@/components/ui/field"
+import { RiCheckLine } from "@remixicon/react"
 import { useStore } from "@tanstack/react-form"
 import type { EventSchema } from "@/validations/events"
 import {
@@ -35,10 +35,10 @@ export function VenueSelect() {
     <form.AppField name="venueId">
       {(field) => (
         <field.Field>
-          <field.Label>Venue</field.Label>
+          <field.Label required>Venue</field.Label>
 
-          <Popover open={open} onOpenChange={setOpen}>
-            <FieldControl>
+          <Popover modal open={open} onOpenChange={setOpen}>
+            <field.Control>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -47,7 +47,7 @@ export function VenueSelect() {
                   {selectedVenue ? selectedVenue.name : "Pick a venue"}
                 </Button>
               </PopoverTrigger>
-            </FieldControl>
+            </field.Control>
 
             <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
               <Command>
@@ -58,7 +58,12 @@ export function VenueSelect() {
                   {venues.map((venue) => (
                     <CommandItem
                       key={venue._id}
-                      value={venue.name}
+                      keywords={[
+                        venue.name,
+                        venue.location,
+                        `${venue.capacity}`,
+                        `${venue.charges}`
+                      ].filter((k): k is string => !!k)}
                       onSelect={() => {
                         field.handleChange(venue._id)
                         form.setFieldValue("hallCharges", venue.charges)
@@ -66,6 +71,9 @@ export function VenueSelect() {
                       }}
                     >
                       {venue.name}
+                      {venue._id === field.state.value && (
+                        <RiCheckLine className="ml-auto" />
+                      )}
                     </CommandItem>
                   ))}
                 </CommandGroup>

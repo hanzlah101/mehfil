@@ -70,17 +70,6 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
 
   const isPending = useStore(form.store, (s) => s.isSubmitting)
 
-  const formValues = useStore(form.store, (s) => s.values)
-  const billTotals = useMemo(
-    () =>
-      calculateBillTotals({
-        hallCharges: formValues.hallCharges ?? 0,
-        meal: formValues.meal,
-        discountedTotal: formValues.discountedTotal
-      }),
-    [formValues.hallCharges, formValues.meal, formValues.discountedTotal]
-  )
-
   return (
     <form.Form>
       <form.Group>
@@ -166,86 +155,7 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
           )}
         </form.AppField>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-              Bill Summary
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <RiMoneyDollarCircleFill className="size-4" />
-                  <span>Hall Charges</span>
-                </div>
-                <span className="font-medium">
-                  {formatPrice(formValues.hallCharges ?? 0)}
-                </span>
-              </div>
-
-              {formValues.meal && formValues.meal.items.length > 0 && (
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <RiRestaurantFill className="size-4" />
-                    <span>Meal Items</span>
-                  </div>
-                  <div className="ml-6 space-y-1">
-                    {formValues.meal.items.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className="text-muted-foreground">
-                          {item.name} ({item.qty} {item.unit})
-                        </span>
-                        <span className="font-medium text-muted-foreground">
-                          {formatPrice(item.qty * item.unitPrice)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="border-t pt-2">
-                <div className="flex items-center justify-between text-sm font-medium">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(billTotals.subtotal)}</span>
-                </div>
-              </div>
-
-              {billTotals.discountAmount > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                    <RiPriceTag3Fill className="size-4" />
-                    <span>Discount ({billTotals.discountPercentage}% off)</span>
-                  </div>
-                  <span className="font-medium text-green-600 dark:text-green-400">
-                    -{formatPrice(billTotals.discountAmount)}
-                  </span>
-                </div>
-              )}
-
-              <div className="rounded-md border bg-muted/50 p-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold">Grand Total</span>
-                  <span className="text-lg font-bold">
-                    {formatPrice(billTotals.grandTotal)}
-                  </span>
-                </div>
-              </div>
-
-              <PaymentStatusAlert
-                hallCharges={formValues.hallCharges ?? 0}
-                meal={formValues.meal}
-                discountedTotal={formValues.discountedTotal}
-                amountPaid={formValues.amountPaid ?? 0}
-                variant="minimal"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <BillSummary />
 
         <div className="sticky bottom-0 z-10 w-full bg-background py-4">
           <Button type="submit" className="w-full" loading={isPending}>
@@ -268,5 +178,103 @@ function MealFields() {
       <MealSelect />
       {mealId && <MealItemsField fieldName="meal.items" />}
     </>
+  )
+}
+
+function BillSummary() {
+  const form = useFormContext<UpdateEventBillSchema>()
+
+  const formValues = useStore(form.store, (s) => s.values)
+  const billTotals = useMemo(
+    () =>
+      calculateBillTotals({
+        hallCharges: formValues.hallCharges ?? 0,
+        meal: formValues.meal,
+        discountedTotal: formValues.discountedTotal
+      }),
+    [formValues.hallCharges, formValues.meal, formValues.discountedTotal]
+  )
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Bill Summary
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <RiMoneyDollarCircleFill className="size-4" />
+              <span>Hall Charges</span>
+            </div>
+            <span className="font-medium">
+              {formatPrice(formValues.hallCharges ?? 0)}
+            </span>
+          </div>
+
+          {formValues.meal && formValues.meal.items.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <RiRestaurantFill className="size-4" />
+                <span>Meal Items</span>
+              </div>
+              <div className="ml-6 space-y-1">
+                {formValues.meal.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-muted-foreground">
+                      {item.name} ({item.qty} {item.unit})
+                    </span>
+                    <span className="font-medium text-muted-foreground">
+                      {formatPrice(item.qty * item.unitPrice)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="border-t pt-2">
+            <div className="flex items-center justify-between text-sm font-medium">
+              <span>Subtotal</span>
+              <span>{formatPrice(billTotals.subtotal)}</span>
+            </div>
+          </div>
+
+          {billTotals.discountAmount > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                <RiPriceTag3Fill className="size-4" />
+                <span>Discount ({billTotals.discountPercentage}% off)</span>
+              </div>
+              <span className="font-medium text-green-600 dark:text-green-400">
+                -{formatPrice(billTotals.discountAmount)}
+              </span>
+            </div>
+          )}
+
+          <div className="rounded-md border bg-muted/50 p-2">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold">Grand Total</span>
+              <span className="text-lg font-bold">
+                {formatPrice(billTotals.grandTotal)}
+              </span>
+            </div>
+          </div>
+
+          <PaymentStatusAlert
+            hallCharges={formValues.hallCharges ?? 0}
+            meal={formValues.meal}
+            discountedTotal={formValues.discountedTotal}
+            amountPaid={formValues.amountPaid ?? 0}
+            variant="minimal"
+          />
+        </div>
+      </CardContent>
+    </Card>
   )
 }

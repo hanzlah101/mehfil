@@ -23,7 +23,10 @@ const eventSchema = _eventSchema
     bookingDate: z.number(),
     startTime: z.number(),
     endTime: z.number(),
-    meal: mealSchema.pick({ items: true }).safeExtend({ mealId: zid("meals") })
+    meal: mealSchema
+      .pick({ items: true })
+      .safeExtend({ mealId: zid("meals") })
+      .optional()
   })
 
 export const create = zm({

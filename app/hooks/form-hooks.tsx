@@ -97,9 +97,21 @@ function useAppForm<T>(
 }
 
 function useFormContext<T>() {
-  return useUntypedFOrmContext() as unknown as Omit<
-    ReturnType<typeof useAppForm<T>>,
-    "Form"
+  return useUntypedFOrmContext() as unknown as ReturnType<
+    typeof useTanstackAppForm<
+      FormApiArgs<T>[0],
+      FormApiArgs<T>[1],
+      FormApiArgs<T>[2],
+      FormApiArgs<T>[3],
+      FormApiArgs<T>[4],
+      FormApiArgs<T>[5],
+      FormApiArgs<T>[6],
+      FormApiArgs<T>[7],
+      FormApiArgs<T>[8],
+      FormApiArgs<T>[9],
+      FormApiArgs<T>[10],
+      FormApiArgs<T>[11]
+    >
   >
 }
 

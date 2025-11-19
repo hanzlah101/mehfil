@@ -10,7 +10,8 @@
     "lint": "eslint app/",
     "format": "prettier --write app/",
     "start": "react-router-serve ./build/server/index.js --port 3000",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc --noEmit",
+    "deploy": "bun run typecheck && bun run lint && bun run build && firebase deploy"
   },
   "dependencies": {
     "@convex-dev/better-auth": "^0.9.6",

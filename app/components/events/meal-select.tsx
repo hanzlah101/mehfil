@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { useFormContext } from "@/hooks/form-hooks"
 import { useQuery } from "@tanstack/react-query"
 import { FieldControl } from "@/components/ui/field"
+import { RiCheckLine } from "@remixicon/react"
 import type { EventSchema } from "@/validations/events"
 import {
   Popover,
@@ -33,7 +34,7 @@ export function MealSelect() {
         <field.Field>
           <field.Label>Meal</field.Label>
 
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover modal open={open} onOpenChange={setOpen}>
             <FieldControl>
               <PopoverTrigger asChild>
                 <Button
@@ -72,6 +73,9 @@ export function MealSelect() {
                       }}
                     >
                       {meal.title}
+                      {meal._id === field.state.value && (
+                        <RiCheckLine className="ml-auto" />
+                      )}
                     </CommandItem>
                   ))}
                 </CommandGroup>

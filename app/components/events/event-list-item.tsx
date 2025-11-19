@@ -54,37 +54,28 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
   const { subtotal, grandTotal, discountAmount: discount } = billTotals
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="w-full [&_svg]:shrink-0"
+    >
       <div className="rounded-lg border bg-card">
         <div className="space-y-3 p-4">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-lg leading-tight font-semibold">
-                  {event.title}
-                </h3>
-                <span
-                  className={cn(
-                    "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                    event.type === "booking"
-                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                  )}
-                >
-                  {event.type === "booking" ? "Booking" : "Reservation"}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 text-sm opacity-70">
-                <RiMapPinFill className="size-3.5 text-muted-foreground" />
-                <span>{event.venue.name}</span>
-                {event.venue.location && (
-                  <>
-                    <span className="opacity-50">•</span>
-                    <span>{event.venue.location}</span>
-                  </>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg leading-tight font-semibold">
+                {event.title}
+              </h3>
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  event.type === "booking"
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                    : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
                 )}
-              </div>
+              >
+                {event.type === "booking" ? "Booking" : "Reservation"}
+              </span>
             </div>
 
             <div className="flex items-center gap-1">
@@ -134,6 +125,14 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <div className="flex items-center gap-1.5 text-sm opacity-70">
+              <RiMapPinFill className="size-3.5 text-muted-foreground" />
+              <span>
+                {event.venue.name}
+                {event.venue.location && ` • ${event.venue.location}`}
+              </span>
+            </div>
+
             <div className="flex items-center gap-1.5 opacity-70">
               <RiCalendarFill className="size-3.5 text-muted-foreground" />
               <span>{format(event.startTime, DAY_DATE_FORMAT)}</span>
