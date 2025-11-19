@@ -1,5 +1,6 @@
 import { useRef } from "react"
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form"
+import type { FormApiArgs, TFormOptions } from "@/lib/types"
 import {
   Form as CoreForm,
   Field,
@@ -12,16 +13,19 @@ import {
   FieldContent,
   FieldGroup
 } from "@/components/ui/field"
-import type {
-  FormAsyncValidateOrFn,
-  FormOptions,
-  FormValidateOrFn
-} from "@tanstack/react-form"
 
-const { useFieldContext, useFormContext, fieldContext, formContext } =
-  createFormHookContexts()
+const {
+  useFieldContext,
+  useFormContext: useUntypedFormContext,
+  fieldContext,
+  formContext
+} = createFormHookContexts()
 
-const { useAppForm: useTanstackAppForm, withForm } = createFormHook({
+const {
+  useAppForm: useTanstackAppForm,
+  withForm,
+  withFieldGroup
+} = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {
@@ -44,35 +48,7 @@ const { useAppForm: useTanstackAppForm, withForm } = createFormHook({
 
 type Inputs = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 
-function useAppForm<
-  TFormData,
-  TOnMount extends FormValidateOrFn<TFormData> | undefined,
-  TOnChange extends FormValidateOrFn<TFormData> | undefined,
-  TOnChangeAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnBlur extends FormValidateOrFn<TFormData> | undefined,
-  TOnBlurAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnSubmit extends FormValidateOrFn<TFormData> | undefined,
-  TOnSubmitAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnDynamic extends FormValidateOrFn<TFormData> | undefined,
-  TOnDynamicAsync extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TOnServer extends FormAsyncValidateOrFn<TFormData> | undefined,
-  TSubmitMeta = never
->(
-  params: FormOptions<
-    TFormData,
-    TOnMount,
-    TOnChange,
-    TOnChangeAsync,
-    TOnBlur,
-    TOnBlurAsync,
-    TOnSubmit,
-    TOnSubmitAsync,
-    TOnDynamic,
-    TOnDynamicAsync,
-    TOnServer,
-    TSubmitMeta
-  >
-) {
+function useAppForm<T>(params: TFormOptions<T>) {
   const formRef = useRef<HTMLFormElement>(null)
   const form = useTanstackAppForm({
     ...params,
@@ -82,7 +58,7 @@ function useAppForm<
       const inputs = formRef.current.querySelectorAll<Inputs>(
         "input, textarea, select"
       )
-      let firstInput: Inputs | undefined
+      let firstInput: Inputs | undefined = undefined
       for (const input of inputs) {
         if (!!errMap?.[input.name]) {
           firstInput = input
@@ -104,4 +80,23 @@ function useAppForm<
   return { ...form, Form }
 }
 
-export { useAppForm, withForm, useFieldContext, useFormContext }
+function useFormContext<T>() {
+  return useUntypedFormContext() as unknown as ReturnType<
+    typeof useTanstackAppForm<
+      FormApiArgs<T>[0],
+      FormApiArgs<T>[1],
+      FormApiArgs<T>[2],
+      FormApiArgs<T>[3],
+      FormApiArgs<T>[4],
+      FormApiArgs<T>[5],
+      FormApiArgs<T>[6],
+      FormApiArgs<T>[7],
+      FormApiArgs<T>[8],
+      FormApiArgs<T>[9],
+      FormApiArgs<T>[10],
+      FormApiArgs<T>[11]
+    >
+  >
+}
+
+export { useAppForm, withForm, withFieldGroup, useFieldContext, useFormContext }

@@ -4,6 +4,7 @@ import { RiCalendar2Fill } from "@remixicon/react"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { FieldControl } from "@/components/ui/field"
+import { DAY_DATE_FORMAT } from "@/lib/constants"
 import {
   Popover,
   PopoverContent,
@@ -31,7 +32,7 @@ export function DatePicker({
               !value && "text-muted-foreground"
             )}
           >
-            {value ? format(value, "PPP") : <span>Pick a date</span>}
+            {value ? format(value, DAY_DATE_FORMAT) : <span>Pick a date</span>}
             <RiCalendar2Fill className="ml-auto opacity-50" />
           </Button>
         </FieldControl>

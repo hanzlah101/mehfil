@@ -44,8 +44,8 @@ export function VenueForm() {
     },
     defaultValues: {
       name: initialValues?.name ?? "",
-      capacity: (initialValues?.capacity ?? null) as number,
-      charges: (initialValues?.charges ?? null) as number,
+      capacity: initialValues?.capacity as number,
+      charges: initialValues?.charges as number,
       location: initialValues?.location ?? "",
       color: initialValues?.color ?? VENUE_COLORS[0]
     } satisfies VenueSchema as VenueSchema,
@@ -111,7 +111,7 @@ export function VenueForm() {
                 <NumberInput
                   min={1}
                   inputMode="numeric"
-                  placeholder="55000"
+                  placeholder="55,000"
                   disabled={isPending}
                   value={field.state.value}
                   onBlur={field.handleBlur}

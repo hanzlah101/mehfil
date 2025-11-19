@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+---
+
+- `TypeScript strict`: `tsconfig.json` keeps `strict: true`, `verbatimModuleSyntax`, and path aliases (`@/*`, `@db/*`) so every module resolves with full type safety.
+- `Lint-first workflow`: `eslint.config.ts` enforces React + Hooks rules, consistent type-only imports, and treats unused identifiers as errors unless they’re prefixed with `_`.
+- `Prettier + Tailwind order`: `prettier.config.mjs` runs `prettier-plugin-tailwindcss` with project-specific utility lists to auto-sort classes and keep CSS atomic.
+- `Design system primitives`: reusable, accessible UI lives in `app/components/ui/*`, built on Radix primitives, `class-variance-authority`, and `tailwind-merge` to keep variants declarative.
+- `Domain-scoped modules`: features such as events, meals, staff, and venues each keep their forms, dialogs, and lists under `app/components/<feature>` plus matching Zustand stores in `app/stores`.
+- `Schema-driven forms`: Zod schemas in `app/validations/*` pair with `@tanstack/react-form` hooks (`app/hooks/form-hooks.tsx`) so validation, defaults, and submission share a single source of truth.
+- `Auth + data providers`: `app/providers/convex-provider.tsx` composes Convex, BetterAuth, and React Query clients with toast-based error handling, ensuring every screen shares caching + auth state.
+- `Utility-first helpers`: cross-cutting helpers in `app/lib/*` (`cn`, date formatters, permissions, constants) centralize business rules so components stay presentational.

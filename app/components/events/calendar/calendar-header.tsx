@@ -40,8 +40,8 @@ export function CalendarHeader() {
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-1 items-center gap-6 not-md:flex-row-reverse not-md:justify-between">
-        <ButtonGroup className="divide-x divide-background">
+      <div className="flex flex-1 gap-6 not-md:flex-col-reverse md:items-center">
+        <ButtonGroup className="divide-x divide-background not-md:w-full">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -60,6 +60,7 @@ export function CalendarHeader() {
           <Button
             size="sm"
             variant="secondary"
+            className="not-md:flex-1"
             onClick={() => setCurrentMonth(null)}
           >
             Today

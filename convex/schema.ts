@@ -1,9 +1,21 @@
 import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
 
+const mealItemsSchema = v.array(
+  v.object({
+    name: v.string(),
+    unit: v.string(),
+    qty: v.number(),
+    unitPrice: v.number()
+  })
+)
+
 export default defineSchema({
   tenants: defineTable({
     name: v.string(),
+    mail: v.optional(v.string()),
+    managerPhone: v.optional(v.string()),
+    complainPhone: v.optional(v.string()),
     updatedAt: v.optional(v.number())
   }),
   venues: defineTable({
@@ -27,24 +39,15 @@ export default defineSchema({
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
     guestArrival: v.optional(v.string()),
-    pax: v.optional(
-      v.union(v.object({ from: v.number(), to: v.number() }), v.number())
-    ),
+    pax: v.optional(v.union(v.number(), v.null())),
     hallCharges: v.number(),
-    discountedAmt: v.union(v.number(), v.null()),
+    amountPaid: v.number(),
+    discountedTotal: v.union(v.number(), v.null()),
     withFood: v.boolean(),
     meal: v.optional(
       v.object({
-        title: v.string(),
-        items: v.array(
-          v.object({
-            name: v.string(),
-            unit: v.string(),
-            qty: v.number(),
-            unitPrice: v.number(),
-            discountedPrice: v.optional(v.number())
-          })
-        )
+        mealId: v.id("meals"),
+        items: mealItemsSchema
       })
     ),
     tenantId: v.id("tenants"),
@@ -61,13 +64,9 @@ export default defineSchema({
     ]),
   meals: defineTable({
     title: v.string(),
-    items: v.array(
-      v.object({
-        name: v.string(),
-        unit: v.string(),
-        qty: v.number(),
-        unitPrice: v.number()
-      })
-    )
-  })
+    items: mealItemsSchema,
+    tenantId: v.id("tenants"),
+    updatedAt: v.optional(v.number()),
+    deletedAt: v.union(v.null(), v.number())
+  }).index("by_tenantId", ["tenantId", "deletedAt"])
 })

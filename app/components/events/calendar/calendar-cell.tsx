@@ -4,9 +4,8 @@ import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { useEventModal } from "@/stores/use-event-modal"
+import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
 import { EVENT_COLOR_CLASSES, getEventColorStyles } from "@/lib/colors"
-import type { Doc } from "@db/_generated/dataModel"
 
 const colStartClasses = [
   "",
@@ -27,7 +26,7 @@ export function CalendarCell({
 }: {
   day: Date
   index: number
-  events: (Doc<"events"> & { venue: Doc<"venues"> })[]
+  events: EventWithVenue[]
 }) {
   const isMobile = useIsMobile()
   const { currentMonth } = useCurrentMonth()

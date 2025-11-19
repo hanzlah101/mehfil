@@ -1,7 +1,11 @@
 import { create } from "zustand"
 import type { Doc } from "@db/_generated/dataModel"
 
-type ModalType = "create" | "update" | "delete"
+type ModalType = "create" | "update" | "delete" | "print-bill"
+export type EventWithVenue = Doc<"events"> & {
+  mealName: string | null
+  venue: Doc<"venues">
+}
 
 /**
  * Custom conditional args for event modal:
@@ -10,13 +14,13 @@ type ModalType = "create" | "update" | "delete"
  */
 type EventArgs =
   | [type: "create", date: Date]
-  | [type: Exclude<ModalType, "create">, event: Doc<"events">]
+  | [type: Exclude<ModalType, "create">, event: EventWithVenue]
 
 type EventModalStore = {
   isOpen: boolean
   type?: ModalType
   date: Date | null
-  event?: Doc<"events">
+  event?: EventWithVenue
   onOpen: (...args: EventArgs) => void
   onClose: () => void
 }
@@ -33,7 +37,7 @@ export const useEventModal = create<EventModalStore>((set) => ({
       set({
         isOpen: true,
         type,
-        event: payload as Doc<"events">,
+        event: payload,
         date: null
       })
     }

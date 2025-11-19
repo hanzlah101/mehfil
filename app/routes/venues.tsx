@@ -13,16 +13,14 @@ export function meta() {
 
 export default function Venues() {
   return (
-    <>
-      <Protected perm="read:venues">
-        <VenuesList />
-      </Protected>
+    <Protected perm="read:venues">
+      <VenuesList />
       <Protected operator="or" perm={["create:venue", "update:venue"]}>
         <VenueModal />
       </Protected>
       <Protected perm="delete:venue">
         <DeleteVenueDialog />
       </Protected>
-    </>
+    </Protected>
   )
 }

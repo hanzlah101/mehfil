@@ -18,6 +18,7 @@ export default defineConfig([
     },
     rules: {
       "react/react-in-jsx-scope": "off",
+      "react-hooks/incompatible-library": "off",
       "react/prop-types": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",

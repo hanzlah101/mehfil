@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useMemo } from "react"
 import { format } from "date-fns"
 import {
   RiCalendarFill,
@@ -12,16 +13,20 @@ import {
   RiDeleteBinFill,
   RiRestaurantFill,
   RiCalendarCheckFill,
-  RiArrowDownSLine
+  RiArrowDownSLine,
+  RiMoneyDollarCircleFill,
+  RiPriceTag3Fill,
+  RiPrinterFill
 } from "@remixicon/react"
 
-import { cn } from "@/lib/utils"
+import { cn, formatPrice, calculateBillTotals } from "@/lib/utils"
 import { Protected } from "@/components/protected"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useEventModal } from "@/stores/use-event-modal"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/copy-button"
-import type { Doc } from "@db/_generated/dataModel"
+import { DAY_DATE_FORMAT } from "@/lib/constants"
+import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
+import { PaymentStatusAlert } from "@/components/events/event-bill/payment-status-alert"
 import {
   Tooltip,
   TooltipContent,
@@ -33,104 +38,116 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 
-type EventWithVenue = Doc<"events"> & { venue: Doc<"venues"> }
-
 export function EventListItem({ event }: { event: EventWithVenue }) {
   const openEventModal = useEventModal((s) => s.onOpen)
   const [isOpen, setIsOpen] = React.useState(false)
 
-  const startTime = new Date(event.startTime)
-  const endTime = new Date(event.endTime)
-  const bookingDate = new Date(event.bookingDate)
+  const billTotals = useMemo(
+    () =>
+      calculateBillTotals({
+        hallCharges: event.hallCharges,
+        meal: event.meal,
+        discountedTotal: event.discountedTotal
+      }),
+    [event.hallCharges, event.meal, event.discountedTotal]
+  )
+  const { subtotal, grandTotal, discountAmount: discount } = billTotals
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="w-full [&_svg]:shrink-0"
+    >
       <div className="rounded-lg border bg-card">
         <div className="space-y-3 p-4">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex-1 space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-lg leading-tight font-semibold">
-                  {event.title}
-                </h3>
-                <span
-                  className={cn(
-                    "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                    event.type === "booking"
-                      ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
-                  )}
-                >
-                  {event.type === "booking" ? "Booking" : "Reservation"}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 text-sm opacity-70">
-                <RiMapPinFill className="size-3.5 text-muted-foreground" />
-                <span>{event.venue.name}</span>
-                {event.venue.location && (
-                  <>
-                    <span className="opacity-50">•</span>
-                    <span>{event.venue.location}</span>
-                  </>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-lg leading-tight font-semibold">
+                {event.title}
+              </h3>
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  event.type === "booking"
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                    : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
                 )}
-              </div>
+              >
+                {event.type === "booking" ? "Booking" : "Reservation"}
+              </span>
             </div>
 
-            <Protected perm={["update:event", "delete:event"]} operator="or">
-              <div className="flex items-center gap-1">
-                <Protected perm="update:event">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="secondary"
-                        onClick={() => openEventModal("update", event)}
-                      >
-                        <RiEdit2Fill className="size-3.5 text-muted-foreground" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Edit Event</TooltipContent>
-                  </Tooltip>
-                </Protected>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon-sm"
+                    variant="secondary"
+                    onClick={() => openEventModal("print-bill", event)}
+                  >
+                    <RiPrinterFill className="size-3.5 text-muted-foreground" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Print Bill</TooltipContent>
+              </Tooltip>
 
-                <Protected perm="delete:event">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon-sm"
-                        variant="destructive"
-                        onClick={() => openEventModal("delete", event)}
-                      >
-                        <RiDeleteBinFill className="size-3.5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Delete Event</TooltipContent>
-                  </Tooltip>
-                </Protected>
-              </div>
-            </Protected>
+              <Protected perm="update:event">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="secondary"
+                      onClick={() => openEventModal("update", event)}
+                    >
+                      <RiEdit2Fill className="size-3.5 text-muted-foreground" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit Event</TooltipContent>
+                </Tooltip>
+              </Protected>
+
+              <Protected perm="delete:event">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon-sm"
+                      variant="destructive"
+                      onClick={() => openEventModal("delete", event)}
+                    >
+                      <RiDeleteBinFill className="size-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Delete Event</TooltipContent>
+                </Tooltip>
+              </Protected>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            <div className="flex items-center gap-1.5 text-sm opacity-70">
+              <RiMapPinFill className="size-3.5 text-muted-foreground" />
+              <span>
+                {event.venue.name}
+                {event.venue.location && ` • ${event.venue.location}`}
+              </span>
+            </div>
+
             <div className="flex items-center gap-1.5 opacity-70">
               <RiCalendarFill className="size-3.5 text-muted-foreground" />
-              <span>{format(startTime, "MMM d, yyyy")}</span>
+              <span>{format(event.startTime, DAY_DATE_FORMAT)}</span>
             </div>
             <div className="flex items-center gap-1.5 opacity-70">
               <RiTimeFill className="size-3.5 text-muted-foreground" />
               <span>
-                {format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
+                {format(event.startTime, "h:mm a")} -{" "}
+                {format(event.endTime, "h:mm a")}
               </span>
             </div>
-            {event.pax && (
+            {typeof event.pax === "number" && (
               <div className="flex items-center gap-1.5 opacity-70">
                 <RiGroupFill className="size-3.5 text-muted-foreground" />
-                <span>
-                  {typeof event.pax === "number"
-                    ? `${event.pax} guests`
-                    : `${event.pax.from}-${event.pax.to} guests`}
-                </span>
+                <span>{event.pax} guests</span>
               </div>
             )}
           </div>
@@ -153,7 +170,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             <div className="flex items-center gap-1.5 text-sm opacity-70">
               <RiCalendarCheckFill className="size-3.5 text-muted-foreground" />
               <span className="font-medium">Booked on:</span>
-              <span>{format(bookingDate, "MMM d, yyyy")}</span>
+              <span>{format(event.bookingDate, DAY_DATE_FORMAT)}</span>
             </div>
 
             {event.guestArrival && (
@@ -168,6 +185,92 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
               <RiRestaurantFill className="size-3.5 text-muted-foreground" />
               <span className="font-medium">Food Service:</span>
               <span>{event.withFood ? "Yes" : "No"}</span>
+            </div>
+
+            <div className="space-y-3 rounded-md border bg-muted/30 p-3">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                Billing Summary
+              </p>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1.5 opacity-70">
+                    <RiMoneyDollarCircleFill className="size-3.5 text-muted-foreground" />
+                    <span>Hall Charges</span>
+                  </div>
+                  <span className="font-medium opacity-70">
+                    {formatPrice(event.hallCharges)}
+                  </span>
+                </div>
+
+                {event.meal && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-sm opacity-70">
+                      <RiRestaurantFill className="size-3.5 text-muted-foreground" />
+                      <span>{event.mealName || "Meal Items"}</span>
+                    </div>
+                    <div className="ml-5 space-y-1">
+                      {event.meal.items.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="opacity-60">
+                            {item.name} ({item.qty} {item.unit})
+                          </span>
+                          <span className="font-medium opacity-60">
+                            {formatPrice(item.qty * item.unitPrice)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="border-t pt-2">
+                  <div className="flex items-center justify-between text-sm font-medium">
+                    <span>Subtotal</span>
+                    <span>{formatPrice(subtotal)}</span>
+                  </div>
+                </div>
+
+                {discount > 0 && (
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                      <RiPriceTag3Fill className="size-3.5" />
+                      <span>Discount</span>
+                    </div>
+                    <span className="font-medium text-green-600 dark:text-green-400">
+                      -{formatPrice(discount)}
+                    </span>
+                  </div>
+                )}
+
+                <div className="rounded-md border bg-background/50 p-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Grand Total</span>
+                    <span className="text-lg font-bold">
+                      {formatPrice(grandTotal)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="opacity-70">Amount Paid</span>
+                    <span className="font-medium opacity-70">
+                      {formatPrice(event.amountPaid)}
+                    </span>
+                  </div>
+                  <PaymentStatusAlert
+                    hallCharges={event.hallCharges}
+                    meal={event.meal}
+                    discountedTotal={event.discountedTotal}
+                    amountPaid={event.amountPaid}
+                    variant="minimal"
+                  />
+                </div>
+              </div>
             </div>
 
             {(event.customerName ||
