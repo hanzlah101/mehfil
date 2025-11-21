@@ -10,6 +10,8 @@ import { EMPTY_NUMBER } from "@/lib/constants"
 import { useAppForm, useFormContext } from "@/hooks/form-hooks"
 import { MealSelect } from "@/components/events/meal-select"
 import { MealItemsField } from "@/components/meals/meal-items-field"
+import { AddonSelect } from "@/components/events/addon-select"
+import { AddonItemsField } from "@/components/events/addon-items-field"
 import { getDirtyValues, calculateBillTotals, formatPrice } from "@/lib/utils"
 import { useQuery } from "@tanstack/react-query"
 import { convexQuery } from "@convex-dev/react-query"
@@ -20,9 +22,9 @@ import {
   type UpdateEventBillSchema
 } from "@/validations/events"
 import {
-  RiMoneyDollarCircleFill,
   RiRestaurantFill,
-  RiPriceTag3Fill
+  RiPriceTag3Fill,
+  RiStarFill
 } from "@remixicon/react"
 
 export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
@@ -48,7 +50,7 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
     defaultValues: {
       discountedTotal: event?.discountedTotal ?? null,
       meal: event?.meal,
-      hallCharges: event?.hallCharges ?? EMPTY_NUMBER,
+      addons: event?.addons,
       pax: event?.pax ?? EMPTY_NUMBER,
       amountPaid: event?.amountPaid ?? 0
     } satisfies UpdateEventBillSchema as UpdateEventBillSchema,
@@ -73,45 +75,25 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
   return (
     <form.Form>
       <form.Group>
-        <div className="grid items-start gap-6 md:grid-cols-2">
-          <form.AppField name="pax">
-            {(field) => (
-              <field.Field>
-                <field.Label>PAX</field.Label>
-                <field.Control>
-                  <NumberInput
-                    placeholder="300"
-                    disabled={isPending}
-                    value={field.state.value}
-                    onChange={(val) => field.handleChange(val)}
-                    onBlur={field.handleBlur}
-                  />
-                </field.Control>
-                <field.Error />
-              </field.Field>
-            )}
-          </form.AppField>
+        <form.AppField name="pax">
+          {(field) => (
+            <field.Field>
+              <field.Label>PAX</field.Label>
+              <field.Control>
+                <NumberInput
+                  placeholder="300"
+                  disabled={isPending}
+                  value={field.state.value}
+                  onChange={(val) => field.handleChange(val)}
+                  onBlur={field.handleBlur}
+                />
+              </field.Control>
+              <field.Error />
+            </field.Field>
+          )}
+        </form.AppField>
 
-          <form.AppField name="hallCharges">
-            {(field) => (
-              <field.Field>
-                <field.Label required>Hall Charges</field.Label>
-                <field.Control>
-                  <NumberInput
-                    min={1}
-                    inputMode="numeric"
-                    placeholder="55,000"
-                    disabled={isPending}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(value) => field.handleChange(value as number)}
-                  />
-                </field.Control>
-                <field.Error />
-              </field.Field>
-            )}
-          </form.AppField>
-        </div>
+        <AddonFields />
 
         <MealFields />
 
@@ -167,6 +149,18 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
   )
 }
 
+function AddonFields() {
+  const form = useFormContext<UpdateEventBillSchema>()
+  const addons = useStore(form.store, (s) => s.values.addons)
+
+  return (
+    <>
+      <AddonSelect />
+      {addons && addons.length > 0 && <AddonItemsField fieldName="addons" />}
+    </>
+  )
+}
+
 function MealFields() {
   const form = useFormContext<UpdateEventBillSchema>()
   const [mealId] = useStore(form.store, (s) => [s.values.meal?.mealId])
@@ -188,11 +182,11 @@ function BillSummary() {
   const billTotals = useMemo(
     () =>
       calculateBillTotals({
-        hallCharges: formValues.hallCharges ?? 0,
         meal: formValues.meal,
+        addons: formValues.addons,
         discountedTotal: formValues.discountedTotal
       }),
-    [formValues.hallCharges, formValues.meal, formValues.discountedTotal]
+    [formValues.meal, formValues.addons, formValues.discountedTotal]
   )
 
   return (
@@ -204,15 +198,29 @@ function BillSummary() {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <RiMoneyDollarCircleFill className="size-4" />
-              <span>Hall Charges</span>
+          {formValues.addons && formValues.addons.length > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <RiStarFill className="size-4" />
+                <span>Addons</span>
+              </div>
+              <div className="ml-6 space-y-1">
+                {formValues.addons.map((addon, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-muted-foreground">
+                      {addon.name} ({addon.qty} {addon.unit})
+                    </span>
+                    <span className="font-medium text-muted-foreground">
+                      {formatPrice(addon.qty * addon.unitPrice)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <span className="font-medium">
-              {formatPrice(formValues.hallCharges ?? 0)}
-            </span>
-          </div>
+          )}
 
           {formValues.meal && formValues.meal.items.length > 0 && (
             <div className="space-y-1.5">
@@ -267,8 +275,8 @@ function BillSummary() {
           </div>
 
           <PaymentStatusAlert
-            hallCharges={formValues.hallCharges ?? 0}
             meal={formValues.meal}
+            addons={formValues.addons}
             discountedTotal={formValues.discountedTotal}
             amountPaid={formValues.amountPaid ?? 0}
             variant="minimal"

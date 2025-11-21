@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as addons from "../addons.js";
 import type * as auth__generated_api from "../auth/_generated/api.js";
 import type * as auth__generated_server from "../auth/_generated/server.js";
 import type * as auth_adapter from "../auth/adapter.js";
@@ -37,6 +38,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  addons: typeof addons;
   "auth/_generated/api": typeof auth__generated_api;
   "auth/_generated/server": typeof auth__generated_server;
   "auth/adapter": typeof auth_adapter;
@@ -82,6 +84,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -91,6 +94,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -608,6 +614,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -617,6 +624,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -857,6 +867,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -866,6 +877,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -1099,6 +1113,9 @@ export declare const components: {
             | "create:meal"
             | "update:meal"
             | "delete:meal"
+            | "create:addon"
+            | "update:addon"
+            | "delete:addon"
           >;
           tenantId: string;
         },
@@ -1129,6 +1146,9 @@ export declare const components: {
             | "create:meal"
             | "update:meal"
             | "delete:meal"
+            | "create:addon"
+            | "update:addon"
+            | "delete:addon"
           >;
           tenantId: string;
         },

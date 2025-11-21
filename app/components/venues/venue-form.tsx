@@ -45,7 +45,6 @@ export function VenueForm() {
     defaultValues: {
       name: initialValues?.name ?? "",
       capacity: initialValues?.capacity as number,
-      charges: initialValues?.charges as number,
       location: initialValues?.location ?? "",
       color: initialValues?.color ?? VENUE_COLORS[0]
     } satisfies VenueSchema as VenueSchema,
@@ -98,27 +97,6 @@ export function VenueForm() {
                   onChange={(value) => field.handleChange(value as number)}
                 />
               </field.Control>
-              <field.Error />
-            </field.Field>
-          )}
-        </form.AppField>
-
-        <form.AppField name="charges">
-          {(field) => (
-            <field.Field>
-              <field.Label required>Charges</field.Label>
-              <field.Control>
-                <NumberInput
-                  min={1}
-                  inputMode="numeric"
-                  placeholder="55,000"
-                  disabled={isPending}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(value) => field.handleChange(value as number)}
-                />
-              </field.Control>
-              <field.Description>Hall charges for the event</field.Description>
               <field.Error />
             </field.Field>
           )}

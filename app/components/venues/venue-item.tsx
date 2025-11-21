@@ -1,4 +1,4 @@
-import { cn, formatPrice } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { useVenueModal } from "@/stores/use-venue-modal"
@@ -14,8 +14,7 @@ import {
   RiDeleteBinFill,
   RiEdit2Fill,
   RiGroupLine,
-  RiMapPinLine,
-  RiMoneyDollarCircleLine
+  RiMapPinLine
 } from "@remixicon/react"
 
 const btnClasses =
@@ -36,10 +35,6 @@ export function VenueItem(venue: Doc<"venues">) {
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-lg font-semibold">{venue.name}</h3>
-        <div className="flex items-center gap-1.5 rounded-md bg-black/5 px-2 py-1 text-sm font-medium dark:bg-white/5">
-          <RiMoneyDollarCircleLine className="size-4" />
-          <span>{formatPrice(venue.charges)}</span>
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">

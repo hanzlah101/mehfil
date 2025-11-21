@@ -10,6 +10,7 @@ export default [
     index("routes/events.tsx"),
     route("venues", "routes/venues.tsx"),
     route("staff", "routes/staff.tsx"),
-    route("meals", "routes/meals.tsx")
+    route("meals", "routes/meals.tsx"),
+    route("addons", "routes/addons.tsx")
   ])
 ] satisfies RouteConfig

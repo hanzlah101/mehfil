@@ -2,6 +2,7 @@ import { z } from "zod"
 import { isAfter } from "date-fns"
 import { dateSchema, emailSchema } from "@/validations/_utils"
 import { mealSchema } from "./meals"
+import { addonSchema } from "./addons"
 import { calculateBillTotals } from "@/lib/utils"
 
 const baseEventSchema = z.object({
@@ -17,12 +18,6 @@ const baseEventSchema = z.object({
   customerPhone: z.string().optional(),
   pax: z.int("Invalid Pax").positive("Pax must be greater than 0").nullable(),
   withFood: z.boolean(),
-  hallCharges: z
-    .number({
-      error: ({ code }) =>
-        code === "invalid_type" ? "Please enter valid charges" : undefined
-    })
-    .nonnegative("Hall charges cannot be negative"),
   amountPaid: z.number().nonnegative("Amount paid cannot be negative").catch(0),
   discountedTotal: z
     .number()
@@ -32,6 +27,7 @@ const baseEventSchema = z.object({
     .pick({ items: true })
     .extend({ mealId: z.string() })
     .optional(),
+  addons: z.array(addonSchema.extend({ _id: z.string().optional() })).optional(),
   venueId: z.string().min(1, "Please select a venue")
 })
 
@@ -49,15 +45,15 @@ export const updateEventBillSchema = baseEventSchema
   .pick({
     discountedTotal: true,
     meal: true,
-    hallCharges: true,
+    addons: true,
     pax: true,
     amountPaid: true
   })
   .refine(
     (val) => {
       const { grandTotal } = calculateBillTotals({
-        hallCharges: val.hallCharges,
         meal: val.meal,
+        addons: val.addons,
         discountedTotal: val.discountedTotal
       })
       if (grandTotal <= 0) return true

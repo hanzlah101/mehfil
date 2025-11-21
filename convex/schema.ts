@@ -10,6 +10,13 @@ const mealItemsSchema = v.array(
   })
 )
 
+const addonFields = v.object({
+  name: v.string(),
+  unit: v.string(),
+  qty: v.number(),
+  unitPrice: v.number()
+})
+
 export default defineSchema({
   tenants: defineTable({
     name: v.string(),
@@ -24,7 +31,6 @@ export default defineSchema({
     location: v.optional(v.string()),
     tenantId: v.id("tenants"),
     color: v.string(),
-    charges: v.number(),
     updatedAt: v.optional(v.number()),
     deletedAt: v.union(v.null(), v.number())
   }).index("by_tenantId", ["tenantId", "deletedAt"]),
@@ -40,7 +46,6 @@ export default defineSchema({
     customerPhone: v.optional(v.string()),
     guestArrival: v.optional(v.string()),
     pax: v.optional(v.union(v.number(), v.null())),
-    hallCharges: v.number(),
     amountPaid: v.number(),
     discountedTotal: v.union(v.number(), v.null()),
     withFood: v.boolean(),
@@ -50,6 +55,7 @@ export default defineSchema({
         items: mealItemsSchema
       })
     ),
+    addons: v.optional(v.array(addonFields)),
     tenantId: v.id("tenants"),
     venueId: v.id("venues"),
     updatedAt: v.optional(v.number()),
@@ -65,6 +71,12 @@ export default defineSchema({
   meals: defineTable({
     title: v.string(),
     items: mealItemsSchema,
+    tenantId: v.id("tenants"),
+    updatedAt: v.optional(v.number()),
+    deletedAt: v.union(v.null(), v.number())
+  }).index("by_tenantId", ["tenantId", "deletedAt"]),
+  addons: defineTable({
+    ...addonFields.fields,
     tenantId: v.id("tenants"),
     updatedAt: v.optional(v.number()),
     deletedAt: v.union(v.null(), v.number())

@@ -11,9 +11,9 @@ import { BillPDF } from "@/components/events/event-bill/bill-pdf"
 import { usePrintPDF } from "@/hooks/use-print-pdf"
 import {
   RiPrinterFill,
-  RiMoneyDollarCircleFill,
   RiRestaurantFill,
-  RiPriceTag3Fill
+  RiPriceTag3Fill,
+  RiStarFill
 } from "@remixicon/react"
 
 export function PrintBill({ onBack }: { onBack: () => void }) {
@@ -26,8 +26,8 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
   const billTotals = useMemo(() => {
     if (!event) return null
     return calculateBillTotals({
-      hallCharges: event.hallCharges,
       meal: event.meal,
+      addons: event.addons,
       discountedTotal: event.discountedTotal
     })
   }, [event])
@@ -47,19 +47,32 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
           <CardTitle className="text-xl">Bill Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Hall Charges */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <RiMoneyDollarCircleFill className="size-4" />
-                <span>Hall Charges</span>
+          {/* Addons */}
+          {event.addons && event.addons.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <RiStarFill className="size-4" />
+                <span className="font-medium">Addons</span>
               </div>
-              <span className="font-medium">
-                {formatPrice(event.hallCharges)}
-              </span>
+              <div className="ml-6 space-y-1.5 border-l pl-3">
+                {event.addons.map((addon, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-muted-foreground">
+                      {addon.name} ({addon.qty} {addon.unit})
+                    </span>
+                    <span className="font-medium text-muted-foreground">
+                      {formatPrice(addon.qty * addon.unitPrice)}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
 
-            {/* Meal Items */}
+          {/* Meal Items */}
             {event.meal && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -85,7 +98,6 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
                 </div>
               </div>
             )}
-          </div>
 
           {/* Divider */}
           <div className="border-t" />
@@ -130,8 +142,8 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
 
           {/* Payment Status */}
           <PaymentStatusAlert
-            hallCharges={event.hallCharges}
             meal={event.meal}
+            addons={event.addons}
             discountedTotal={event.discountedTotal}
             amountPaid={amountPaid}
             variant="descriptive"
