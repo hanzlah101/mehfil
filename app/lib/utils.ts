@@ -49,13 +49,14 @@ export function getDirtyValues<TData>(
 }
 
 type MealItem = NonNullable<Doc<"events">["meal"]>["items"][number]
+type AddonItem = NonNullable<Doc<"events">["addons"]>[number]
 
 type BillCalculationInput = {
-  hallCharges: number
   meal?: {
     items: MealItem[]
     mealId?: Id<"meals"> | string
   } | null
+  addons?: AddonItem[] | null
   discountedTotal?: Doc<"events">["discountedTotal"] | null
 }
 
@@ -63,16 +64,22 @@ export function calculateBillTotals(input: BillCalculationInput) {
   const mealTotal = input.meal
     ? input.meal.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
     : 0
-  const subtotal = input.hallCharges + mealTotal
+  const addonsTotal = input.addons
+    ? input.addons.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
+    : 0
+  const subtotal = mealTotal + addonsTotal
   const discountedTotal = input.discountedTotal ?? null
   const grandTotal = discountedTotal ?? subtotal
   const discountAmount =
     discountedTotal !== null ? subtotal - discountedTotal : 0
   const discountPercentage =
-    discountAmount > 0 ? Math.round((discountAmount / subtotal) * 100) : 0
+    discountAmount > 0 && subtotal > 0
+      ? Math.round((discountAmount / subtotal) * 100)
+      : 0
 
   return {
     mealTotal,
+    addonsTotal,
     subtotal,
     grandTotal,
     discountAmount,

@@ -14,9 +14,9 @@ import {
   RiRestaurantFill,
   RiCalendarCheckFill,
   RiArrowDownSLine,
-  RiMoneyDollarCircleFill,
   RiPriceTag3Fill,
-  RiPrinterFill
+  RiPrinterFill,
+  RiStarFill
 } from "@remixicon/react"
 
 import { cn, formatPrice, calculateBillTotals } from "@/lib/utils"
@@ -45,11 +45,11 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
   const billTotals = useMemo(
     () =>
       calculateBillTotals({
-        hallCharges: event.hallCharges,
         meal: event.meal,
+        addons: event.addons,
         discountedTotal: event.discountedTotal
       }),
-    [event.hallCharges, event.meal, event.discountedTotal]
+    [event.meal, event.addons, event.discountedTotal]
   )
   const { subtotal, grandTotal, discountAmount: discount } = billTotals
 
@@ -193,15 +193,29 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
               </p>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1.5 opacity-70">
-                    <RiMoneyDollarCircleFill className="size-3.5 text-muted-foreground" />
-                    <span>Hall Charges</span>
+                {event.addons && event.addons.length > 0 && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-sm opacity-70">
+                      <RiStarFill className="size-3.5 text-muted-foreground" />
+                      <span>Addons</span>
+                    </div>
+                    <div className="ml-5 space-y-1">
+                      {event.addons.map((addon, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between text-sm"
+                        >
+                          <span className="opacity-60">
+                            {addon.name} ({addon.qty} {addon.unit})
+                          </span>
+                          <span className="font-medium opacity-60">
+                            {formatPrice(addon.qty * addon.unitPrice)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <span className="font-medium opacity-70">
-                    {formatPrice(event.hallCharges)}
-                  </span>
-                </div>
+                )}
 
                 {event.meal && (
                   <div className="space-y-1.5">
@@ -263,8 +277,8 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                     </span>
                   </div>
                   <PaymentStatusAlert
-                    hallCharges={event.hallCharges}
                     meal={event.meal}
+                    addons={event.addons}
                     discountedTotal={event.discountedTotal}
                     amountPaid={event.amountPaid}
                     variant="minimal"

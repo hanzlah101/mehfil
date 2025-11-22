@@ -61,11 +61,9 @@ export function VenueSelect() {
                         venue.name,
                         venue.location,
                         `${venue.capacity}`,
-                        `${venue.charges}`
                       ].filter((k): k is string => !!k)}
                       onSelect={() => {
                         field.handleChange(venue._id)
-                        form.setFieldValue("hallCharges", venue.charges)
                         setOpen(false)
                       }}
                     >

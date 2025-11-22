@@ -17,10 +17,11 @@ import { useConvexMutation } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { NumberInput } from "@/components/ui/number-input"
-import { EMPTY_NUMBER } from "@/lib/constants"
 import { MealSelect } from "./meal-select"
+import { AddonSelect } from "./addon-select"
 import { VenueSelect } from "./venue-select"
 import { MealItemsField } from "@/components/meals/meal-items-field"
+import { AddonItemsField } from "./addon-items-field"
 import type { Id } from "@db/_generated/dataModel"
 import type { EventType } from "@/lib/types"
 import {
@@ -80,10 +81,10 @@ export function EventForm() {
         ? new Date(initialValues.startTime)
         : defaultStartTime,
       endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime,
-      hallCharges: initialValues?.hallCharges ?? EMPTY_NUMBER,
       amountPaid: initialValues?.amountPaid ?? 0,
       discountedTotal: initialValues?.discountedTotal ?? null,
-      meal: initialValues?.meal ?? undefined
+      meal: initialValues?.meal ?? undefined,
+      addons: initialValues?.addons
     } satisfies EventSchema as EventSchema,
     onSubmit: async ({ formApi, value }) => {
       const body = {
@@ -339,29 +340,7 @@ export function EventForm() {
           </form.AppField>
         </div>
 
-        <div className="grid items-start gap-6 md:grid-cols-2">
-          <VenueSelect />
-
-          <form.AppField name="hallCharges">
-            {(field) => (
-              <field.Field>
-                <field.Label required>Hall Charges</field.Label>
-                <field.Control>
-                  <NumberInput
-                    min={1}
-                    inputMode="numeric"
-                    placeholder="55,000"
-                    disabled={isPending}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(value) => field.handleChange(value as number)}
-                  />
-                </field.Control>
-                <field.Error />
-              </field.Field>
-            )}
-          </form.AppField>
-        </div>
+        <VenueSelect />
 
         <form.AppField name="notes">
           {(field) => (
@@ -417,6 +396,8 @@ export function EventForm() {
           )}
         </form.AppField>
 
+        <AddonFields />
+
         <MealFields />
 
         <div className="sticky bottom-0 z-10 w-full bg-background py-4">
@@ -442,6 +423,18 @@ function MealFields() {
     <>
       <MealSelect />
       {mealId && <MealItemsField fieldName="meal.items" />}
+    </>
+  )
+}
+
+function AddonFields() {
+  const form = useFormContext<EventSchema>()
+  const addons = useStore(form.store, (s) => s.values.addons)
+
+  return (
+    <>
+      <AddonSelect />
+      {addons && addons.length > 0 && <AddonItemsField fieldName="addons" />}
     </>
   )
 }

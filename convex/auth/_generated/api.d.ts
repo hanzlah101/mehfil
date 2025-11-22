@@ -50,6 +50,7 @@ export type Mounts = {
                   | "read:venues"
                   | "read:events"
                   | "read:meals"
+                  | "read:addons"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
@@ -59,6 +60,9 @@ export type Mounts = {
                   | "create:meal"
                   | "update:meal"
                   | "delete:meal"
+                  | "create:addon"
+                  | "update:addon"
+                  | "delete:addon"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -576,6 +580,7 @@ export type Mounts = {
                   | "read:venues"
                   | "read:events"
                   | "read:meals"
+                  | "read:addons"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
@@ -585,6 +590,9 @@ export type Mounts = {
                   | "create:meal"
                   | "update:meal"
                   | "delete:meal"
+                  | "create:addon"
+                  | "update:addon"
+                  | "delete:addon"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -825,6 +833,7 @@ export type Mounts = {
                   | "read:venues"
                   | "read:events"
                   | "read:meals"
+                  | "read:addons"
                   | "create:venue"
                   | "update:venue"
                   | "delete:venue"
@@ -834,6 +843,9 @@ export type Mounts = {
                   | "create:meal"
                   | "update:meal"
                   | "delete:meal"
+                  | "create:addon"
+                  | "update:addon"
+                  | "delete:addon"
                   | "create:staff"
                   | "update:staff"
                   | "delete:staff"
@@ -1067,6 +1079,9 @@ export type Mounts = {
           | "create:meal"
           | "update:meal"
           | "delete:meal"
+          | "create:addon"
+          | "update:addon"
+          | "delete:addon"
         >;
         tenantId: string;
       },
@@ -1097,6 +1112,9 @@ export type Mounts = {
           | "create:meal"
           | "update:meal"
           | "delete:meal"
+          | "create:addon"
+          | "update:addon"
+          | "delete:addon"
         >;
         tenantId: string;
       },

@@ -4,7 +4,6 @@ import { RiCheckboxCircleFill, RiTimeLine } from "@remixicon/react"
 import type { Doc } from "@db/_generated/dataModel"
 
 type PaymentStatusAlertProps = {
-  hallCharges: number
   meal?:
     | Doc<"events">["meal"]
     | {
@@ -12,14 +11,15 @@ type PaymentStatusAlertProps = {
         mealId?: unknown
       }
     | null
+  addons?: Doc<"events">["addons"] | null
   discountedTotal?: Doc<"events">["discountedTotal"] | null
   amountPaid: number
   variant?: "minimal" | "descriptive"
 }
 
 export function PaymentStatusAlert({
-  hallCharges,
   meal,
+  addons,
   discountedTotal,
   amountPaid,
   variant = "minimal"
@@ -27,11 +27,11 @@ export function PaymentStatusAlert({
   const billTotals = useMemo(
     () =>
       calculateBillTotals({
-        hallCharges,
         meal: meal as Parameters<typeof calculateBillTotals>[0]["meal"],
+        addons: addons as Parameters<typeof calculateBillTotals>[0]["addons"],
         discountedTotal
       }),
-    [hallCharges, meal, discountedTotal]
+    [meal, addons, discountedTotal]
   )
 
   const remaining = useMemo(

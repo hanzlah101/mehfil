@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as addons from "../addons.js";
 import type * as auth__generated_api from "../auth/_generated/api.js";
 import type * as auth__generated_server from "../auth/_generated/server.js";
 import type * as auth_adapter from "../auth/adapter.js";
@@ -17,6 +18,7 @@ import type * as auth from "../auth.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as meals from "../meals.js";
+import type * as migrations from "../migrations.js";
 import type * as staff from "../staff.js";
 import type * as tenant from "../tenant.js";
 import type * as util from "../util.js";
@@ -37,6 +39,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  addons: typeof addons;
   "auth/_generated/api": typeof auth__generated_api;
   "auth/_generated/server": typeof auth__generated_server;
   "auth/adapter": typeof auth_adapter;
@@ -46,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   events: typeof events;
   http: typeof http;
   meals: typeof meals;
+  migrations: typeof migrations;
   staff: typeof staff;
   tenant: typeof tenant;
   util: typeof util;
@@ -82,6 +86,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -91,6 +96,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -608,6 +616,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -617,6 +626,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -857,6 +869,7 @@ export declare const components: {
                     | "read:venues"
                     | "read:events"
                     | "read:meals"
+                    | "read:addons"
                     | "create:venue"
                     | "update:venue"
                     | "delete:venue"
@@ -866,6 +879,9 @@ export declare const components: {
                     | "create:meal"
                     | "update:meal"
                     | "delete:meal"
+                    | "create:addon"
+                    | "update:addon"
+                    | "delete:addon"
                     | "create:staff"
                     | "update:staff"
                     | "delete:staff"
@@ -1099,6 +1115,9 @@ export declare const components: {
             | "create:meal"
             | "update:meal"
             | "delete:meal"
+            | "create:addon"
+            | "update:addon"
+            | "delete:addon"
           >;
           tenantId: string;
         },
@@ -1129,10 +1148,98 @@ export declare const components: {
             | "create:meal"
             | "update:meal"
             | "delete:meal"
+            | "create:addon"
+            | "update:addon"
+            | "delete:addon"
           >;
           tenantId: string;
         },
         any
+      >;
+    };
+  };
+  migrations: {
+    lib: {
+      cancel: FunctionReference<
+        "mutation",
+        "internal",
+        { name: string },
+        {
+          batchSize?: number;
+          cursor?: string | null;
+          error?: string;
+          isDone: boolean;
+          latestEnd?: number;
+          latestStart: number;
+          name: string;
+          next?: Array<string>;
+          processed: number;
+          state: "inProgress" | "success" | "failed" | "canceled" | "unknown";
+        }
+      >;
+      cancelAll: FunctionReference<
+        "mutation",
+        "internal",
+        { sinceTs?: number },
+        Array<{
+          batchSize?: number;
+          cursor?: string | null;
+          error?: string;
+          isDone: boolean;
+          latestEnd?: number;
+          latestStart: number;
+          name: string;
+          next?: Array<string>;
+          processed: number;
+          state: "inProgress" | "success" | "failed" | "canceled" | "unknown";
+        }>
+      >;
+      clearAll: FunctionReference<
+        "mutation",
+        "internal",
+        { before?: number },
+        null
+      >;
+      getStatus: FunctionReference<
+        "query",
+        "internal",
+        { limit?: number; names?: Array<string> },
+        Array<{
+          batchSize?: number;
+          cursor?: string | null;
+          error?: string;
+          isDone: boolean;
+          latestEnd?: number;
+          latestStart: number;
+          name: string;
+          next?: Array<string>;
+          processed: number;
+          state: "inProgress" | "success" | "failed" | "canceled" | "unknown";
+        }>
+      >;
+      migrate: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          batchSize?: number;
+          cursor?: string | null;
+          dryRun: boolean;
+          fnHandle: string;
+          name: string;
+          next?: Array<{ fnHandle: string; name: string }>;
+        },
+        {
+          batchSize?: number;
+          cursor?: string | null;
+          error?: string;
+          isDone: boolean;
+          latestEnd?: number;
+          latestStart: number;
+          name: string;
+          next?: Array<string>;
+          processed: number;
+          state: "inProgress" | "success" | "failed" | "canceled" | "unknown";
+        }
       >;
     };
   };

@@ -11,7 +11,9 @@ import {
   RiLogoutBoxLine,
   type RemixiconComponentType,
   RiRestaurantLine,
-  RiRestaurantFill
+  RiRestaurantFill,
+  RiStarLine,
+  RiStarFill
 } from "@remixicon/react"
 import {
   Sidebar,
@@ -62,6 +64,15 @@ export function AppSidebar() {
                 label="Meals"
                 icon={RiRestaurantLine}
                 activeIcon={RiRestaurantFill}
+              />
+            </Protected>
+
+            <Protected perm="read:addons">
+              <MenuItem
+                href="/addons"
+                label="Addons"
+                icon={RiStarLine}
+                activeIcon={RiStarFill}
               />
             </Protected>
           </SidebarMenu>
