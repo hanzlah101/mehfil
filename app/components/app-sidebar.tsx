@@ -34,7 +34,7 @@ export function AppSidebar() {
             <Protected perm="read:events">
               <MenuItem
                 href="/"
-                label="Calendar"
+                label="Events"
                 icon={RiCalendar2Line}
                 activeIcon={RiCalendar2Fill}
               />

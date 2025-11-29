@@ -12,7 +12,8 @@
     "format": "prettier --write app/",
     "start": "react-router-serve ./build/server/index.js --port 3000",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "deploy": "bun run typecheck && bun run lint && bun run build && bun run convex:deploy && firebase deploy"
+    "web:deploy": "firebase deploy",
+    "deploy": "bun run typecheck && bun run lint && bun run build && bun run convex:deploy && bun run web:deploy"
   },
   "dependencies": {
     "@convex-dev/better-auth": "^0.9.6",
