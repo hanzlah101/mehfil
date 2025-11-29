@@ -95,12 +95,16 @@ export function EventForm() {
       addons: initialValues?.addons
     } satisfies EventSchema as EventSchema,
     onSubmit: async ({ formApi, value }) => {
-      // Strip _id from addons before sending to mutation
-      const addonsWithoutId = value.addons?.map(({ _id, ...addon }) => addon)
+      const addons = value.addons?.map(({ name, qty, unit, unitPrice }) => ({
+        name,
+        qty,
+        unit,
+        unitPrice
+      }))
 
       const body = {
         ...value,
-        addons: addonsWithoutId,
+        addons,
         venueId: value.venueId as Id<"venues">,
         bookingDate: value.bookingDate.getTime(),
         startTime: value.startTime.getTime(),
