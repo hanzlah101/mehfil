@@ -24,7 +24,12 @@ import { Protected } from "@/components/protected"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/copy-button"
-import { DAY_DATE_FORMAT } from "@/lib/constants"
+import {
+  DAY_DATE_FORMAT,
+  EVENT_STATUS_LABELS,
+  EVENT_STATUS_COLORS
+} from "@/lib/constants"
+import { getMealTypeFromTimes, formatMealType } from "@/lib/date"
 import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
 import { PaymentStatusAlert } from "@/components/events/event-bill/payment-status-alert"
 import {
@@ -69,12 +74,13 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
               <span
                 className={cn(
                   "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                  event.type === "booking"
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                    : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                  EVENT_STATUS_COLORS[event.status].bg,
+                  EVENT_STATUS_COLORS[event.status].text,
+                  EVENT_STATUS_COLORS[event.status].darkBg,
+                  EVENT_STATUS_COLORS[event.status].darkText
                 )}
               >
-                {event.type === "booking" ? "Booking" : "Reservation"}
+                {EVENT_STATUS_LABELS[event.status]}
               </span>
             </div>
 
@@ -140,8 +146,9 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             <div className="flex items-center gap-1.5 opacity-70">
               <RiTimeFill className="size-3.5 text-muted-foreground" />
               <span>
-                {format(event.startTime, "h:mm a")} -{" "}
-                {format(event.endTime, "h:mm a")}
+                {formatMealType(
+                  getMealTypeFromTimes(event.startTime, event.endTime)
+                )}
               </span>
             </div>
             {typeof event.pax === "number" && (

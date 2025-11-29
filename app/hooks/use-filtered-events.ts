@@ -6,7 +6,7 @@ import type { EventWithVenue } from "@/stores/use-event-modal"
 export function useFilteredEvents(events: EventWithVenue[]) {
   const search = useEventFiltersStore((s) => s.search)
   const venueIds = useEventFiltersStore((s) => s.venueIds)
-  const eventType = useEventFiltersStore((s) => s.eventType)
+  const eventStatus = useEventFiltersStore((s) => s.eventStatus)
   const foodService = useEventFiltersStore((s) => s.foodService)
 
   // Configure Fuse.js for fuzzy search
@@ -42,9 +42,9 @@ export function useFilteredEvents(events: EventWithVenue[]) {
       result = result.filter((event) => venueIds.includes(event.venueId))
     }
 
-    // Apply event type filter
-    if (eventType !== "all") {
-      result = result.filter((event) => event.type === eventType)
+    // Apply event status filter
+    if (eventStatus !== "all") {
+      result = result.filter((event) => event.status === eventStatus)
     }
 
     // Apply food service filter
@@ -55,7 +55,7 @@ export function useFilteredEvents(events: EventWithVenue[]) {
     }
 
     return result
-  }, [events, search, venueIds, eventType, foodService, fuse])
+  }, [events, search, venueIds, eventStatus, foodService, fuse])
 
   return {
     filteredEvents,
@@ -64,7 +64,7 @@ export function useFilteredEvents(events: EventWithVenue[]) {
     hasActiveFilters:
       search.trim() !== "" ||
       venueIds.length > 0 ||
-      eventType !== "all" ||
+      eventStatus !== "all" ||
       foodService !== "all"
   }
 }

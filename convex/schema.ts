@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from "convex/server"
 import { v } from "convex/values"
+import { EVENT_STATUSES } from "../app/lib/constants"
 
 const mealItemsSchema = v.array(
   v.object({
@@ -40,10 +41,12 @@ export default defineSchema({
     bookingDate: v.number(),
     startTime: v.number(),
     endTime: v.number(),
-    type: v.union(v.literal("reservation"), v.literal("booking")),
+    status: v.union(...EVENT_STATUSES.map(v.literal)),
+    type: v.string(),
     customerName: v.optional(v.string()),
     customerEmail: v.optional(v.string()),
     customerPhone: v.optional(v.string()),
+    customerCNIC: v.optional(v.string()),
     guestArrival: v.optional(v.string()),
     pax: v.optional(v.union(v.number(), v.null())),
     amountPaid: v.number(),

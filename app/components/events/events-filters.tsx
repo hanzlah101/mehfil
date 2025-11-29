@@ -64,12 +64,12 @@ export function EventsFilters() {
 
 function useActiveFiltersCount() {
   const venueIds = useEventFiltersStore((s) => s.venueIds)
-  const eventType = useEventFiltersStore((s) => s.eventType)
+  const eventStatus = useEventFiltersStore((s) => s.eventStatus)
   const foodService = useEventFiltersStore((s) => s.foodService)
 
   const activeFiltersCount = [
     venueIds.length > 0,
-    eventType !== "all",
+    eventStatus !== "all",
     foodService !== "all"
   ].filter(Boolean).length
 

@@ -21,11 +21,7 @@ import {
   updateEventBillSchema,
   type UpdateEventBillSchema
 } from "@/validations/events"
-import {
-  RiRestaurantFill,
-  RiPriceTag3Fill,
-  RiStarFill
-} from "@remixicon/react"
+import { RiRestaurantFill, RiPriceTag3Fill, RiStarFill } from "@remixicon/react"
 
 export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
   const initialEvent = useEventModal((s) => s.event)
@@ -60,9 +56,18 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
       const dirtyValues = getDirtyValues(formApi)
 
       if (dirtyValues) {
-        await updateEventBill({ id: event._id, ...dirtyValues } as Parameters<
-          typeof updateEventBill
-        >[0])
+        // Strip _id from addons if present
+        const cleanedValues = { ...dirtyValues }
+        if (cleanedValues.addons) {
+          cleanedValues.addons = cleanedValues.addons.map(
+            ({ _id, ...addon }) => addon
+          )
+        }
+
+        await updateEventBill({
+          id: event._id,
+          ...cleanedValues
+        } as Parameters<typeof updateEventBill>[0])
       }
 
       onContinue()

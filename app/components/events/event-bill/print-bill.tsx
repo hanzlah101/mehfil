@@ -7,7 +7,7 @@ import { formatPrice, calculateBillTotals } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PaymentStatusAlert } from "@/components/events/event-bill/payment-status-alert"
-import { BillPDF } from "@/components/events/event-bill/bill-pdf"
+import { BillPDF } from "@/pdfs/bill-pdf"
 import { usePrintPDF } from "@/hooks/use-print-pdf"
 import {
   RiPrinterFill,
@@ -73,31 +73,31 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
           )}
 
           {/* Meal Items */}
-            {event.meal && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <RiRestaurantFill className="size-4" />
-                  <span className="font-medium">
-                    {event.mealName || "Meal Items"}
-                  </span>
-                </div>
-                <div className="ml-6 space-y-1.5 border-l pl-3">
-                  {event.meal.items.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between text-sm"
-                    >
-                      <span className="text-muted-foreground">
-                        {item.name} ({item.qty} {item.unit})
-                      </span>
-                      <span className="font-medium text-muted-foreground">
-                        {formatPrice(item.qty * item.unitPrice)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+          {event.meal && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <RiRestaurantFill className="size-4" />
+                <span className="font-medium">
+                  {event.mealName || "Meal Items"}
+                </span>
               </div>
-            )}
+              <div className="ml-6 space-y-1.5 border-l pl-3">
+                {event.meal.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span className="text-muted-foreground">
+                      {item.name} ({item.qty} {item.unit})
+                    </span>
+                    <span className="font-medium text-muted-foreground">
+                      {formatPrice(item.qty * item.unitPrice)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Divider */}
           <div className="border-t" />
