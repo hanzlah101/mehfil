@@ -7,7 +7,7 @@ import { calculateBillTotals } from "@/lib/utils"
 import { EVENT_STATUSES } from "@/lib/constants"
 
 const baseEventSchema = z.object({
-  title: z.string().min(1, "Please enter event title"),
+
   notes: z.string().optional(),
   bookingDate: dateSchema("Please enter booking date"),
   startTime: dateSchema("Please enter start time"),

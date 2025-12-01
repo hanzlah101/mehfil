@@ -34,8 +34,11 @@ export const create = zm({
   handler: async (ctx, args) => {
     const user = await validateAuth(ctx, "create:event")
 
+    const title = `${args.type} - ${args.customerName}`
+
     await ctx.db.insert("events", {
       ...args,
+      title,
       deletedAt: null,
       tenantId: user.tenantId
     })
@@ -59,7 +62,15 @@ export const update = zm({
       throw new ConvexError("Forbidden")
     }
 
-    await ctx.db.patch(id, args)
+    const updatePayload: Record<string, any> = { ...args }
+
+    if (args.type !== undefined || args.customerName !== undefined) {
+      const newType = args.type !== undefined ? args.type : event.type;
+      const newCustomerName = args.customerName !== undefined ? args.customerName : event.customerName;
+      updatePayload.title = `${newType} - ${newCustomerName}`;
+    }
+
+    await ctx.db.patch(id, updatePayload)
   }
 })
 

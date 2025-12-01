@@ -70,7 +70,7 @@ export function EventForm() {
       onDynamic: eventSchema
     },
     defaultValues: {
-      title: initialValues?.title ?? "",
+
       status: initialValues?.status ?? "booked",
       type: initialValues?.type ?? "",
       customerName: initialValues?.customerName ?? "",
@@ -125,24 +125,7 @@ export function EventForm() {
   return (
     <form.Form>
       <form.Group>
-        <form.AppField name="title">
-          {(field) => (
-            <field.Field>
-              <field.Label required>Title</field.Label>
-              <field.Control>
-                <Input
-                  autoFocus
-                  placeholder="Corporate Dinner"
-                  disabled={isPending}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-              </field.Control>
-              <field.Error />
-            </field.Field>
-          )}
-        </form.AppField>
+
 
         <div className="grid items-start gap-6 md:grid-cols-2">
           <form.AppField name="status">
