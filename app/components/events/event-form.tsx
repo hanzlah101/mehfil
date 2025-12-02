@@ -8,9 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { DatePicker } from "@/components/date-picker"
 import { Switch } from "@/components/ui/switch"
-import { TimeField } from "@/components/ui/time-field"
 import { RiRestaurantFill } from "@remixicon/react"
-import { setDatePreserveTime, defaultEventTime } from "@/lib/date"
+import {
+  defaultEventTime,
+  getMealTypeFromTimes,
+  getMealTypeTimes,
+  type MealType
+} from "@/lib/date"
 import { useAppForm, useFormContext } from "@/hooks/form-hooks"
 import { useMutation } from "@tanstack/react-query"
 import { useConvexMutation } from "@convex-dev/react-query"
@@ -22,8 +26,10 @@ import { AddonSelect } from "./addon-select"
 import { VenueSelect } from "./venue-select"
 import { MealItemsField } from "@/components/meals/meal-items-field"
 import { AddonItemsField } from "./addon-items-field"
+import { EventTypeSelect } from "./event-type-select"
+import { ACTIVE_EVENT_STATUS } from "@/lib/constants"
 import type { Id } from "@db/_generated/dataModel"
-import type { EventType } from "@/lib/types"
+import type { EventStatus } from "@/lib/types"
 import {
   Select,
   SelectContent,
@@ -64,14 +70,15 @@ export function EventForm() {
       onDynamic: eventSchema
     },
     defaultValues: {
-      title: initialValues?.title ?? "",
-      type: initialValues?.type ?? "booking",
+      status: initialValues?.status ?? "booked",
+      type: initialValues?.type ?? "",
       customerName: initialValues?.customerName ?? "",
       customerEmail: initialValues?.customerEmail ?? "",
       customerPhone: initialValues?.customerPhone ?? "",
       withFood: initialValues?.withFood ?? false,
       venueId: initialValues?.venueId ?? "",
       guestArrival: initialValues?.guestArrival ?? "",
+      customerCNIC: initialValues?.customerCNIC ?? "",
       notes: initialValues?.notes ?? "",
       pax: initialValues?.pax ?? null,
       bookingDate: initialValues
@@ -87,8 +94,16 @@ export function EventForm() {
       addons: initialValues?.addons
     } satisfies EventSchema as EventSchema,
     onSubmit: async ({ formApi, value }) => {
+      const addons = value.addons?.map(({ name, qty, unit, unitPrice }) => ({
+        name,
+        qty,
+        unit,
+        unitPrice
+      }))
+
       const body = {
         ...value,
+        addons,
         venueId: value.venueId as Id<"venues">,
         bookingDate: value.bookingDate.getTime(),
         startTime: value.startTime.getTime(),
@@ -109,46 +124,36 @@ export function EventForm() {
   return (
     <form.Form>
       <form.Group>
-        <form.AppField name="title">
-          {(field) => (
-            <field.Field>
-              <field.Label required>Title</field.Label>
-              <field.Control>
-                <Input
-                  autoFocus
-                  placeholder="Corporate Dinner"
-                  disabled={isPending}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  onBlur={field.handleBlur}
-                />
-              </field.Control>
-              <field.Error />
-            </field.Field>
-          )}
-        </form.AppField>
+        <EventTypeSelect />
 
         <div className="grid items-start gap-6 md:grid-cols-2">
-          <form.AppField name="type">
+          <form.AppField name="status">
             {(field) => (
               <field.Field>
-                <field.Label required>Event Type</field.Label>
+                <field.Label required>Status</field.Label>
                 <Select
                   disabled={isPending}
                   value={field.state.value}
-                  onValueChange={(type) =>
-                    field.handleChange(type as EventType)
+                  onValueChange={(status) =>
+                    field.handleChange(status as EventStatus)
                   }
                 >
                   <field.Control>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select event type" />
+                    <SelectTrigger className="w-full capitalize">
+                      <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                   </field.Control>
 
                   <SelectContent>
-                    <SelectItem value="booking">Booking</SelectItem>
-                    <SelectItem value="reservation">Reservation</SelectItem>
+                    {ACTIVE_EVENT_STATUS.map((status) => (
+                      <SelectItem
+                        key={status}
+                        value={status}
+                        className="capitalize"
+                      >
+                        {status}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <field.Error />
@@ -201,16 +206,16 @@ export function EventForm() {
                     value={field.state.value}
                     onChange={(newValue) => {
                       if (!newValue) return
-                      const newStart = setDatePreserveTime(
+                      const mealType = getMealTypeFromTimes(
                         field.state.value,
-                        newValue
+                        form.getFieldValue("endTime")
                       )
-                      const newEnd = setDatePreserveTime(
-                        form.getFieldValue("endTime"),
-                        newValue
+                      const { startTime, endTime } = getMealTypeTimes(
+                        newValue,
+                        mealType
                       )
-                      field.handleChange(newStart)
-                      form.setFieldValue("endTime", newEnd)
+                      field.handleChange(startTime)
+                      form.setFieldValue("endTime", endTime)
                     }}
                     disabled={isPending}
                   />
@@ -221,44 +226,46 @@ export function EventForm() {
           </form.AppField>
         </div>
 
-        <div className="grid items-start gap-6 md:grid-cols-2">
-          <form.AppField name="startTime">
-            {(field) => (
-              <field.Field>
-                <field.Label required>Start Time</field.Label>
-                <field.Control>
-                  <TimeField
-                    disabled={isPending}
-                    value={field.state.value}
-                    onChange={field.handleChange}
-                    onBlur={field.handleBlur}
-                  />
-                </field.Control>
-                <field.Error />
-              </field.Field>
-            )}
-          </form.AppField>
+        <form.AppField name="startTime">
+          {(field) => {
+            const mealType = getMealTypeFromTimes(
+              field.state.value,
+              form.getFieldValue("endTime")
+            )
 
-          <form.AppField
-            name="endTime"
-            validators={{ onChangeListenTo: ["startTime"] }}
-          >
-            {(field) => (
+            return (
               <field.Field>
-                <field.Label required>End Time</field.Label>
-                <field.Control>
-                  <TimeField
-                    disabled={isPending}
-                    value={field.state.value}
-                    onChange={field.handleChange}
-                    onBlur={field.handleBlur}
-                  />
-                </field.Control>
+                <field.Label required>Event Time</field.Label>
+                <Select
+                  disabled={isPending}
+                  value={mealType}
+                  onValueChange={(value) => {
+                    const { startTime, endTime } = getMealTypeTimes(
+                      field.state.value,
+                      value as MealType
+                    )
+                    field.handleChange(startTime)
+                    form.setFieldValue("endTime", endTime)
+                  }}
+                >
+                  <field.Control>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select meal type" />
+                    </SelectTrigger>
+                  </field.Control>
+
+                  <SelectContent>
+                    <SelectItem value="lunch">Lunch (12 PM - 4 PM)</SelectItem>
+                    <SelectItem value="dinner">
+                      Dinner (6 PM - 10 PM)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
                 <field.Error />
               </field.Field>
-            )}
-          </form.AppField>
-        </div>
+            )
+          }}
+        </form.AppField>
 
         <div className="grid items-start gap-6 md:grid-cols-2">
           <form.AppField name="customerName">
@@ -279,13 +286,13 @@ export function EventForm() {
             )}
           </form.AppField>
 
-          <form.AppField name="guestArrival">
+          <form.AppField name="customerCNIC">
             {(field) => (
               <field.Field>
-                <field.Label>Guests Arrival</field.Label>
+                <field.Label>Customer CNIC</field.Label>
                 <field.Control>
                   <Input
-                    placeholder="Gujranwala"
+                    placeholder="1234567890123"
                     disabled={isPending}
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -340,6 +347,24 @@ export function EventForm() {
           </form.AppField>
         </div>
 
+        <form.AppField name="guestArrival">
+          {(field) => (
+            <field.Field>
+              <field.Label>Guests Arrival</field.Label>
+              <field.Control>
+                <Input
+                  placeholder="Gujranwala"
+                  disabled={isPending}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </field.Control>
+              <field.Error />
+            </field.Field>
+          )}
+        </form.AppField>
+
         <VenueSelect />
 
         <form.AppField name="notes">
@@ -359,6 +384,8 @@ export function EventForm() {
             </field.Field>
           )}
         </form.AppField>
+
+        <AddonFields />
 
         <form.AppField name="withFood">
           {(field) => (
@@ -395,8 +422,6 @@ export function EventForm() {
             </field.Field>
           )}
         </form.AppField>
-
-        <AddonFields />
 
         <MealFields />
 

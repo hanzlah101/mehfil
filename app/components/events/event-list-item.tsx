@@ -16,7 +16,9 @@ import {
   RiArrowDownSLine,
   RiPriceTag3Fill,
   RiPrinterFill,
-  RiStarFill
+  RiStarFill,
+  RiMore2Fill,
+  RiCloseCircleFill
 } from "@remixicon/react"
 
 import { cn, formatPrice, calculateBillTotals } from "@/lib/utils"
@@ -24,19 +26,22 @@ import { Protected } from "@/components/protected"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { CopyButton } from "@/components/copy-button"
-import { DAY_DATE_FORMAT } from "@/lib/constants"
-import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
+import { getMealTypeFromTimes, formatMealType } from "@/lib/date"
 import { PaymentStatusAlert } from "@/components/events/event-bill/payment-status-alert"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger
-} from "@/components/ui/tooltip"
+import { DAY_DATE_FORMAT, EVENT_STATUS_CLASSES } from "@/lib/constants"
+import { useEventModal, type EventWithVenue } from "@/stores/use-event-modal"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 
 export function EventListItem({ event }: { event: EventWithVenue }) {
   const openEventModal = useEventModal((s) => s.onOpen)
@@ -52,6 +57,9 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
     [event.meal, event.addons, event.discountedTotal]
   )
   const { subtotal, grandTotal, discountAmount: discount } = billTotals
+  const isCancelled = event.status === "cancelled"
+  const pendingRefund =
+    isCancelled && event.amountPaid > 0 ? event.amountPaid : 0
 
   return (
     <Collapsible
@@ -63,65 +71,72 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
         <div className="space-y-3 p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg leading-tight font-semibold">
-                {event.title}
-              </h3>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-base font-bold text-foreground">
+                  #{event.serialCode}
+                </span>
+                <h3 className="text-lg leading-tight font-semibold">
+                  {event.title}
+                </h3>
+              </div>
               <span
                 className={cn(
-                  "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium",
-                  event.type === "booking"
-                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                    : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+                  "shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
+                  EVENT_STATUS_CLASSES[event.status]
                 )}
               >
-                {event.type === "booking" ? "Booking" : "Reservation"}
+                {event.status}
               </span>
             </div>
 
-            <div className="flex items-center gap-1">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="icon-sm"
-                    variant="secondary"
-                    onClick={() => openEventModal("print-bill", event)}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
+                  className="data-[state=open]:bg-accent"
+                >
+                  <RiMore2Fill className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => openEventModal("print-bill", event)}
+                >
+                  <RiPrinterFill className="size-4" />
+                  Print Bill
+                </DropdownMenuItem>
+                <Protected perm="update:event">
+                  <DropdownMenuItem
+                    onClick={() => openEventModal("update", event)}
                   >
-                    <RiPrinterFill className="size-3.5 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Print Bill</TooltipContent>
-              </Tooltip>
-
-              <Protected perm="update:event">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon-sm"
-                      variant="secondary"
-                      onClick={() => openEventModal("update", event)}
-                    >
-                      <RiEdit2Fill className="size-3.5 text-muted-foreground" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Edit Event</TooltipContent>
-                </Tooltip>
-              </Protected>
-
-              <Protected perm="delete:event">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon-sm"
+                    <RiEdit2Fill className="size-4" />
+                    Edit Event
+                  </DropdownMenuItem>
+                </Protected>
+                {event.status !== "cancelled" && (
+                  <Protected perm="update:event">
+                    <DropdownMenuItem
+                      onClick={() => openEventModal("cancel-event", event)}
                       variant="destructive"
-                      onClick={() => openEventModal("delete", event)}
                     >
-                      <RiDeleteBinFill className="size-3.5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Delete Event</TooltipContent>
-                </Tooltip>
-              </Protected>
-            </div>
+                      <RiCloseCircleFill className="size-4" />
+                      Cancel Event
+                    </DropdownMenuItem>
+                  </Protected>
+                )}
+                <Protected perm="delete:event">
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => openEventModal("delete", event)}
+                    variant="destructive"
+                  >
+                    <RiDeleteBinFill className="size-4" />
+                    Delete Event
+                  </DropdownMenuItem>
+                </Protected>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
@@ -140,8 +155,9 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
             <div className="flex items-center gap-1.5 opacity-70">
               <RiTimeFill className="size-3.5 text-muted-foreground" />
               <span>
-                {format(event.startTime, "h:mm a")} -{" "}
-                {format(event.endTime, "h:mm a")}
+                {formatMealType(
+                  getMealTypeFromTimes(event.startTime, event.endTime)
+                )}
               </span>
             </div>
             {typeof event.pax === "number" && (
@@ -167,6 +183,34 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
 
         <CollapsibleContent>
           <div className="space-y-3 border-t px-4 pt-3 pb-4">
+            {isCancelled && (
+              <div className="rounded-lg border border-red-200 bg-red-50/50 p-3 dark:border-red-900/30 dark:bg-red-950/20">
+                <div className="flex items-start gap-2">
+                  <RiCloseCircleFill className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
+                  <div className="flex-1 space-y-2">
+                    <div className="text-sm font-semibold text-red-700 dark:text-red-400">
+                      Event Cancelled
+                    </div>
+                    {event.cancellationReason && (
+                      <div className="text-xs whitespace-pre-wrap text-red-600/80 dark:text-red-400/80">
+                        {event.cancellationReason}
+                      </div>
+                    )}
+                    {pendingRefund > 0 && (
+                      <div className="flex items-center justify-between border-t border-red-200 pt-1 dark:border-red-900/30">
+                        <span className="text-xs font-medium text-red-700 dark:text-red-400">
+                          Pending Refund:
+                        </span>
+                        <span className="text-sm font-bold text-red-700 dark:text-red-400">
+                          {formatPrice(pendingRefund)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center gap-1.5 text-sm opacity-70">
               <RiCalendarCheckFill className="size-3.5 text-muted-foreground" />
               <span className="font-medium">Booked on:</span>
@@ -276,13 +320,30 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                       {formatPrice(event.amountPaid)}
                     </span>
                   </div>
-                  <PaymentStatusAlert
-                    meal={event.meal}
-                    addons={event.addons}
-                    discountedTotal={event.discountedTotal}
-                    amountPaid={event.amountPaid}
-                    variant="minimal"
-                  />
+                  {!isCancelled && (
+                    <PaymentStatusAlert
+                      meal={event.meal}
+                      addons={event.addons}
+                      discountedTotal={event.discountedTotal}
+                      amountPaid={event.amountPaid}
+                      variant="minimal"
+                    />
+                  )}
+                  {isCancelled && pendingRefund > 0 && (
+                    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50/50 p-2 dark:border-red-900/30 dark:bg-red-950/20">
+                      <RiCloseCircleFill className="size-4 text-red-600 dark:text-red-400" />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-red-700 dark:text-red-400">
+                            Refund Due
+                          </span>
+                          <span className="text-xs font-bold text-red-700 dark:text-red-400">
+                            {formatPrice(pendingRefund)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
