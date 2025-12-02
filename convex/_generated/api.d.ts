@@ -15,7 +15,6 @@ import type * as auth_adapter from "../auth/adapter.js";
 import type * as auth_auth from "../auth/auth.js";
 import type * as auth_staff from "../auth/staff.js";
 import type * as auth from "../auth.js";
-import type * as constants from "../constants.js";
 import type * as events from "../events.js";
 import type * as http from "../http.js";
 import type * as meals from "../meals.js";
@@ -47,7 +46,6 @@ declare const fullApi: ApiFromModules<{
   "auth/auth": typeof auth_auth;
   "auth/staff": typeof auth_staff;
   auth: typeof auth;
-  constants: typeof constants;
   events: typeof events;
   http: typeof http;
   meals: typeof meals;

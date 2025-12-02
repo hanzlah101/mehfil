@@ -110,7 +110,7 @@ export function AddonItemsField({ fieldName }: { fieldName: string }) {
                   size="sm"
                   type="button"
                   disabled={isPending}
-                  variant="destructive"
+                  variant="destructive-muted"
                   onClick={() => itemsField.removeValue(i)}
                 >
                   <RiDeleteBin6Line size={16} />

@@ -1,10 +1,10 @@
 import { Label } from "@/components/ui/label"
+import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
+import { EVENT_STATUS } from "@/lib/constants"
 import {
   useEventFiltersStore,
   type EventFilterStatus
 } from "@/stores/use-event-filters"
-import { FilterRadioGroup, FilterRadioItem } from "./filter-radio-group"
-import { EVENT_STATUSES, EVENT_STATUS_LABELS } from "@/lib/constants"
 
 export function EventsTypeFilter() {
   const pendingEventStatus = useEventFiltersStore((s) => s.pendingEventStatus)
@@ -27,11 +27,12 @@ export function EventsTypeFilter() {
         }
       >
         <FilterRadioItem value="all" label="All" />
-        {EVENT_STATUSES.map((status) => (
+        {EVENT_STATUS.map((status) => (
           <FilterRadioItem
+            className="capitalize"
             key={status}
             value={status}
-            label={EVENT_STATUS_LABELS[status]}
+            label={status}
           />
         ))}
       </FilterRadioGroup>

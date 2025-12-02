@@ -4,16 +4,16 @@ import { dateSchema, emailSchema } from "@/validations/_utils"
 import { mealSchema } from "./meals"
 import { addonSchema } from "./addons"
 import { calculateBillTotals } from "@/lib/utils"
-import { EVENT_STATUSES } from "@/lib/constants"
+import { EVENT_STATUS } from "@/lib/constants"
 
 const baseEventSchema = z.object({
-
   notes: z.string().optional(),
   bookingDate: dateSchema("Please enter booking date"),
   startTime: dateSchema("Please enter start time"),
   endTime: dateSchema("Please enter end time"),
-  status: z.enum(EVENT_STATUSES, "Please select event status"),
+  status: z.enum(EVENT_STATUS, "Please select event status"),
   type: z.string().min(1, "Please select event type"),
+  cancellationReason: z.string().optional(),
   customerName: z.string().min(1, "Please enter customer name"),
   guestArrival: z.string().optional(),
   customerEmail: z.union([z.literal(""), emailSchema.optional()]),

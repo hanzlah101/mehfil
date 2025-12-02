@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { zid } from "zodvex"
-import { zm } from "./util"
+import { zm, getNextSerialCode } from "./util"
 import { validateAuth } from "./auth"
 import { eventSchema as _eventSchema } from "@/validations/events"
 import { ConvexError } from "convex/values"
@@ -35,10 +35,12 @@ export const create = zm({
     const user = await validateAuth(ctx, "create:event")
 
     const title = `${args.type} - ${args.customerName}`
+    const serialCode = await getNextSerialCode(ctx, user.tenantId)
 
     await ctx.db.insert("events", {
       ...args,
       title,
+      serialCode,
       deletedAt: null,
       tenantId: user.tenantId
     })
@@ -62,12 +64,13 @@ export const update = zm({
       throw new ConvexError("Forbidden")
     }
 
-    const updatePayload: Record<string, any> = { ...args }
+    const updatePayload: Record<string, unknown> = { ...args }
 
     if (args.type !== undefined || args.customerName !== undefined) {
-      const newType = args.type !== undefined ? args.type : event.type;
-      const newCustomerName = args.customerName !== undefined ? args.customerName : event.customerName;
-      updatePayload.title = `${newType} - ${newCustomerName}`;
+      const newType = args.type !== undefined ? args.type : event.type
+      const newCustomerName =
+        args.customerName !== undefined ? args.customerName : event.customerName
+      updatePayload.title = `${newType} - ${newCustomerName}`
     }
 
     await ctx.db.patch(id, updatePayload)

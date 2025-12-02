@@ -32,7 +32,8 @@ export function DeleteEventDialog() {
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete your
             event{" "}
-            <span className="font-medium text-foreground">{event?.title}</span>.
+            <span className="font-medium text-foreground">{event?.title}</span>{" "}
+            <span className="font-mono text-xs">(#{event?.serialCode})</span>.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

@@ -26,6 +26,8 @@ import { AddonSelect } from "./addon-select"
 import { VenueSelect } from "./venue-select"
 import { MealItemsField } from "@/components/meals/meal-items-field"
 import { AddonItemsField } from "./addon-items-field"
+import { EventTypeSelect } from "./event-type-select"
+import { ACTIVE_EVENT_STATUS } from "@/lib/constants"
 import type { Id } from "@db/_generated/dataModel"
 import type { EventStatus } from "@/lib/types"
 import {
@@ -35,8 +37,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { EventTypeSelect } from "./event-type-select"
-import { EVENT_STATUSES, EVENT_STATUS_LABELS } from "@/lib/constants"
 
 export function EventForm() {
   const initialDate = useEventModal((s) => s.date)
@@ -70,7 +70,6 @@ export function EventForm() {
       onDynamic: eventSchema
     },
     defaultValues: {
-
       status: initialValues?.status ?? "booked",
       type: initialValues?.type ?? "",
       customerName: initialValues?.customerName ?? "",
@@ -125,7 +124,7 @@ export function EventForm() {
   return (
     <form.Form>
       <form.Group>
-
+        <EventTypeSelect />
 
         <div className="grid items-start gap-6 md:grid-cols-2">
           <form.AppField name="status">
@@ -140,15 +139,19 @@ export function EventForm() {
                   }
                 >
                   <field.Control>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full capitalize">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                   </field.Control>
 
                   <SelectContent>
-                    {EVENT_STATUSES.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {EVENT_STATUS_LABELS[status]}
+                    {ACTIVE_EVENT_STATUS.map((status) => (
+                      <SelectItem
+                        key={status}
+                        value={status}
+                        className="capitalize"
+                      >
+                        {status}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -361,8 +364,6 @@ export function EventForm() {
             </field.Field>
           )}
         </form.AppField>
-
-        <EventTypeSelect />
 
         <VenueSelect />
 

@@ -1,5 +1,7 @@
 import { Protected } from "@/components/protected"
 import { EventForm } from "@/components/events/event-form"
+import { EventBill } from "@/components/events/event-bill"
+import { CancelEventForm } from "@/components/events/cancel-event-form"
 import { useEventModal } from "@/stores/use-event-modal"
 import {
   Drawer,
@@ -8,7 +10,6 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "@/components/ui/drawer"
-import { EventBill } from "./event-bill"
 
 const modalContent = {
   create: {
@@ -18,21 +19,27 @@ const modalContent = {
     Component: EventForm
   },
   update: {
-    title: "Update Event",
+    title: (serialCode: string) => `Update Event (#${serialCode})`,
     permission: "update:event",
     description: "Modify the details, date, or information of this event.",
     Component: EventForm
   },
   "print-bill": {
-    title: "Print Bill",
+    title: (serialCode: string) => `Print Bill (#${serialCode})`,
     permission: "read:events",
     description: "Print the bill for this event.",
     Component: EventBill
+  },
+  "cancel-event": {
+    title: (serialCode: string) => `Cancel Event (#${serialCode})`,
+    permission: "update:event",
+    description: "Cancel this event and provide a reason for cancellation.",
+    Component: CancelEventForm
   }
 } as const
 
 export function EventModal() {
-  const { type, isOpen, onClose } = useEventModal()
+  const { type, isOpen, onClose, event } = useEventModal()
 
   const { permission, title, description, Component } =
     type === "create"
@@ -41,7 +48,9 @@ export function EventModal() {
         ? modalContent.update
         : type === "print-bill"
           ? modalContent["print-bill"]
-          : modalContent.create
+          : type === "cancel-event"
+            ? modalContent["cancel-event"]
+            : modalContent.create
 
   return (
     <Protected perm={permission}>
@@ -49,7 +58,11 @@ export function EventModal() {
         <DrawerContent>
           <div className="overflow-y-auto">
             <DrawerHeader>
-              <DrawerTitle>{title}</DrawerTitle>
+              <DrawerTitle>
+                {typeof title === "function"
+                  ? title(event?.serialCode ?? "")
+                  : title}
+              </DrawerTitle>
               <DrawerDescription>{description}</DrawerDescription>
             </DrawerHeader>
 

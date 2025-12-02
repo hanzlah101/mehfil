@@ -1,6 +1,10 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { calculateBillTotals, formatPrice } from "@/lib/utils"
+import { createTw } from "react-pdf-tailwind"
+import { getMealTypeFromTimes, formatMealType } from "@/lib/date"
+import type { Doc } from "@db/_generated/dataModel"
+import type { EventWithVenue } from "@/stores/use-event-modal"
 import {
   Document,
   Page,
@@ -10,10 +14,6 @@ import {
   Path,
   Font
 } from "@react-pdf/renderer"
-import { createTw } from "react-pdf-tailwind"
-import { getMealTypeFromTimes, formatMealType } from "@/lib/date"
-import type { Doc } from "@db/_generated/dataModel"
-import type { EventWithVenue } from "@/stores/use-event-modal"
 
 Font.register({
   family: "Work Sans",
@@ -102,6 +102,8 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
   const amountPaid = event.amountPaid
   const remaining = grandTotal - amountPaid
   const isFullyPaid = remaining <= 0
+  const isCancelled = event.status === "cancelled"
+  const pendingRefund = isCancelled && amountPaid > 0 ? amountPaid : 0
 
   // Calculate item count for serial numbers
   const addons: Array<{
@@ -194,8 +196,25 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
           <View style={tw("flex-row justify-between items-start")}>
             <View>
               <Text style={tw("text-3xl font-bold text-gray-900")}>
-                INVOICE
+                {isCancelled ? "CANCELLED INVOICE" : "INVOICE"}
               </Text>
+              <Text style={tw("text-sm text-gray-600 mt-1")}>
+                Event #{event.serialCode}
+              </Text>
+              {isCancelled && (
+                <View
+                  style={tw("mt-2 p-2 bg-red-50 rounded border border-red-200")}
+                >
+                  <Text style={tw("text-xs font-semibold text-red-700 mb-1")}>
+                    Event Cancelled
+                  </Text>
+                  {event.cancellationReason && (
+                    <Text style={tw("text-xs text-red-600")}>
+                      {event.cancellationReason}
+                    </Text>
+                  )}
+                </View>
+              )}
             </View>
             {tenant && (
               <View style={tw("items-end")}>
@@ -342,34 +361,66 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
             </View>
 
             {/* Payment Status - Integrated */}
-            <View
-              style={tw(
-                `mt-4 pt-4 border-t-2 ${
-                  isFullyPaid ? "border-green-300" : "border-yellow-300"
-                }`
-              )}
-            >
-              <View style={tw("flex-row justify-between items-center")}>
-                <Text
-                  style={tw(
-                    `text-sm font-semibold ${
-                      isFullyPaid ? "text-green-700" : "text-yellow-700"
-                    }`
-                  )}
-                >
-                  {isFullyPaid ? "Status:" : "Remaining:"}
-                </Text>
-                <Text
-                  style={tw(
-                    `text-2xl font-bold ${
-                      isFullyPaid ? "text-green-700" : "text-yellow-700"
-                    }`
-                  )}
-                >
-                  {isFullyPaid ? "Paid in Full" : formatPrice(remaining)}
-                </Text>
+            {isCancelled ? (
+              <View style={tw("mt-4 pt-4 border-t-2 border-red-300")}>
+                <View style={tw("flex-row justify-between items-center mb-2")}>
+                  <Text style={tw("text-sm font-semibold text-red-700")}>
+                    Status:
+                  </Text>
+                  <Text style={tw("text-2xl font-bold text-red-700")}>
+                    Cancelled
+                  </Text>
+                </View>
+                {pendingRefund > 0 && (
+                  <View
+                    style={tw(
+                      "flex-row justify-between items-center pt-2 border-t border-red-200"
+                    )}
+                  >
+                    <Text style={tw("text-sm font-semibold text-red-700")}>
+                      Refund Due:
+                    </Text>
+                    <Text style={tw("text-xl font-bold text-red-700")}>
+                      {formatPrice(pendingRefund)}
+                    </Text>
+                  </View>
+                )}
+                {pendingRefund === 0 && (
+                  <Text style={tw("text-xs text-red-600 mt-1 text-right")}>
+                    No refund required
+                  </Text>
+                )}
               </View>
-            </View>
+            ) : (
+              <View
+                style={tw(
+                  `mt-4 pt-4 border-t-2 ${
+                    isFullyPaid ? "border-green-300" : "border-yellow-300"
+                  }`
+                )}
+              >
+                <View style={tw("flex-row justify-between items-center")}>
+                  <Text
+                    style={tw(
+                      `text-sm font-semibold ${
+                        isFullyPaid ? "text-green-700" : "text-yellow-700"
+                      }`
+                    )}
+                  >
+                    {isFullyPaid ? "Status:" : "Remaining:"}
+                  </Text>
+                  <Text
+                    style={tw(
+                      `text-2xl font-bold ${
+                        isFullyPaid ? "text-green-700" : "text-yellow-700"
+                      }`
+                    )}
+                  >
+                    {isFullyPaid ? "Paid in Full" : formatPrice(remaining)}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         </View>
 

@@ -1,17 +1,12 @@
 import { create } from "zustand"
 import type { Doc } from "@db/_generated/dataModel"
 
-type ModalType = "create" | "update" | "delete" | "print-bill"
+type ModalType = "create" | "update" | "delete" | "print-bill" | "cancel-event"
 export type EventWithVenue = Doc<"events"> & {
   mealName: string | null
   venue: Doc<"venues">
 }
 
-/**
- * Custom conditional args for event modal:
- * - create → requires (date)
- * - update/delete → requires (event)
- */
 type EventArgs =
   | [type: "create", date: Date]
   | [type: Exclude<ModalType, "create">, event: EventWithVenue]
