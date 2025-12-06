@@ -52,9 +52,10 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
       calculateBillTotals({
         meal: event.meal,
         addons: event.addons,
-        discountedTotal: event.discountedTotal
+        discountAmt: event.discountAmt,
+        pax: event.pax
       }),
-    [event.meal, event.addons, event.discountedTotal]
+    [event.meal, event.addons, event.discountAmt, event.pax]
   )
   const { subtotal, grandTotal, discountAmount: discount } = billTotals
   const isCancelled = event.status === "cancelled"
@@ -265,22 +266,58 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-1.5 text-sm opacity-70">
                       <RiRestaurantFill className="size-3.5 text-muted-foreground" />
-                      <span>{event.mealName || "Meal Items"}</span>
+                      <span>
+                        {event.mealName ||
+                          (event.meal.type === "package"
+                            ? "Meal Package"
+                            : "Meal Items")}
+                      </span>
                     </div>
                     <div className="ml-5 space-y-1">
-                      {event.meal.items.map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between text-sm"
-                        >
-                          <span className="opacity-60">
-                            {item.name} ({item.qty} {item.unit})
-                          </span>
-                          <span className="font-medium opacity-60">
-                            {formatPrice(item.qty * item.unitPrice)}
-                          </span>
+                      {event.meal.type === "package" ? (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="opacity-60">
+                              Package (Per Head:{" "}
+                              {formatPrice(event.meal.pricePerHead)})
+                              {event.pax && (
+                                <span className="ml-2">
+                                  × {event.pax} guests
+                                </span>
+                              )}
+                            </span>
+                            <span className="font-medium opacity-60">
+                              {formatPrice(
+                                event.meal.pricePerHead * (event.pax ?? 0)
+                              )}
+                            </span>
+                          </div>
+                          {event.meal.items && event.meal.items.length > 0 && (
+                            <div className="ml-4 text-xs opacity-50">
+                              {event.meal.items.map((item, idx) => (
+                                <span key={idx}>
+                                  {idx > 0 && ", "}
+                                  {item.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      ))}
+                      ) : (
+                        event.meal.items.map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between text-sm"
+                          >
+                            <span className="opacity-60">
+                              {item.name} ({item.qty} {item.unit})
+                            </span>
+                            <span className="font-medium opacity-60">
+                              {formatPrice(item.qty * item.unitPrice)}
+                            </span>
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -324,7 +361,8 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                     <PaymentStatusAlert
                       meal={event.meal}
                       addons={event.addons}
-                      discountedTotal={event.discountedTotal}
+                      discountAmt={event.discountAmt}
+                      pax={event.pax}
                       amountPaid={event.amountPaid}
                       variant="minimal"
                     />

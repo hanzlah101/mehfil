@@ -8,7 +8,6 @@ import { query } from "./_generated/server"
 import { v } from "convex/values"
 import { atLeastOne } from "@/validations/_utils"
 import { asyncMap } from "convex-helpers"
-import { mealSchema } from "@/validations/meals"
 
 const eventSchema = _eventSchema
   .omit({
@@ -23,9 +22,29 @@ const eventSchema = _eventSchema
     bookingDate: z.number(),
     startTime: z.number(),
     endTime: z.number(),
-    meal: mealSchema
-      .pick({ items: true })
-      .safeExtend({ mealId: zid("meals") })
+    meal: z
+      .discriminatedUnion("type", [
+        z.object({
+          mealId: zid("meals"),
+          type: z.literal("package"),
+          pricePerHead: z.number().positive(),
+          items: z.array(z.object({ name: z.string().min(1) })).optional()
+        }),
+        z.object({
+          mealId: zid("meals"),
+          type: z.literal("items"),
+          items: z
+            .array(
+              z.object({
+                name: z.string().min(1),
+                unit: z.string().min(1),
+                qty: z.number().positive(),
+                unitPrice: z.number().nonnegative()
+              })
+            )
+            .min(1)
+        })
+      ])
       .optional()
   })
 

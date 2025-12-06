@@ -8,6 +8,8 @@ import { useFormContext } from "@/hooks/form-hooks"
 import { useQuery } from "@tanstack/react-query"
 import { FieldControl } from "@/components/ui/field"
 import type { EventSchema } from "@/validations/events"
+import { matchMealType } from "@/lib/meal-utils"
+import type { Doc } from "@db/_generated/dataModel"
 import {
   RiArrowDownSLine,
   RiCheckLine,
@@ -70,7 +72,23 @@ export function MealSelect() {
 
                         if (shouldUpdate) {
                           field.handleChange(meal._id)
-                          form.setFieldValue("meal.items", meal.items)
+                          matchMealType(meal as Doc<"meals">, {
+                            package: (pkgMeal) => {
+                              form.setFieldValue("meal", {
+                                mealId: meal._id,
+                                type: "package",
+                                pricePerHead: pkgMeal.pricePerHead ?? 0,
+                                items: pkgMeal.items ?? []
+                              })
+                            },
+                            items: (itemsMeal) => {
+                              form.setFieldValue("meal", {
+                                mealId: meal._id,
+                                type: "items",
+                                items: itemsMeal.items ?? []
+                              })
+                            }
+                          })
                           setOpen(false)
                         }
 

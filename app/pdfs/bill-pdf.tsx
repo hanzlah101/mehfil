@@ -94,7 +94,8 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
   const billTotals = calculateBillTotals({
     meal: event.meal,
     addons: event.addons,
-    discountedTotal: event.discountedTotal
+    discountAmt: event.discountAmt,
+    pax: event.pax
   })
 
   const { subtotal, grandTotal, discountAmount, discountPercentage } =
@@ -109,14 +110,15 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
   const addons: Array<{
     name: string
     total: number
+    details?: string
   }> = []
 
   const mealItems: Array<{
     name: string
     total: number
+    details?: string
   }> = []
 
-  // Add addons first (as requested)
   if (event.addons && event.addons.length > 0) {
     event.addons.forEach((addon) => {
       addons.push({
@@ -128,12 +130,23 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
   // Add meal items
   if (event.meal) {
-    event.meal.items.forEach((item) => {
+    if (event.meal.type === "package") {
+      const pax = event.pax ?? 0
       mealItems.push({
-        name: item.name,
-        total: item.qty * item.unitPrice
+        name: "Package Meal",
+        total: event.meal.pricePerHead * pax,
+        details: pax > 0 
+          ? `${formatPrice(event.meal.pricePerHead)} × ${pax} ${pax === 1 ? 'guest' : 'guests'}`
+          : formatPrice(event.meal.pricePerHead)
       })
-    })
+    } else {
+      event.meal.items.forEach((item) => {
+        mealItems.push({
+          name: item.name,
+          total: item.qty * item.unitPrice
+        })
+      })
+    }
   }
 
   const allItems = [...addons, ...mealItems]
@@ -190,15 +203,15 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
   return (
     <Document>
-      <Page size="A4" style={tw("p-8 bg-white flex flex-col font-sans")}>
+      <Page size="A4" style={tw("p-6 bg-white flex flex-col font-sans")}>
         {/* Header */}
-        <View style={tw("mb-6 pb-4 border-b-2 border-gray-200")}>
+        <View style={tw("mb-4 pb-3 border-b border-gray-300")}>
           <View style={tw("flex-row justify-between items-start")}>
             <View>
-              <Text style={tw("text-3xl font-bold text-gray-900")}>
+              <Text style={tw("text-2xl font-bold text-gray-900")}>
                 {isCancelled ? "CANCELLED INVOICE" : "INVOICE"}
               </Text>
-              <Text style={tw("text-sm text-gray-600 mt-1")}>
+              <Text style={tw("text-xs text-gray-600 mt-0.5")}>
                 Event #{event.serialCode}
               </Text>
               {isCancelled && (
@@ -227,7 +240,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
         </View>
 
         {/* Event Details with Icons - 2 Columns */}
-        <View style={tw("mb-5")}>
+        <View style={tw("mb-4")}>
           <View style={tw("flex-row flex-wrap")}>
             {eventDetails.map((detail, index) => {
               const isLeft = index % 2 === 0
@@ -237,13 +250,13 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
                 <View
                   key={index}
                   style={tw(
-                    `flex-row items-center gap-2 w-1/2 ${
-                      isLeft ? "pr-4" : "pl-4"
-                    } ${isNewRow ? "mt-2.5" : ""}`
+                    `flex-row items-center gap-1.5 w-1/2 ${
+                      isLeft ? "pr-3" : "pl-3"
+                    } ${isNewRow ? "mt-2" : ""}`
                   )}
                 >
                   {detail.icon}
-                  <Text style={tw("text-sm text-gray-900")}>{detail.text}</Text>
+                  <Text style={tw("text-xs text-gray-700")}>{detail.text}</Text>
                 </View>
               )
             })}
@@ -251,23 +264,23 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
         </View>
 
         {/* Billing Items */}
-        <View style={tw("mb-5")}>
-          <Text style={tw("text-sm font-bold text-gray-900 mb-3")}>
+        <View style={tw("mb-4")}>
+          <Text style={tw("text-xs font-bold text-gray-900 mb-2")}>
             Billing Summary
           </Text>
-          <View style={tw("border border-gray-300 rounded-lg")}>
+          <View style={tw("border border-gray-300 rounded")}>
             {/* Table Header */}
             <View
-              style={tw(`flex-row bg-gray-100 rounded-t-lg ${rowPadding} px-4`)}
+              style={tw(`flex-row bg-gray-50 ${rowPadding} px-3`)}
             >
               <Text
-                style={tw(`${cellFontSize} font-bold text-gray-900 flex-1`)}
+                style={tw(`${cellFontSize} font-semibold text-gray-900 flex-1`)}
               >
                 Item
               </Text>
               <Text
                 style={tw(
-                  `${cellFontSize} font-bold text-gray-900 w-24 text-right`
+                  `${cellFontSize} font-semibold text-gray-900 w-20 text-right`
                 )}
               >
                 Amount
@@ -280,31 +293,44 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
                 <View
                   key={index}
                   style={tw(
-                    `flex-row ${rowPadding} px-4 ${
+                    `flex-col ${rowPadding} px-3 ${
                       index < allItems.length - 1
                         ? "border-b border-gray-200"
                         : ""
                     }`
                   )}
                 >
-                  <Text
-                    style={tw(
-                      `${cellFontSize} text-gray-900 flex-1 font-medium`
-                    )}
-                  >
-                    {item.name}
-                  </Text>
-                  <Text
-                    style={tw(
-                      `${cellFontSize} text-gray-900 w-24 text-right font-semibold`
-                    )}
-                  >
-                    {formatPrice(item.total)}
-                  </Text>
+                  <View style={tw("flex-row justify-between items-start")}>
+                    <View style={tw("flex-1")}>
+                      <Text
+                        style={tw(
+                          `${cellFontSize} text-gray-900 font-medium`
+                        )}
+                      >
+                        {item.name}
+                      </Text>
+                      {item.details && (
+                        <Text
+                          style={tw(
+                            `${cellFontSize} text-gray-600 mt-0.5`
+                          )}
+                        >
+                          {item.details}
+                        </Text>
+                      )}
+                    </View>
+                    <Text
+                      style={tw(
+                        `${cellFontSize} text-gray-900 w-20 text-right font-semibold`
+                      )}
+                    >
+                      {formatPrice(item.total)}
+                    </Text>
+                  </View>
                 </View>
               ))
             ) : (
-              <View style={tw("py-6 px-4")}>
+              <View style={tw("py-4 px-3")}>
                 <Text style={tw(`${cellFontSize} text-gray-500 text-center`)}>
                   No items
                 </Text>
@@ -314,10 +340,10 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
         </View>
 
         {/* Summary */}
-        <View style={tw("mb-5")}>
-          <View style={tw("bg-gray-50 rounded-lg p-4")}>
-            <View style={tw("flex-row justify-between mb-2.5")}>
-              <Text style={tw(`${cellFontSize} text-gray-700 font-medium`)}>
+        <View style={tw("mb-4")}>
+          <View style={tw("bg-gray-50 rounded p-3")}>
+            <View style={tw("flex-row justify-between mb-2")}>
+              <Text style={tw(`${cellFontSize} text-gray-700`)}>
                 Subtotal
               </Text>
               <Text style={tw(`${cellFontSize} text-gray-900 font-semibold`)}>
@@ -328,13 +354,13 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
             {discountAmount > 0 && (
               <View
                 style={tw(
-                  "flex-row justify-between mb-2.5 bg-green-50 -mx-1 px-3 py-2 rounded"
+                  "flex-row justify-between mb-2 bg-green-50 -mx-0.5 px-2 py-1.5 rounded"
                 )}
               >
-                <Text style={tw(`${cellFontSize} text-green-700 font-medium`)}>
+                <Text style={tw(`${cellFontSize} text-green-700`)}>
                   Discount ({discountPercentage}%)
                 </Text>
-                <Text style={tw(`${cellFontSize} text-green-700 font-bold`)}>
+                <Text style={tw(`${cellFontSize} text-green-700 font-semibold`)}>
                   -{formatPrice(discountAmount)}
                 </Text>
               </View>
@@ -342,17 +368,17 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
             <View
               style={tw(
-                "flex-row justify-between mt-3 pt-3 border-t-2 border-gray-300"
+                "flex-row justify-between mt-2 pt-2 border-t border-gray-300"
               )}
             >
-              <Text style={tw("text-base font-bold text-gray-900")}>Total</Text>
-              <Text style={tw("text-lg font-bold text-gray-900")}>
+              <Text style={tw("text-sm font-bold text-gray-900")}>Total</Text>
+              <Text style={tw("text-base font-bold text-gray-900")}>
                 {formatPrice(grandTotal)}
               </Text>
             </View>
 
-            <View style={tw("flex-row justify-between mt-3")}>
-              <Text style={tw(`${cellFontSize} text-gray-700 font-medium`)}>
+            <View style={tw("flex-row justify-between mt-2")}>
+              <Text style={tw(`${cellFontSize} text-gray-700`)}>
                 Amount Paid
               </Text>
               <Text style={tw(`${cellFontSize} text-gray-900 font-semibold`)}>
@@ -362,25 +388,25 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
             {/* Payment Status - Integrated */}
             {isCancelled ? (
-              <View style={tw("mt-4 pt-4 border-t-2 border-red-300")}>
-                <View style={tw("flex-row justify-between items-center mb-2")}>
-                  <Text style={tw("text-sm font-semibold text-red-700")}>
+              <View style={tw("mt-3 pt-3 border-t border-red-300")}>
+                <View style={tw("flex-row justify-between items-center")}>
+                  <Text style={tw("text-xs font-semibold text-red-700")}>
                     Status:
                   </Text>
-                  <Text style={tw("text-2xl font-bold text-red-700")}>
+                  <Text style={tw("text-base font-bold text-red-700")}>
                     Cancelled
                   </Text>
                 </View>
                 {pendingRefund > 0 && (
                   <View
                     style={tw(
-                      "flex-row justify-between items-center pt-2 border-t border-red-200"
+                      "flex-row justify-between items-center mt-1.5 pt-1.5 border-t border-red-200"
                     )}
                   >
-                    <Text style={tw("text-sm font-semibold text-red-700")}>
+                    <Text style={tw("text-xs font-semibold text-red-700")}>
                       Refund Due:
                     </Text>
-                    <Text style={tw("text-xl font-bold text-red-700")}>
+                    <Text style={tw("text-sm font-bold text-red-700")}>
                       {formatPrice(pendingRefund)}
                     </Text>
                   </View>
@@ -394,7 +420,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
             ) : (
               <View
                 style={tw(
-                  `mt-4 pt-4 border-t-2 ${
+                  `mt-3 pt-3 border-t ${
                     isFullyPaid ? "border-green-300" : "border-yellow-300"
                   }`
                 )}
@@ -402,7 +428,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
                 <View style={tw("flex-row justify-between items-center")}>
                   <Text
                     style={tw(
-                      `text-sm font-semibold ${
+                      `text-xs font-semibold ${
                         isFullyPaid ? "text-green-700" : "text-yellow-700"
                       }`
                     )}
@@ -411,7 +437,7 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
                   </Text>
                   <Text
                     style={tw(
-                      `text-2xl font-bold ${
+                      `text-base font-bold ${
                         isFullyPaid ? "text-green-700" : "text-yellow-700"
                       }`
                     )}
@@ -425,23 +451,23 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
         </View>
 
         {/* Signatures */}
-        <View style={tw("mt-auto pt-6")}>
-          <View style={tw("flex-row justify-between gap-6")}>
+        <View style={tw("mt-auto pt-4")}>
+          <View style={tw("flex-row justify-between gap-4")}>
             <View style={tw("flex-1")}>
-              <View style={tw("border-b-2 border-black mb-2 h-14")} />
+              <View style={tw("border-b border-gray-400 mb-1.5 h-12")} />
               <Text
                 style={tw(
-                  `${cellFontSize} text-gray-700 text-center font-medium`
+                  `text-xs text-gray-600 text-center`
                 )}
               >
                 Customer Signature
               </Text>
             </View>
             <View style={tw("flex-1")}>
-              <View style={tw("border-b-2 border-black mb-2 h-14")} />
+              <View style={tw("border-b border-gray-400 mb-1.5 h-12")} />
               <Text
                 style={tw(
-                  `${cellFontSize} text-gray-700 text-center font-medium`
+                  `text-xs text-gray-600 text-center`
                 )}
               >
                 Manager Signature
@@ -452,58 +478,36 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
         {/* Footer Contact Info */}
         {tenant && (
-          <View style={tw("mt-5 pt-4")}>
-            <View style={tw("flex-row flex-wrap")}>
+          <View style={tw("mt-3 pt-3 border-t border-gray-200")}>
+            <View style={tw("flex-row flex-wrap gap-x-4 gap-y-1.5")}>
               {tenant.managerPhone && (
-                <View style={tw("flex-row items-center gap-2 w-1/2 pr-4")}>
-                  <PhoneIcon size={11} color="#9CA3AF" />
-                  <Text style={tw(`${cellFontSize} text-gray-700`)}>
-                    Manager: {tenant.managerPhone}
+                <View style={tw("flex-row items-center gap-1.5")}>
+                  <PhoneIcon size={10} color="#6B7280" />
+                  <Text style={tw(`text-xs text-gray-600`)}>
+                    {tenant.managerPhone}
                   </Text>
                 </View>
               )}
               {tenant.mail && (
-                <View
-                  style={tw(
-                    `flex-row items-center gap-2 w-1/2 ${
-                      tenant.managerPhone ? "pl-4" : "pr-4"
-                    }`
-                  )}
-                >
-                  <MailIcon size={11} color="#9CA3AF" />
-                  <Text style={tw(`${cellFontSize} text-gray-700`)}>
+                <View style={tw("flex-row items-center gap-1.5")}>
+                  <MailIcon size={10} color="#6B7280" />
+                  <Text style={tw(`text-xs text-gray-600`)}>
                     {tenant.mail}
                   </Text>
                 </View>
               )}
               {tenant.complainPhone && (
-                <View
-                  style={tw(
-                    `flex-row items-center gap-2 w-1/2 pr-4 ${
-                      tenant.managerPhone || tenant.mail ? "mt-2" : ""
-                    }`
-                  )}
-                >
-                  <PhoneIcon size={11} color="#9CA3AF" />
-                  <Text style={tw(`${cellFontSize} text-gray-700`)}>
+                <View style={tw("flex-row items-center gap-1.5")}>
+                  <PhoneIcon size={10} color="#6B7280" />
+                  <Text style={tw(`text-xs text-gray-600`)}>
                     Complaint: {tenant.complainPhone}
                   </Text>
                 </View>
               )}
               {event.venue.location && (
-                <View
-                  style={tw(
-                    `flex-row items-center gap-2 w-1/2 ${
-                      tenant.complainPhone
-                        ? "pl-4"
-                        : tenant.mail
-                          ? "pl-4"
-                          : "pr-4"
-                    } ${tenant.complainPhone || tenant.mail ? "mt-2" : ""}`
-                  )}
-                >
-                  <LocationIcon size={11} color="#9CA3AF" />
-                  <Text style={tw(`${cellFontSize} text-gray-700`)}>
+                <View style={tw("flex-row items-center gap-1.5")}>
+                  <LocationIcon size={10} color="#6B7280" />
+                  <Text style={tw(`text-xs text-gray-600`)}>
                     {event.venue.location}
                   </Text>
                 </View>

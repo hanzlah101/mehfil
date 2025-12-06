@@ -1,30 +1,35 @@
+import { z } from "zod"
 import { zid } from "zodvex"
 import { zm } from "./util"
 import { validateAuth } from "./auth"
 import { mealSchema } from "@/validations/meals"
 import { ConvexError } from "convex/values"
 import { query } from "./_generated/server"
-import { atLeastOne } from "@/validations/_utils"
 
 export const create = zm({
   args: mealSchema,
-  handler: async (ctx, args) => {
+  handler: async (ctx, { value: args }) => {
     const user = await validateAuth(ctx, "create:meal")
 
     await ctx.db.insert("meals", {
-      ...args,
+      type: args.type,
+      title: args.title,
+      pricePerHead: args.type === "package" ? args.pricePerHead : undefined,
+      items: args.type === "package" ? (args.items ?? []) : args.items,
       deletedAt: null,
       tenantId: user.tenantId
     })
   }
 })
 
+const updateMealSchema = z.object({ id: zid("meals") }).and(mealSchema)
+
 export const update = zm({
-  args: atLeastOne(mealSchema).safeExtend({ id: zid("meals") }),
-  handler: async (ctx, { id, ...args }) => {
+  args: updateMealSchema,
+  handler: async (ctx, args) => {
     const user = await validateAuth(ctx, "update:meal")
 
-    const meal = await ctx.db.get(id)
+    const meal = await ctx.db.get(args.value.id)
 
     if (!meal) {
       throw new ConvexError("Meal not found")
@@ -34,7 +39,10 @@ export const update = zm({
       throw new ConvexError("Forbidden")
     }
 
-    await ctx.db.patch(id, { ...args, updatedAt: Date.now() })
+    await ctx.db.patch(args.value.id, {
+      ...args,
+      updatedAt: Date.now()
+    })
   }
 })
 
