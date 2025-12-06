@@ -13,12 +13,13 @@ import { cn } from "@/lib/utils"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { CalendarCell } from "@/components/events/calendar/calendar-cell"
 import { api } from "@db/_generated/api"
+import { getMonthStartUTC } from "@/lib/date"
 
 export function CalendarGrid() {
   const { currentMonth } = useCurrentMonth()
 
   const { data } = useQuery(
-    convexQuery(api.events.list, { date: currentMonth.getTime() })
+    convexQuery(api.events.list, { date: getMonthStartUTC(currentMonth) })
   )
 
   const getEventsByDate = React.useCallback(

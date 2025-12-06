@@ -7,6 +7,7 @@ import { api } from "@db/_generated/api"
 import { useCurrentMonth } from "@/hooks/use-current-month"
 import { Button } from "@/components/ui/button"
 import { convexQuery } from "@convex-dev/react-query"
+import { getMonthStartUTC } from "@/lib/date"
 import { EventsFilters } from "@/components/events/events-filters"
 import { useFilteredEvents } from "@/hooks/use-filtered-events"
 import { EventListItem } from "./event-list-item"
@@ -28,7 +29,7 @@ export function EventsList() {
   const clearFilters = useEventFiltersStore((s) => s.clear)
   const { data: events, isLoading } = useQuery(
     convexQuery(api.events.list, {
-      date: currentMonth.getTime()
+      date: getMonthStartUTC(currentMonth)
     })
   )
 

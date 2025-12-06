@@ -14,6 +14,7 @@ import { ButtonGroup } from "@/components/ui/button-group"
 import { useEventModal } from "@/stores/use-event-modal"
 import { CalendarViews } from "@/components/events/calendar/calendar-views"
 import { api } from "@db/_generated/api"
+import { getMonthStartUTC } from "@/lib/date"
 import {
   Tooltip,
   TooltipContent,
@@ -34,7 +35,7 @@ export function CalendarHeader() {
 
   const { data: events } = useQuery(
     convexQuery(api.events.list, {
-      date: currentMonth.getTime()
+      date: getMonthStartUTC(currentMonth)
     })
   )
 

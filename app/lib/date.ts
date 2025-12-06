@@ -55,3 +55,14 @@ export function getMealTypeTimes(
 export function formatMealType(mealType: MealType): string {
   return mealType === "lunch" ? "Lunch" : "Dinner"
 }
+
+/**
+ * Converts a Date to a UTC timestamp for the start of that month.
+ * This ensures consistent month boundaries regardless of timezone.
+ */
+export function getMonthStartUTC(date: Date): number {
+  const year = date.getFullYear()
+  const month = date.getMonth() // 0-11
+  // Create UTC date for the start of the month
+  return Date.UTC(year, month, 1, 0, 0, 0, 0)
+}

@@ -101,14 +101,15 @@ export const list = query({
   handler: async (ctx, { date }) => {
     const user = await validateAuth(ctx, "read:events")
 
-    const startOfMonth = new Date(date)
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
+    // The date parameter is a UTC timestamp for the start of a month (from getMonthStartUTC)
+    // Calculate month boundaries in UTC to match frontend
+    const dateObj = new Date(date)
+    const year = dateObj.getUTCFullYear()
+    const month = dateObj.getUTCMonth() // 0-11
 
-    const endOfMonth = new Date(date)
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1)
-    endOfMonth.setDate(0)
-    endOfMonth.setHours(23, 59, 59, 999)
+    // Create UTC dates for month boundaries
+    const startTimestamp = Date.UTC(year, month, 1, 0, 0, 0, 0)
+    const endTimestamp = Date.UTC(year, month + 1, 1, 0, 0, 0, 0)
 
     const events = await ctx.db
       .query("events")
@@ -116,8 +117,8 @@ export const list = query({
         q
           .eq("tenantId", user.tenantId)
           .eq("deletedAt", null)
-          .gte("startTime", startOfMonth.getTime())
-          .lte("startTime", endOfMonth.getTime())
+          .gte("startTime", startTimestamp)
+          .lt("startTime", endTimestamp) // Use < instead of <= for exclusive end boundary
       )
       .collect()
 
