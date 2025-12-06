@@ -8,7 +8,8 @@ import { useFormContext } from "@/hooks/form-hooks"
 import { useQuery } from "@tanstack/react-query"
 import { FieldControl } from "@/components/ui/field"
 import type { EventSchema } from "@/validations/events"
-import type { MealItemSchema } from "@/validations/meals"
+import { matchMealType } from "@/lib/meal-utils"
+import type { Doc } from "@db/_generated/dataModel"
 import {
   RiArrowDownSLine,
   RiCheckLine,
@@ -71,30 +72,23 @@ export function MealSelect() {
 
                         if (shouldUpdate) {
                           field.handleChange(meal._id)
-                          if (meal.type === "package") {
-                            form.setFieldValue("meal", {
-                              mealId: meal._id,
-                              type: "package",
-                              pricePerHead: meal.pricePerHead ?? 0,
-                              items: meal.items ?? []
-                            })
-                          } else {
-                            const items = meal.items ?? []
-                            form.setFieldValue("meal", {
-                              mealId: meal._id,
-                              type: "items",
-                              items: Array.isArray(items)
-                                ? items.filter(
-                                    (item): item is MealItemSchema =>
-                                      item &&
-                                      typeof item === "object" &&
-                                      "qty" in item &&
-                                      "unit" in item &&
-                                      "unitPrice" in item
-                                  )
-                                : []
-                            })
-                          }
+                          matchMealType(meal as Doc<"meals">, {
+                            package: (pkgMeal) => {
+                              form.setFieldValue("meal", {
+                                mealId: meal._id,
+                                type: "package",
+                                pricePerHead: pkgMeal.pricePerHead ?? 0,
+                                items: pkgMeal.items ?? []
+                              })
+                            },
+                            items: (itemsMeal) => {
+                              form.setFieldValue("meal", {
+                                mealId: meal._id,
+                                type: "items",
+                                items: itemsMeal.items ?? []
+                              })
+                            }
+                          })
                           setOpen(false)
                         }
 

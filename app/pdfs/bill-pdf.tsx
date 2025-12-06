@@ -117,7 +117,6 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
     total: number
   }> = []
 
-  // Add addons first (as requested)
   if (event.addons && event.addons.length > 0) {
     event.addons.forEach((addon) => {
       addons.push({

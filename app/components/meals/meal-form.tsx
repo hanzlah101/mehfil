@@ -9,15 +9,12 @@ import { useMutation } from "@tanstack/react-query"
 import { useConvexMutation } from "@convex-dev/react-query"
 import { api } from "@db/_generated/api"
 import { useMealModal } from "@/stores/use-meal-modal"
-import { EMPTY_NUMBER } from "@/lib/constants"
 import { useAppForm } from "@/hooks/form-hooks"
 import { MealItemsField } from "./meal-items-field"
 import { MealMenuItemsField } from "./meal-menu-items-field"
-import {
-  mealSchema,
-  type MealSchema,
-  type MealMenuItemSchema
-} from "@/validations/meals"
+import { mealSchema } from "@/validations/meals"
+import { useMealFormDefaults, useMealItemHelpers } from "@/hooks/use-meal-types"
+import { isMealItem, hasMealItemData, type MealItem } from "@/lib/meal-utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +29,8 @@ import {
 export function MealForm() {
   const closeMealModal = useMealModal((s) => s.onClose)
   const initialValues = useMealModal((s) => s.meal)
+  const defaultValues = useMealFormDefaults(initialValues)
+  const { createEmpty } = useMealItemHelpers()
 
   const { mutateAsync: createMeal } = useMutation({
     mutationFn: useConvexMutation(api.meals.create),
@@ -64,61 +63,12 @@ export function MealForm() {
     validators: {
       onDynamic: mealSchema
     },
-    defaultValues: (() => {
-      const type =
-        (initialValues?.type as "package" | "items") ?? ("package" as const)
-      if (type === "package") {
-        return {
-          type: "package" as const,
-          title: initialValues?.title ?? "",
-          pricePerHead: initialValues?.pricePerHead ?? 0,
-          items: (initialValues?.items ?? []).filter(
-            (item): item is MealMenuItemSchema =>
-              item &&
-              typeof item === "object" &&
-              "name" in item &&
-              !("qty" in item)
-          )
-        } satisfies MealSchema as MealSchema
-      } else {
-        type MealItemType = {
-          name: string
-          unit: string
-          qty: number
-          unitPrice: number
-        }
-        const itemsArray: MealItemType[] =
-          initialValues?.items &&
-          Array.isArray(initialValues.items) &&
-          initialValues.items.some((item) => "qty" in item)
-            ? initialValues.items.filter(
-                (item): item is MealItemType =>
-                  item &&
-                  typeof item === "object" &&
-                  "qty" in item &&
-                  "unit" in item &&
-                  "unitPrice" in item
-              )
-            : [
-                {
-                  name: "",
-                  unit: "",
-                  qty: EMPTY_NUMBER,
-                  unitPrice: EMPTY_NUMBER
-                }
-              ]
-        return {
-          type: "items" as const,
-          title: initialValues?.title ?? "",
-          items: itemsArray
-        } satisfies MealSchema
-      }
-    })(),
+    defaultValues,
     onSubmit: async ({ formApi, value }) => {
       if (initialValues) {
-        await updateMeal({ id: initialValues._id, ...value })
+        await updateMeal({ value: { id: initialValues._id, ...value } })
       } else {
-        await createMeal(value)
+        await createMeal({ value })
       }
       formApi.reset()
     }
@@ -136,13 +86,7 @@ export function MealForm() {
 
     if (mealType === "items" && newType === "package") {
       const itemsWithData = currentItems.filter(
-        (item: any) =>
-          item &&
-          typeof item === "object" &&
-          "qty" in item &&
-          "unit" in item &&
-          "unitPrice" in item &&
-          (item.name || item.qty > 0 || item.unitPrice > 0)
+        (item): item is MealItem => isMealItem(item) && hasMealItemData(item)
       )
 
       if (itemsWithData.length > 0) {
@@ -158,14 +102,7 @@ export function MealForm() {
       form.setFieldValue("items", [])
     } else if (newType === "items") {
       if (!currentItems || currentItems.length === 0) {
-        form.setFieldValue("items", [
-          {
-            name: "",
-            unit: "",
-            qty: EMPTY_NUMBER,
-            unitPrice: EMPTY_NUMBER
-          }
-        ])
+        form.setFieldValue("items", [createEmpty()])
       }
     }
   }
@@ -235,7 +172,7 @@ export function MealForm() {
                               disabled={isPending}
                               value={priceField.state.value}
                               onChange={(val) =>
-                                priceField.handleChange(val as number)
+                                priceField.handleChange(Number(val) || 0)
                               }
                               onBlur={priceField.handleBlur}
                             />
@@ -270,8 +207,8 @@ export function MealForm() {
           <AlertDialogHeader>
             <AlertDialogTitle>Data Loss Warning</AlertDialogTitle>
             <AlertDialogDescription>
-              Switching to "Per Head" pricing will remove all quantity-based
-              items you've entered.{" "}
+              Switching to &quot;Per Head&quot; pricing will remove all
+              quantity-based items you&apos;ve entered.{" "}
               <span className="font-semibold text-destructive">
                 {itemsToRemove} item{itemsToRemove !== 1 ? "s" : ""} will be
                 removed.

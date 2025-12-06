@@ -43,7 +43,8 @@ export function AddonsList() {
             </EmptyMedia>
             <EmptyTitle>No addons created</EmptyTitle>
             <EmptyDescription>
-              Get started by creating your first addon with pricing for your events.
+              Get started by creating your first addon with pricing for your
+              events.
             </EmptyDescription>
           </EmptyHeader>
 

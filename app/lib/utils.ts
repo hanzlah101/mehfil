@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { isMealItem } from "./meal-utils"
 import type { TFormApi } from "@/lib/types"
 import type { DeepKeys } from "@tanstack/react-form"
 import type { Doc } from "@db/_generated/dataModel"
@@ -71,7 +72,7 @@ export function calculateBillTotals(input: BillCalculationInput) {
       const items = input.meal.items
       if (Array.isArray(items)) {
         mealTotal = items.reduce((sum, item) => {
-          if ("qty" in item && "unitPrice" in item) {
+          if (isMealItem(item)) {
             return sum + item.qty * item.unitPrice
           }
           return sum

@@ -8,7 +8,6 @@ import { query } from "./_generated/server"
 import { v } from "convex/values"
 import { atLeastOne } from "@/validations/_utils"
 import { asyncMap } from "convex-helpers"
-import { mealSchema } from "@/validations/meals"
 
 const eventSchema = _eventSchema
   .omit({

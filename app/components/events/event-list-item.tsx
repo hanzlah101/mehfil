@@ -278,9 +278,12 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                         <div className="space-y-1">
                           <div className="flex items-center justify-between text-sm">
                             <span className="opacity-60">
-                              Package (Per Head: {formatPrice(event.meal.pricePerHead)})
+                              Package (Per Head:{" "}
+                              {formatPrice(event.meal.pricePerHead)})
                               {event.pax && (
-                                <span className="ml-2">× {event.pax} guests</span>
+                                <span className="ml-2">
+                                  × {event.pax} guests
+                                </span>
                               )}
                             </span>
                             <span className="font-medium opacity-60">
@@ -359,7 +362,7 @@ export function EventListItem({ event }: { event: EventWithVenue }) {
                       meal={event.meal}
                       addons={event.addons}
                       discountAmt={event.discountAmt}
-                    pax={event.pax}
+                      pax={event.pax}
                       amountPaid={event.amountPaid}
                       variant="minimal"
                     />

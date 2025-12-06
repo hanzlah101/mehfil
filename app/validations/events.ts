@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { isAfter } from "date-fns"
 import { dateSchema, emailSchema } from "@/validations/_utils"
-import { mealSchema } from "./meals"
 import { addonSchema } from "./addons"
 import { calculateBillTotals } from "@/lib/utils"
 import { EVENT_STATUS } from "@/lib/constants"
@@ -34,9 +33,7 @@ const baseEventSchema = z.object({
         pricePerHead: z
           .number()
           .positive("Price per head must be greater than 0"),
-        items: z
-          .array(z.object({ name: z.string().min(1) }))
-          .optional()
+        items: z.array(z.object({ name: z.string().min(1) })).optional()
       }),
       z.object({
         mealId: z.string(),

@@ -90,7 +90,8 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
-                        Package (Per Head: {formatPrice(event.meal.pricePerHead)})
+                        Package (Per Head:{" "}
+                        {formatPrice(event.meal.pricePerHead)})
                         {event.pax && (
                           <span className="ml-2">× {event.pax} guests</span>
                         )}

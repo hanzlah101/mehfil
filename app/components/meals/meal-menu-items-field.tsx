@@ -24,7 +24,7 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold">Menu Items</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Optional list of items included in this package
           </p>
         </div>
@@ -35,10 +35,7 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
           disabled={isPending}
           onClick={() => {
             const currentItems = form.getFieldValue(itemsFieldName) ?? []
-            form.setFieldValue(itemsFieldName, [
-              ...currentItems,
-              { name: "" }
-            ])
+            form.setFieldValue(itemsFieldName, [...currentItems, { name: "" }])
           }}
         >
           <RiAddLine size={16} />
@@ -56,13 +53,15 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
                     <TableRow>
                       <TableHead className="w-[50px] text-center">#</TableHead>
                       <TableHead>Item Name</TableHead>
-                      <TableHead className="w-[80px] text-right">Action</TableHead>
+                      <TableHead className="w-[80px] text-right">
+                        Action
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {itemsField.state.value.map((_, i) => (
                       <TableRow key={i}>
-                        <TableCell className="text-center text-muted-foreground font-medium">
+                        <TableCell className="text-center font-medium text-muted-foreground">
                           {i + 1}
                         </TableCell>
                         <TableCell>
@@ -95,7 +94,10 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
                             className="h-8 w-8 p-0"
                             onClick={() => itemsField.removeValue(i)}
                           >
-                            <RiDeleteBin6Line size={16} className="text-destructive" />
+                            <RiDeleteBin6Line
+                              size={16}
+                              className="text-destructive"
+                            />
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -106,7 +108,8 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
             ) : (
               <div className="rounded-lg border border-dashed bg-muted/30 p-6 text-center">
                 <p className="text-sm text-muted-foreground">
-                  No menu items added yet. Click "Add Item" to create a menu list.
+                  No menu items added yet. Click &quot;Add Item&quot; to create
+                  a menu list.
                 </p>
               </div>
             )}
@@ -118,4 +121,3 @@ export function MealMenuItemsField({ fieldName }: { fieldName: string }) {
     </div>
   )
 }
-

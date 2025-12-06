@@ -107,18 +107,19 @@ export function MealItemsField({ fieldName }: { fieldName: string }) {
                   </form.AppField>
                 </div>
 
-                {itemsField.state.value && itemsField.state.value.length > 1 && (
-                  <Button
-                    size="sm"
-                    type="button"
-                    disabled={isPending}
-                    variant="destructive-muted"
-                    onClick={() => itemsField.removeValue(i)}
-                  >
-                    <RiDeleteBin6Line size={16} />
-                    Remove Item
-                  </Button>
-                )}
+                {itemsField.state.value &&
+                  itemsField.state.value.length > 1 && (
+                    <Button
+                      size="sm"
+                      type="button"
+                      disabled={isPending}
+                      variant="destructive-muted"
+                      onClick={() => itemsField.removeValue(i)}
+                    >
+                      <RiDeleteBin6Line size={16} />
+                      Remove Item
+                    </Button>
+                  )}
               </div>
             ))}
 

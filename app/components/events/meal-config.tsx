@@ -46,4 +46,3 @@ export function MealConfig() {
 
   return <MealItemsField fieldName="meal.items" />
 }
-
