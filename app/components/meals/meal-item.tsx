@@ -22,11 +22,18 @@ export function MealItem(meal: Doc<"meals">) {
   const openMealModal = useMealModal((s) => s.onOpen)
   const deleteMealModal = useMealModal((s) => s.onOpen)
 
-  const totalPrice = meal.items.reduce(
-    (sum, item) => sum + item.qty * item.unitPrice,
-    0
-  )
-  const itemCount = meal.items.length
+  const totalPrice =
+    meal.type === "package"
+      ? 0
+      : meal.items && Array.isArray(meal.items)
+        ? meal.items.reduce((sum, item) => {
+            if ("qty" in item && "unitPrice" in item) {
+              return sum + item.qty * item.unitPrice
+            }
+            return sum
+          }, 0)
+        : 0
+  const itemCount = meal.type === "package" ? 0 : (meal.items?.length ?? 0)
 
   return (
     <li
@@ -39,33 +46,70 @@ export function MealItem(meal: Doc<"meals">) {
             {meal.title}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {itemCount} {itemCount === 1 ? "item" : "items"}
+            {meal.type === "package"
+              ? "Package (per head)"
+              : `${itemCount} ${itemCount === 1 ? "item" : "items"}`}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium">
-          <RiShoppingCart2Line className="size-3.5" />
-          <span>{formatPrice(totalPrice)}</span>
-        </div>
+        {meal.type === "items" && (
+          <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium">
+            <RiShoppingCart2Line className="size-3.5" />
+            <span>{formatPrice(totalPrice)}</span>
+          </div>
+        )}
+        {meal.type === "package" && (
+          <div className="flex shrink-0 items-center gap-1.5 rounded-md bg-muted px-2 py-1 text-sm font-medium">
+            <RiShoppingCart2Line className="size-3.5" />
+            <span>{formatPrice(meal.pricePerHead ?? 0)}/head</span>
+          </div>
+        )}
       </div>
 
-      <div className="max-h-24 space-y-1.5 overflow-y-auto">
-        {meal.items.map((item, idx) => (
-          <div
-            key={idx}
-            className="flex items-center justify-between text-xs text-muted-foreground"
-          >
-            <span className="truncate">
-              {item.name}{" "}
-              <span className="opacity-70">
-                ({item.qty} {item.unit})
-              </span>
-            </span>
-            <span className="ml-2 shrink-0 font-medium text-foreground">
-              {formatPrice(item.qty * item.unitPrice)}
+      {meal.type === "package" ? (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span className="font-medium">Price Per Head</span>
+            <span className="font-semibold text-foreground">
+              {formatPrice(meal.pricePerHead ?? 0)}
             </span>
           </div>
-        ))}
-      </div>
+          {meal.items && meal.items.length > 0 && (
+            <div className="max-h-24 space-y-1 overflow-y-auto rounded-md bg-muted/30 p-2">
+              {meal.items.map((item, idx) => (
+                <div key={idx} className="text-xs text-muted-foreground">
+                  • {item.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="max-h-24 space-y-1.5 overflow-y-auto">
+          {meal.items &&
+            Array.isArray(meal.items) &&
+            meal.items.map((item, idx) => {
+              if ("qty" in item && "unit" in item && "unitPrice" in item) {
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between text-xs text-muted-foreground"
+                  >
+                    <span className="truncate">
+                      {item.name}{" "}
+                      <span className="opacity-70">
+                        ({item.qty} {item.unit})
+                      </span>
+                    </span>
+                    <span className="ml-2 shrink-0 font-medium text-foreground">
+                      {formatPrice(item.qty * item.unitPrice)}
+                    </span>
+                  </div>
+                )
+              }
+              return null
+            })}
+        </div>
+      )}
 
       <Protected perm={["update:meal", "delete:meal"]} operator="or">
         <div className="absolute top-0 right-4 z-10 hidden -translate-y-1/2 items-center gap-0.5 rounded-md border bg-background p-0.5 group-hover/item:flex">

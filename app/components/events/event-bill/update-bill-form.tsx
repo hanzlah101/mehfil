@@ -9,7 +9,7 @@ import { revalidateLogic, useStore } from "@tanstack/react-form"
 import { EMPTY_NUMBER } from "@/lib/constants"
 import { useAppForm, useFormContext } from "@/hooks/form-hooks"
 import { MealSelect } from "@/components/events/meal-select"
-import { MealItemsField } from "@/components/meals/meal-items-field"
+import { MealConfig } from "../meal-config"
 import { AddonSelect } from "@/components/events/addon-select"
 import { AddonItemsField } from "@/components/events/addon-items-field"
 import { getDirtyValues, calculateBillTotals, formatPrice } from "@/lib/utils"
@@ -44,7 +44,7 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
       onDynamic: updateEventBillSchema
     },
     defaultValues: {
-      discountedTotal: event?.discountedTotal ?? null,
+      discountAmt: event?.discountAmt ?? null,
       meal: event?.meal,
       addons: event?.addons,
       pax: event?.pax ?? EMPTY_NUMBER,
@@ -102,10 +102,10 @@ export function UpdateBillForm({ onContinue }: { onContinue: () => void }) {
 
         <MealFields />
 
-        <form.AppField name="discountedTotal">
+        <form.AppField name="discountAmt">
           {(field) => (
             <field.Field>
-              <field.Label>Discounted Total (Optional)</field.Label>
+              <field.Label>Discount Amount (Optional)</field.Label>
               <field.Control>
                 <NumberInput
                   min={0}
@@ -175,7 +175,7 @@ function MealFields() {
   return (
     <>
       <MealSelect />
-      {mealId && <MealItemsField fieldName="meal.items" />}
+      {mealId && <MealConfig />}
     </>
   )
 }
@@ -187,11 +187,12 @@ function BillSummary() {
   const billTotals = useMemo(
     () =>
       calculateBillTotals({
-        meal: formValues.meal,
-        addons: formValues.addons,
-        discountedTotal: formValues.discountedTotal
+        meal: formValues.meal ?? null,
+        addons: formValues.addons ?? null,
+        discountAmt: formValues.discountAmt ?? null,
+        pax: formValues.pax ?? null
       }),
-    [formValues.meal, formValues.addons, formValues.discountedTotal]
+    [formValues.meal, formValues.addons, formValues.discountAmt, formValues.pax]
   )
 
   return (
@@ -227,26 +228,47 @@ function BillSummary() {
             </div>
           )}
 
-          {formValues.meal && formValues.meal.items.length > 0 && (
+          {formValues.meal && (
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <RiRestaurantFill className="size-4" />
-                <span>Meal Items</span>
+                <span>
+                  {formValues.meal.type === "package"
+                    ? "Meal Package"
+                    : "Meal Items"}
+                </span>
               </div>
               <div className="ml-6 space-y-1">
-                {formValues.meal.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between text-sm"
-                  >
+                {formValues.meal.type === "package" ? (
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {item.name} ({item.qty} {item.unit})
+                      Package (Per Head:{" "}
+                      {formatPrice(formValues.meal.pricePerHead)})
+                      {formValues.pax && (
+                        <span className="ml-2">× {formValues.pax} guests</span>
+                      )}
                     </span>
                     <span className="font-medium text-muted-foreground">
-                      {formatPrice(item.qty * item.unitPrice)}
+                      {formatPrice(
+                        formValues.meal.pricePerHead * (formValues.pax ?? 0)
+                      )}
                     </span>
                   </div>
-                ))}
+                ) : (
+                  formValues.meal.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-muted-foreground">
+                        {item.name} ({item.qty} {item.unit})
+                      </span>
+                      <span className="font-medium text-muted-foreground">
+                        {formatPrice(item.qty * item.unitPrice)}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -280,9 +302,10 @@ function BillSummary() {
           </div>
 
           <PaymentStatusAlert
-            meal={formValues.meal}
-            addons={formValues.addons}
-            discountedTotal={formValues.discountedTotal}
+            meal={formValues.meal ?? null}
+            addons={formValues.addons ?? null}
+            discountAmt={formValues.discountAmt ?? null}
+            pax={formValues.pax ?? null}
             amountPaid={formValues.amountPaid ?? 0}
             variant="minimal"
           />

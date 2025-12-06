@@ -2,17 +2,13 @@ import { useMemo } from "react"
 import { calculateBillTotals, formatPrice } from "@/lib/utils"
 import { RiCheckboxCircleFill, RiTimeLine } from "@remixicon/react"
 import type { Doc } from "@db/_generated/dataModel"
+import type { UpdateEventBillSchema } from "@/validations/events"
 
 type PaymentStatusAlertProps = {
-  meal?:
-    | Doc<"events">["meal"]
-    | {
-        items: NonNullable<Doc<"events">["meal"]>["items"]
-        mealId?: unknown
-      }
-    | null
+  meal?: Doc<"events">["meal"] | UpdateEventBillSchema["meal"] | null
   addons?: Doc<"events">["addons"] | null
-  discountedTotal?: Doc<"events">["discountedTotal"] | null
+  discountAmt?: number | null
+  pax?: number | null
   amountPaid: number
   variant?: "minimal" | "descriptive"
 }
@@ -20,18 +16,20 @@ type PaymentStatusAlertProps = {
 export function PaymentStatusAlert({
   meal,
   addons,
-  discountedTotal,
+  discountAmt,
+  pax,
   amountPaid,
   variant = "minimal"
 }: PaymentStatusAlertProps) {
   const billTotals = useMemo(
     () =>
       calculateBillTotals({
-        meal: meal as Parameters<typeof calculateBillTotals>[0]["meal"],
-        addons: addons as Parameters<typeof calculateBillTotals>[0]["addons"],
-        discountedTotal
+        meal: meal ?? null,
+        addons: addons ?? null,
+        discountAmt: discountAmt ?? null,
+        pax: pax ?? null
       }),
-    [meal, addons, discountedTotal]
+    [meal, addons, discountAmt, pax]
   )
 
   const remaining = useMemo(

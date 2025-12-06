@@ -14,8 +14,9 @@ function FilterRadioGroup({
   )
 }
 
-interface FilterRadioItemProps
-  extends React.ComponentProps<typeof RadioGroupPrimitive.Item> {
+interface FilterRadioItemProps extends React.ComponentProps<
+  typeof RadioGroupPrimitive.Item
+> {
   label: string
 }
 

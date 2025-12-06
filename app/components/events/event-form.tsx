@@ -24,7 +24,7 @@ import { NumberInput } from "@/components/ui/number-input"
 import { MealSelect } from "./meal-select"
 import { AddonSelect } from "./addon-select"
 import { VenueSelect } from "./venue-select"
-import { MealItemsField } from "@/components/meals/meal-items-field"
+import { MealConfig } from "./meal-config"
 import { AddonItemsField } from "./addon-items-field"
 import { EventTypeSelect } from "./event-type-select"
 import { ACTIVE_EVENT_STATUS } from "@/lib/constants"
@@ -89,7 +89,7 @@ export function EventForm() {
         : defaultStartTime,
       endTime: initialValues ? new Date(initialValues.endTime) : defaultEndTime,
       amountPaid: initialValues?.amountPaid ?? 0,
-      discountedTotal: initialValues?.discountedTotal ?? null,
+      discountAmt: initialValues?.discountAmt ?? null,
       meal: initialValues?.meal ?? undefined,
       addons: initialValues?.addons
     } satisfies EventSchema as EventSchema,
@@ -101,9 +101,23 @@ export function EventForm() {
         unitPrice
       }))
 
+      const meal = value.meal
+        ? {
+            mealId: value.meal.mealId as Id<"meals">,
+            type: value.meal.type,
+            ...(value.meal.type === "package"
+              ? {
+                  pricePerHead: value.meal.pricePerHead,
+                  items: value.meal.items
+                }
+              : { items: value.meal.items })
+          }
+        : undefined
+
       const body = {
         ...value,
         addons,
+        meal,
         venueId: value.venueId as Id<"venues">,
         bookingDate: value.bookingDate.getTime(),
         startTime: value.startTime.getTime(),
@@ -367,6 +381,46 @@ export function EventForm() {
 
         <VenueSelect />
 
+        <div className="grid items-start gap-6 md:grid-cols-2">
+          <form.AppField name="amountPaid">
+            {(field) => (
+              <field.Field>
+                <field.Label>Amount Paid</field.Label>
+                <field.Control>
+                  <NumberInput
+                    placeholder="0"
+                    min={0}
+                    disabled={isPending}
+                    value={field.state.value}
+                    onChange={(val) => field.handleChange(val as number)}
+                    onBlur={field.handleBlur}
+                  />
+                </field.Control>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+
+          <form.AppField name="discountAmt">
+            {(field) => (
+              <field.Field>
+                <field.Label>Discount Amount</field.Label>
+                <field.Control>
+                  <NumberInput
+                    placeholder="0"
+                    min={0}
+                    disabled={isPending}
+                    value={field.state.value ?? 0}
+                    onChange={(val) => field.handleChange(val as number)}
+                    onBlur={field.handleBlur}
+                  />
+                </field.Control>
+                <field.Error />
+              </field.Field>
+            )}
+          </form.AppField>
+        </div>
+
         <form.AppField name="notes">
           {(field) => (
             <field.Field>
@@ -447,7 +501,7 @@ function MealFields() {
   return (
     <>
       <MealSelect />
-      {mealId && <MealItemsField fieldName="meal.items" />}
+      {mealId && <MealConfig />}
     </>
   )
 }

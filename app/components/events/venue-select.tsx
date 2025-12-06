@@ -60,7 +60,7 @@ export function VenueSelect() {
                       keywords={[
                         venue.name,
                         venue.location,
-                        `${venue.capacity}`,
+                        `${venue.capacity}`
                       ].filter((k): k is string => !!k)}
                       onSelect={() => {
                         field.handleChange(venue._id)

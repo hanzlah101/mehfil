@@ -1,8 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { isMealItem } from "./meal-utils"
 import type { TFormApi } from "@/lib/types"
 import type { DeepKeys } from "@tanstack/react-form"
-import type { Doc, Id } from "@db/_generated/dataModel"
+import type { Doc } from "@db/_generated/dataModel"
+import type { EventSchema } from "@/validations/events"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -48,30 +50,45 @@ export function getDirtyValues<TData>(
   return result
 }
 
-type MealItem = NonNullable<Doc<"events">["meal"]>["items"][number]
+type EventMeal = Doc<"events">["meal"]
+type FormMeal = EventSchema["meal"]
 type AddonItem = NonNullable<Doc<"events">["addons"]>[number]
 
 type BillCalculationInput = {
-  meal?: {
-    items: MealItem[]
-    mealId?: Id<"meals"> | string
-  } | null
+  meal?: EventMeal | FormMeal | null
   addons?: AddonItem[] | null
-  discountedTotal?: Doc<"events">["discountedTotal"] | null
+  discountAmt?: number | null
+  pax?: number | null
 }
 
 export function calculateBillTotals(input: BillCalculationInput) {
-  const mealTotal = input.meal
-    ? input.meal.items.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
-    : 0
+  let mealTotal = 0
+
+  if (input.meal) {
+    if (input.meal.type === "package") {
+      const pax = input.pax ?? 0
+      mealTotal = input.meal.pricePerHead * pax
+    } else if (input.meal.type === "items") {
+      const items = input.meal.items
+      if (Array.isArray(items)) {
+        mealTotal = items.reduce((sum, item) => {
+          if (isMealItem(item)) {
+            return sum + item.qty * item.unitPrice
+          }
+          return sum
+        }, 0)
+      }
+    }
+  }
+
   const addonsTotal = input.addons
     ? input.addons.reduce((sum, item) => sum + item.qty * item.unitPrice, 0)
     : 0
+
   const subtotal = mealTotal + addonsTotal
-  const discountedTotal = input.discountedTotal ?? null
-  const grandTotal = discountedTotal ?? subtotal
-  const discountAmount =
-    discountedTotal !== null ? subtotal - discountedTotal : 0
+  const discountAmt = input.discountAmt ?? null
+  const grandTotal = discountAmt !== null ? subtotal - discountAmt : subtotal
+  const discountAmount = discountAmt ?? 0
   const discountPercentage =
     discountAmount > 0 && subtotal > 0
       ? Math.round((discountAmount / subtotal) * 100)

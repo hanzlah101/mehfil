@@ -35,7 +35,8 @@ export function DeleteAddonDialog() {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your addon{" "}
+            This action cannot be undone. This will permanently delete your
+            addon{" "}
             <span className="font-medium text-foreground">{addon?.name}</span>.
           </AlertDialogDescription>
         </AlertDialogHeader>
