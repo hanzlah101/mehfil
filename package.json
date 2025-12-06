@@ -31,6 +31,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
@@ -45,7 +46,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "convex": "^1.28.0",
+    "convex": "^1.30.0",
     "convex-helpers": "^0.1.104",
     "date-fns": "^4.1.0",
     "fuse.js": "^7.1.0",
@@ -62,8 +63,8 @@
     "tailwind-merge": "^3.3.1",
     "usehooks-ts": "^3.1.1",
     "vaul": "^1.1.2",
-    "zod": "^4.1.12",
-    "zodvex": "^0.2.4",
+    "zod": "^4.1.13",
+    "zodvex": "^0.2.5",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

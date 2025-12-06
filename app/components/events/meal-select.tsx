@@ -8,6 +8,7 @@ import { useFormContext } from "@/hooks/form-hooks"
 import { useQuery } from "@tanstack/react-query"
 import { FieldControl } from "@/components/ui/field"
 import type { EventSchema } from "@/validations/events"
+import type { MealItemSchema } from "@/validations/meals"
 import {
   RiArrowDownSLine,
   RiCheckLine,
@@ -70,7 +71,30 @@ export function MealSelect() {
 
                         if (shouldUpdate) {
                           field.handleChange(meal._id)
-                          form.setFieldValue("meal.items", meal.items)
+                          if (meal.type === "package") {
+                            form.setFieldValue("meal", {
+                              mealId: meal._id,
+                              type: "package",
+                              pricePerHead: meal.pricePerHead ?? 0,
+                              items: meal.items ?? []
+                            })
+                          } else {
+                            const items = meal.items ?? []
+                            form.setFieldValue("meal", {
+                              mealId: meal._id,
+                              type: "items",
+                              items: Array.isArray(items)
+                                ? items.filter(
+                                    (item): item is MealItemSchema =>
+                                      item &&
+                                      typeof item === "object" &&
+                                      "qty" in item &&
+                                      "unit" in item &&
+                                      "unitPrice" in item
+                                  )
+                                : []
+                            })
+                          }
                           setOpen(false)
                         }
 

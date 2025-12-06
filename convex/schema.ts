@@ -11,6 +11,12 @@ const mealItemsSchema = v.array(
   })
 )
 
+const mealMenuItemsSchema = v.array(
+  v.object({
+    name: v.string()
+  })
+)
+
 const addonFields = v.object({
   name: v.string(),
   unit: v.string(),
@@ -51,13 +57,22 @@ export default defineSchema({
     guestArrival: v.optional(v.string()),
     pax: v.optional(v.union(v.number(), v.null())),
     amountPaid: v.number(),
-    discountedTotal: v.union(v.number(), v.null()),
+    discountAmt: v.union(v.number(), v.null()),
     withFood: v.boolean(),
     meal: v.optional(
-      v.object({
-        mealId: v.id("meals"),
-        items: mealItemsSchema
-      })
+      v.union(
+        v.object({
+          mealId: v.id("meals"),
+          type: v.literal("package"),
+          pricePerHead: v.number(),
+          items: v.optional(mealMenuItemsSchema)
+        }),
+        v.object({
+          mealId: v.id("meals"),
+          type: v.literal("items"),
+          items: mealItemsSchema
+        })
+      )
     ),
     addons: v.optional(v.array(addonFields)),
     cancellationReason: v.optional(v.string()),
@@ -75,8 +90,10 @@ export default defineSchema({
     ])
     .index("by_tenantId_serialCode", ["tenantId", "serialCode"]),
   meals: defineTable({
+    type: v.union(v.literal("package"), v.literal("items")),
     title: v.string(),
-    items: mealItemsSchema,
+    pricePerHead: v.optional(v.number()),
+    items: v.optional(v.union(mealItemsSchema, mealMenuItemsSchema)),
     tenantId: v.id("tenants"),
     updatedAt: v.optional(v.number()),
     deletedAt: v.union(v.null(), v.number())

@@ -26,9 +26,10 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
   const billTotals = useMemo(() => {
     if (!event) return null
     return calculateBillTotals({
-      meal: event.meal,
-      addons: event.addons,
-      discountedTotal: event.discountedTotal
+      meal: event.meal ?? null,
+      addons: event.addons ?? null,
+      discountAmt: event.discountAmt ?? null,
+      pax: event.pax ?? null
     })
   }, [event])
 
@@ -78,23 +79,54 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <RiRestaurantFill className="size-4" />
                 <span className="font-medium">
-                  {event.mealName || "Meal Items"}
+                  {event.mealName ||
+                    (event.meal.type === "package"
+                      ? "Meal Package"
+                      : "Meal Items")}
                 </span>
               </div>
               <div className="ml-6 space-y-1.5 border-l pl-3">
-                {event.meal.items.map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="text-muted-foreground">
-                      {item.name} ({item.qty} {item.unit})
-                    </span>
-                    <span className="font-medium text-muted-foreground">
-                      {formatPrice(item.qty * item.unitPrice)}
-                    </span>
+                {event.meal.type === "package" ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        Package (Per Head: {formatPrice(event.meal.pricePerHead)})
+                        {event.pax && (
+                          <span className="ml-2">× {event.pax} guests</span>
+                        )}
+                      </span>
+                      <span className="font-medium text-muted-foreground">
+                        {formatPrice(
+                          event.meal.pricePerHead * (event.pax ?? 0)
+                        )}
+                      </span>
+                    </div>
+                    {event.meal.items && event.meal.items.length > 0 && (
+                      <div className="ml-4 text-xs text-muted-foreground">
+                        {event.meal.items.map((item, idx) => (
+                          <span key={idx}>
+                            {idx > 0 && ", "}
+                            {item.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                ))}
+                ) : (
+                  event.meal.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-muted-foreground">
+                        {item.name} ({item.qty} {item.unit})
+                      </span>
+                      <span className="font-medium text-muted-foreground">
+                        {formatPrice(item.qty * item.unitPrice)}
+                      </span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -142,9 +174,10 @@ export function PrintBill({ onBack }: { onBack: () => void }) {
 
           {/* Payment Status */}
           <PaymentStatusAlert
-            meal={event.meal}
-            addons={event.addons}
-            discountedTotal={event.discountedTotal}
+            meal={event.meal ?? null}
+            addons={event.addons ?? null}
+            discountAmt={event.discountAmt ?? null}
+            pax={event.pax ?? null}
             amountPaid={amountPaid}
             variant="descriptive"
           />

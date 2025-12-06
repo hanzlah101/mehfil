@@ -94,7 +94,8 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
   const billTotals = calculateBillTotals({
     meal: event.meal,
     addons: event.addons,
-    discountedTotal: event.discountedTotal
+    discountAmt: event.discountAmt,
+    pax: event.pax
   })
 
   const { subtotal, grandTotal, discountAmount, discountPercentage } =
@@ -128,12 +129,24 @@ export function BillPDF({ event, tenant }: BillPDFProps) {
 
   // Add meal items
   if (event.meal) {
-    event.meal.items.forEach((item) => {
+    if (event.meal.type === "package") {
+      const pax = event.pax ?? 0
+      const menuItemsText =
+        event.meal.items && event.meal.items.length > 0
+          ? ` (${event.meal.items.map((i) => i.name).join(", ")})`
+          : ""
       mealItems.push({
-        name: item.name,
-        total: item.qty * item.unitPrice
+        name: `Package (Per Head: ${formatPrice(event.meal.pricePerHead)}${pax > 0 ? ` × ${pax} guests` : ""}${menuItemsText})`,
+        total: event.meal.pricePerHead * pax
       })
-    })
+    } else {
+      event.meal.items.forEach((item) => {
+        mealItems.push({
+          name: item.name,
+          total: item.qty * item.unitPrice
+        })
+      })
+    }
   }
 
   const allItems = [...addons, ...mealItems]

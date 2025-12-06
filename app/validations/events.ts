@@ -22,13 +22,37 @@ const baseEventSchema = z.object({
   pax: z.int("Invalid Pax").positive("Pax must be greater than 0").nullable(),
   withFood: z.boolean(),
   amountPaid: z.number().nonnegative("Amount paid cannot be negative").catch(0),
-  discountedTotal: z
+  discountAmt: z
     .number()
-    .nonnegative("Discounted total cannot be negative")
+    .nonnegative("Discount amount cannot be negative")
     .nullable(),
-  meal: mealSchema
-    .pick({ items: true })
-    .extend({ mealId: z.string() })
+  meal: z
+    .discriminatedUnion("type", [
+      z.object({
+        mealId: z.string(),
+        type: z.literal("package"),
+        pricePerHead: z
+          .number()
+          .positive("Price per head must be greater than 0"),
+        items: z
+          .array(z.object({ name: z.string().min(1) }))
+          .optional()
+      }),
+      z.object({
+        mealId: z.string(),
+        type: z.literal("items"),
+        items: z
+          .array(
+            z.object({
+              name: z.string().min(1),
+              unit: z.string().min(1),
+              qty: z.number().positive(),
+              unitPrice: z.number().nonnegative()
+            })
+          )
+          .min(1, "Please add at least one item")
+      })
+    ])
     .optional(),
   addons: z
     .array(addonSchema.extend({ _id: z.string().optional() }))
@@ -48,7 +72,7 @@ export type EventSchema = z.infer<typeof eventSchema>
 
 export const updateEventBillSchema = baseEventSchema
   .pick({
-    discountedTotal: true,
+    discountAmt: true,
     meal: true,
     addons: true,
     pax: true,
@@ -59,7 +83,8 @@ export const updateEventBillSchema = baseEventSchema
       const { grandTotal } = calculateBillTotals({
         meal: val.meal,
         addons: val.addons,
-        discountedTotal: val.discountedTotal
+        discountAmt: val.discountAmt,
+        pax: val.pax
       })
       if (grandTotal <= 0) return true
       return val.amountPaid <= grandTotal

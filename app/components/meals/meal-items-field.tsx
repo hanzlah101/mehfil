@@ -107,7 +107,7 @@ export function MealItemsField({ fieldName }: { fieldName: string }) {
                   </form.AppField>
                 </div>
 
-                {itemsField.state.value?.length > 1 && (
+                {itemsField.state.value && itemsField.state.value.length > 1 && (
                   <Button
                     size="sm"
                     type="button"
@@ -122,7 +122,7 @@ export function MealItemsField({ fieldName }: { fieldName: string }) {
               </div>
             ))}
 
-            {itemsField.state.value?.length < 50 && (
+            {itemsField.state.value && itemsField.state.value.length < 50 && (
               <Button
                 type="button"
                 variant="outline"
